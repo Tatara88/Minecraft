@@ -29,32 +29,9 @@ public class SecretBookshelf {
 	public static SecretBookshelf instance;
 
 	/**
-	 * Block's default identifier.
-	 */
-	private static int secretBookshelfDefaultID = 500;
-
-	/**
-	 * Block's identifier.
-	 */
-	private static int secretBookshelfID;
-
-	/**
 	 * Block's instance.
 	 */
 	public static Block secretBookshelf;
-
-	/**
-	 * Rotate blocks at the left of the bookshelf.
-	 */
-	public static boolean rotateLeft;
-
-	/**
-	 * Rotate blocks at the right of the bookshelf.
-	 */
-	public static boolean rotateRight;
-
-	@SidedProxy(clientSide = "net.minecraftnauja.secretbookshelf.client.ClientProxy", serverSide = "net.minecraftnauja.secretbookshelf.CommonProxy")
-	public static CommonProxy proxy;
 
 	/**
 	 * {@inheritDoc}
@@ -64,10 +41,7 @@ public class SecretBookshelf {
 		Configuration config = new Configuration(
 				event.getSuggestedConfigurationFile());
 		config.load();
-		secretBookshelfID = config.get(Configuration.CATEGORY_BLOCK,
-				"SecretBookshelf", secretBookshelfDefaultID).getInt();
-		rotateLeft = config.get("Rotate", "Left", false).getBoolean(false);
-		rotateRight = config.get("Rotate", "Right", true).getBoolean(true);
+		Config.load(config);
 		config.save();
 	}
 
@@ -76,7 +50,7 @@ public class SecretBookshelf {
 	 */
 	@Init
 	public void load(FMLInitializationEvent event) {
-		secretBookshelf = new BlockSecretBookshelf(500)
+		secretBookshelf = new BlockSecretBookshelf(Config.secretBookshelfID)
 				.setHardness(Block.bookShelf.blockHardness)
 				.setStepSound(Block.bookShelf.stepSound)
 				.setUnlocalizedName("secretBookshelf");
