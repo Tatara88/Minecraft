@@ -18,7 +18,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockSecretBookshelf extends Block {
 
 	/**
-	 * Initialising constructor.
+	 * Initializing constructor.
 	 * 
 	 * @param par1
 	 *            block's identifier.
@@ -68,7 +68,20 @@ public class BlockSecretBookshelf extends Block {
 			int par5, int par6) {
 		if ((par6 & 8) != 0) {
 			par1World.notifyBlocksOfNeighborChange(par2, par3, par4, blockID);
+			par1World.notifyBlocksOfNeighborChange(par2 - 1, par3, par4,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2 + 1, par3, par4,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3, par4 - 1,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3, par4 + 1,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3 - 1, par4,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3 + 1, par4,
+					blockID);
 		}
+		super.breakBlock(par1World, par2, par3, par4, par5, par6);
 	}
 
 	/**
@@ -112,7 +125,7 @@ public class BlockSecretBookshelf extends Block {
 						3);
 				par1World.playSoundEffect((double) par2 + 0.5D,
 						(double) par3 + 0.5D, (double) par4 + 0.5D,
-						"random.click", 0.3F, 0.6F);
+						"random.click", 0.3F, 0.5F);
 				Config.rotation
 						.apply(par1World, par2, par3, par4, i & 7, false);
 			} else {
@@ -120,10 +133,22 @@ public class BlockSecretBookshelf extends Block {
 						(i & 7) | 8, 3);
 				par1World.playSoundEffect((double) par2 + 0.5D,
 						(double) par3 + 0.5D, (double) par4 + 0.5D,
-						"random.click", 0.3F, 0.5F);
+						"random.click", 0.3F, 0.6F);
 				Config.rotation.apply(par1World, par2, par3, par4, i & 7, true);
 			}
 			par1World.notifyBlocksOfNeighborChange(par2, par3, par4, blockID);
+			par1World.notifyBlocksOfNeighborChange(par2 - 1, par3, par4,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2 + 1, par3, par4,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3, par4 - 1,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3, par4 + 1,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3 - 1, par4,
+					blockID);
+			par1World.notifyBlocksOfNeighborChange(par2, par3 + 1, par4,
+					blockID);
 		}
 		return true;
 	}
