@@ -107,19 +107,17 @@ public class BlockSecretBookshelf extends Block {
 			float par8, float par9) {
 		if (!par1World.isRemote) {
 			int i = par1World.getBlockMetadata(par2, par3, par4);
-			System.out.print(i + " => ");
 			if ((i & 8) != 0) {
 				par1World.setBlockMetadataWithNotify(par2, par3, par4, (i & 7),
 						3);
-				System.out.println((i & 7) + " (deactivated)");
 				par1World.playSoundEffect((double) par2 + 0.5D,
 						(double) par3 + 0.5D, (double) par4 + 0.5D,
 						"random.click", 0.3F, 0.6F);
-				Config.rotation.apply(par1World, par2, par3, par4, i & 7, false);
+				Config.rotation
+						.apply(par1World, par2, par3, par4, i & 7, false);
 			} else {
 				par1World.setBlockMetadataWithNotify(par2, par3, par4,
 						(i & 7) | 8, 3);
-				System.out.println(((i & 7) | 8) + " (activated)");
 				par1World.playSoundEffect((double) par2 + 0.5D,
 						(double) par3 + 0.5D, (double) par4 + 0.5D,
 						"random.click", 0.3F, 0.5F);
@@ -128,58 +126,6 @@ public class BlockSecretBookshelf extends Block {
 			par1World.notifyBlocksOfNeighborChange(par2, par3, par4, blockID);
 		}
 		return true;
-	}
-
-	/**
-	 * Rotates the block at (x1, y, z1) to (x2, y, z2).
-	 * 
-	 * @param world
-	 *            the world.
-	 * @param x1
-	 *            source x-coordinate.
-	 * @param z1
-	 *            source z-coordinate.
-	 * @param x2
-	 *            destination x-coordinate.
-	 * @param z2
-	 *            destination z-coordinate.
-	 * @param y
-	 *            y-coordinate.
-	 */
-	private void rotate(World world, int x1, int z1, int x2, int z2, int y) {
-		if (canRotate(world, x1, z1, x2, z2, y)) {
-			int id = world.getBlockId(x1, y, z1);
-			int metadata = world.getBlockMetadata(x1, y, z1);
-			world.setBlockToAir(x1, y, z1);
-			world.setBlock(x2, y, z2, id, metadata, 3);
-		}
-	}
-
-	/**
-	 * Indicates if the block at (x1, y, z1) can be moved to (x2, y, z2).
-	 * 
-	 * @param world
-	 *            the world.
-	 * @param x1
-	 *            source x-coordinate.
-	 * @param z1
-	 *            source z-coordinate.
-	 * @param x2
-	 *            destination x-coordinate.
-	 * @param z2
-	 *            destination z-coordinate.
-	 * @param y
-	 *            y-coordinate.
-	 * @return if it can be moved.
-	 */
-	private boolean canRotate(World world, int x1, int z1, int x2, int z2, int y) {
-		// Only if source block exist, doesn't have an entity and is solid.
-		// Only if destination block is air or liquid.
-		return world.blockExists(x1, y, z1)
-				&& !world.blockHasTileEntity(x1, y, z1)
-				&& world.getBlockMaterial(x1, y, z1).isSolid()
-				&& (world.isAirBlock(x2, y, z2) || world.getBlockMaterial(x2,
-						y, z2).isLiquid());
 	}
 
 }
