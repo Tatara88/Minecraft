@@ -1,16 +1,16 @@
 package org.minecraftnauja.secretbookshelf;
 
-import org.minecraftnauja.secretbookshelf.block.BlockSecretBookshelf;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
+
+import org.minecraftnauja.secretbookshelf.block.BlockSecretBookshelf;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -62,7 +62,6 @@ public class SecretBookshelf {
 		ItemStack ls = new ItemStack(Block.lever);
 		ItemStack bs = new ItemStack(Block.bookShelf);
 		GameRegistry.addRecipe(sbs, "l", "b", 'l', ls, 'b', bs);
-
 	}
 
 	/**
