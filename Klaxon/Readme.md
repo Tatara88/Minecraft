@@ -70,4 +70,4 @@ item {
 
 Feel free to report any bug [here](https://github.com/Nauja/Minecraft/issues).
 
-* Downloaded klaxons are saved on disk and added to the Minecraft sound manager. When a player reconnects with a new klaxon, you will download it again and have the new version in the `klaxons` folder. However you will not hear this new version ingame as the sound manager will not update it.
+* Downloaded klaxons are saved on disk and added to the Minecraft sound manager. When a player reconnects with a new klaxon, you will download it again and have the new version in the `klaxons` folder. However you will not hear this new version ingame as the sound manager will not update it. Without changing the Minecraft class, it is impossible to refresh an existing sound without adding it with a new name and keeping the old version in memory.
