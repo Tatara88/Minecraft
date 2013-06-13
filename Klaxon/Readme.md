@@ -26,14 +26,14 @@ It can be crafted by putting one stick at each side of the grid and one leather 
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) and [AutoP2P](https://github.com/Nauja/Minecraft/tree/master/AutoP2P) mods.
-3. Downloads the latests `Klaxon-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
+3. Downloads the latest `Klaxon-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
 4. It's done.
 
 ## How to install it - Server
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) and [AutoP2P](https://github.com/Nauja/Minecraft/tree/master/AutoP2P) mods.
-3. Downloads the latests `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
+3. Downloads the latest `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
 4. It's done.
 
 ## Configuration
