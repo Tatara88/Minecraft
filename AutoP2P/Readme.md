@@ -26,7 +26,23 @@ On client-side, this mod hides all the process of starting a peer and joining th
 3. Downloads the latest `AutoP2P-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
 4. It's done.
 
-## Configuration - Client
+## Configuration
+
+As it can sometime be difficult to correctly configure network applications, the configurations showed below are real and working configurations that were used to test this mod.
+
+The server was hosted on a computer with:
+* LAN address: 192.168.1.12
+* WAN address: arena.servequake.com
+* Port: 25565
+* P2P port: 4000
+
+The client was on the same computer with:
+* LAN address: 192.168.1.12
+* P2P port: 4001
+
+The LAN address is the local address displayed by `ipconfig` or `ifconfig`. The WAN address is a `no-ip` address redirecting to the real WAN address displayed on [mywanip](https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&ved=0CDAQFjAA&url=http%3A%2F%2Fwww.mywanip.com%2F&ei=elW6UdzUCOHl4QSW9YH4BQ&usg=AFQjCNGaAkaIyVPM5G9I_mTvXn8M9qMKNw&sig2=y3UavH4qD_Ch91pKOyEmqA&bvm=bv.47883778,d.bGE).
+
+### Client
 
 The configuration file `AutoP2P.cfg` can be found in the `.minecraft/config` folder. It contains the following:
 
