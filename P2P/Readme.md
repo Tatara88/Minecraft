@@ -10,6 +10,10 @@ It relies on the external P2P library [TomP2P](http://tomp2p.net/) written in Ja
 
 The goal is to provide an API for others mods so that they can use the P2P functionalities provided by the library without having to look directly at its code. The API must also minimize the impact of switching to another library for these mods.
 
+## API
+
+Coming...
+
 ## How to install it - Client
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
