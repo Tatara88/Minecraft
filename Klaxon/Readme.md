@@ -22,21 +22,25 @@ Once a klaxon has been downloaded, it is saved in the `.minecraft/config/klaxons
 
 It can be crafted by putting one stick at each side of the grid and one leather at the center.
 
-## How to install it - Client
+## How to install it
+
+### Client
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) and [AutoP2P](https://github.com/Nauja/Minecraft/tree/master/AutoP2P) mods.
 3. Downloads the latest `Klaxon-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
 4. It's done.
 
-## How to install it - Server
+### Server
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) and [AutoP2P](https://github.com/Nauja/Minecraft/tree/master/AutoP2P) mods.
 3. Downloads the latest `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
 4. It's done.
 
-## Configuration - Client
+## Configuration
+
+### Client
 
 The configuration file `Klaxon.cfg` can be found in the `.minecraft/config` folder. By default, it contains the following:
 
@@ -66,7 +70,7 @@ item {
 * item
     * Klaxon: item identifier.
 
-## Configuration - Server
+### Server
 
 The configuration file `Klaxon.cfg` can be found in the `yourserver/config` folder. By default, it contains the following:
 
