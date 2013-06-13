@@ -28,6 +28,8 @@ On client-side, this mod hides all the process of starting a peer and joining th
 
 ## Configuration - Client
 
+The configuration file `AutoP2P.cfg` can be found in the `.minecraft/config` folder. It contains the following:
+
 ```
 # Configuration file
 
@@ -43,7 +45,15 @@ client {
 }
 ```
 
+* client
+    * Address: LAN address.
+    * BehindFirewall: if you are behind a firewall.
+    * Port: port to listen to.
+    * Storage: method used for storage.
+
 ## Configuration - Server
+
+The configuration file `AutoP2P.cfg` can be found in the `yourserver/config` folder. It contains the following:
 
 ```
 # Configuration file
@@ -60,6 +70,13 @@ server {
     S:Storage=none
 }
 ```
+
+* server
+    * Address: LAN address.
+    * BehindFirewall: if you are behind a firewall.
+    * ExternalAddress: WAN address.
+    * Port: port to listen to.
+    * Storage: method used for storage.
 
 ## Bugs
 
