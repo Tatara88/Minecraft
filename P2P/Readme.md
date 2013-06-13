@@ -14,13 +14,15 @@ The goal is to provide an API for others mods so that they can use the P2P funct
 
 Coming...
 
-## How to install it - Client
+## How to install it
+
+### Client
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Downloads the latest `P2P-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
 3. It's done.
 
-## How to install it - Server
+### Server
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Downloads the latest `P2P-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
