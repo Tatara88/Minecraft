@@ -46,7 +46,8 @@ Advices:
 * The LAN address is the local address displayed by `ipconfig` or `ifconfig`. The WAN address is a `no-ip` address redirecting to the real WAN address displayed on [mywanip](https://www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&ved=0CDAQFjAA&url=http%3A%2F%2Fwww.mywanip.com%2F&ei=elW6UdzUCOHl4QSW9YH4BQ&usg=AFQjCNGaAkaIyVPM5G9I_mTvXn8M9qMKNw&sig2=y3UavH4qD_Ch91pKOyEmqA&bvm=bv.47883778,d.bGE).
 * Note that the two P2P ports need to be differents if the client and the server are on the same computer. Otherwise, the client and the server will try to listen on the same port.
 * For the same reason, the P2P port and the Minecraft port need to be differents.
-* Both the P2P port and Minecraft port must be opened or players won't be able to reach the server.
+* Both the P2P port and Minecraft port must be opened server-side or players won't be able to reach the server.
+* The P2P port doesn't need to be opened client-side.
 
 ### Client
 
@@ -70,8 +71,12 @@ client {
 * client
     * Address: LAN address.
     * BehindFirewall: if you are behind a firewall.
+        * true: you are behind a firewall.
+        * false: you are not.
     * Port: port to listen to.
     * Storage: method used for storage.
+        * memory: data are stored in memory.
+        * absolute/path/to/folder: data are stored on disk.
 
 ### Server
 
@@ -96,9 +101,14 @@ server {
 * server
     * Address: LAN address.
     * BehindFirewall: if you are behind a firewall.
+        * true: you are behind a firewall.
+        * false: you are not.
     * ExternalAddress: WAN address.
     * Port: port to listen to.
     * Storage: method used for storage.
+        * none: data are not stored.
+        * memory: data are stored in memory.
+        * absolute/path/to/folder: data are stored on disk.
 
 ## Bugs
 
