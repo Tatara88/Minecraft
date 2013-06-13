@@ -36,9 +36,9 @@ It can be crafted by putting one stick at each side of the grid and one leather 
 3. Downloads the latest `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
 4. It's done.
 
-## Configuration
+## Configuration - Client
 
-The configuration file `Klaxon.cfg` can be found in the `.minecraft/config` folder client-side and in the `yourserver/config` folder server-side. By default, it contains the following:
+The configuration file `Klaxon.cfg` can be found in the `.minecraft/config` folder. By default, it contains the following:
 
 ```
 # Configuration file
@@ -63,6 +63,25 @@ item {
 
 * general
     * Klaxon: absolute path to your klaxon (`.ogg` file).
+* item
+    * Klaxon: item identifier.
+
+## Configuration - Server
+
+The configuration file `Klaxon.cfg` can be found in the `yourserver/config` folder. By default, it contains the following:
+
+```
+# Configuration file
+
+####################
+# item
+####################
+
+item {
+    I:Klaxon=5000
+}
+```
+
 * item
     * Klaxon: item identifier.
 
