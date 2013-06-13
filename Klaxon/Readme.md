@@ -12,7 +12,7 @@ Klaxons are shared via P2P between the players and are not stored on the server.
 
 A klaxon can be heard ingame only if it has been downloaded because of one of those two events. It means that a player won't hear its own klaxon if it has not been uploaded and downloaded before. It can be used as a way to detect if the P2P is working or not.
 
-Once a klaxon has been downloaded, it is saved in the `.minecraft/config/klaxons` folder client-side and in the `yourserver/config/klaxons` folder server-side. You can easily check if the P2P is working by looking at these folders.
+Once a klaxon has been downloaded, it is saved in the `.minecraft/config/klaxons` folder client-side and in the `yourserver/config/klaxons` folder server-side. You can easily check if the P2P is working by looking at these folders. Finally, it is added to the Minecraft sound manager. The klaxon can now be heard ingame.
 
 ## How to craft it
 
