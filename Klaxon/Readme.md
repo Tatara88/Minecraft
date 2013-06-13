@@ -2,9 +2,9 @@
 
 > This mod adds a customizable klaxon for each player.
 
-## In-Depth
-
 With this mod, a new item called `Klaxon` is added to the game. A player can right-click while holding it to make a sound audible by all the players within a certain range. The range is the same as the one for sounds made by mods or items. Each player can use a custom `.ogg` file as its klaxon.
+
+## In-Depth
 
 Klaxons are shared via P2P between the players and are not stored on the server. There are two events making a player download the klaxon of another player:
 * When a player A connects to a server, he automatically uploads its klaxon and sends a packet to notify the server that a klaxon has been uploaded. Then, the server sends the packet to all the players (including player A). Each player receiving the packet deletes the old klaxon for player A if any and downloads the new one.
@@ -65,3 +65,9 @@ item {
     * Klaxon: absolute path to your klaxon (`.ogg` file).
 * item
     * Klaxon: item identifier.
+
+## Bugs
+
+Feel free to report any bug [here](https://github.com/Nauja/Minecraft/issues).
+
+* Downloaded klaxons are saved on disk and added to the Minecraft sound manager. When a player reconnects with a new klaxon, you will download it again and have the new version in the `klaxons` folder. However you will not hear this new version ingame as the sound manager will not update it.
