@@ -18,7 +18,7 @@ Once a klaxon has been downloaded, it is saved in the `.minecraft/config/klaxons
 
 ![Crafting](/resources/crafting.png "Crafting")
 
-> The klaxon is a little bag filled with air that make an annoying noise when pressed.
+> The klaxon is a little bag filled with air that makes an annoying noise when pressed.
 
 It can be crafted by putting one stick at each side of the grid and one leather at the center.
 
