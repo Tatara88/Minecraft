@@ -19,12 +19,14 @@ Coming...
 ### Client
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
-2. Downloads the latest `P2P-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
-3. It's done.
+2. Downloads the `lib.zip` and put its content into `.minecraft/mods`.
+3. Downloads the latest `P2P-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
+4. It's done.
 
 ### Server
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
+2. Downloads the `lib.zip` and put its content into `yourserver/mods`.
 2. Downloads the latest `P2P-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
 3. It's done.
 
