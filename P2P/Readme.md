@@ -1,6 +1,6 @@
 # P2P
 
-> This mod adds Peer-to-Peer capabilities to Minecraft
+> This mod adds Peer-to-Peer capabilities to Minecraft.
 
 With this mod, it is possible to set up a scalable, independent P2P network.
 
