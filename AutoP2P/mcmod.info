@@ -1,0 +1,19 @@
+[
+{
+  "modid": "AutoP2P",
+  "name": "AutoP2P",
+  "description": "Layer allowing automatic connection between a master server and the clients.",
+  "version": "1.0.0",
+  "mcversion": "1.5.2",
+  "logoFile": "",
+  "url": "https://github.com/Nauja/minecraft",
+  "updateUrl": "",
+  "authors": ["Nauja"],
+  "credits": "",
+  "requiredMods": ["P2P"],
+  "parent": "P2P",
+  "screenshots": [],
+  "dependencies": ["P2P"],
+  "dependants": ["Klaxon"]
+}
+]

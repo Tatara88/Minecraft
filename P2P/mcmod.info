@@ -1,0 +1,18 @@
+[
+{
+  "modid": "P2P",
+  "name": "P2P",
+  "description": "Adds P2P capabilities to Minecraft.",
+  "version": "1.0.0",
+  "mcversion": "1.5.2",
+  "logoFile": "",
+  "url": "https://github.com/Nauja/minecraft",
+  "updateUrl": "",
+  "authors": ["Nauja"],
+  "credits": "",
+  "parent": "",
+  "screenshots": [],
+  "dependencies": [],
+  "dependants": ["AutoP2P"]
+}
+]
