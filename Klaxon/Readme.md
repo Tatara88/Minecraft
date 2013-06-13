@@ -62,6 +62,6 @@ item {
 ```
 
 * general
-** Klaxon: absolute path to your klaxon (`.ogg` file).
+    * Klaxon: absolute path to your klaxon (`.ogg` file).
 * item
-** Klaxon: item identifier.
+    * Klaxon: item identifier.
