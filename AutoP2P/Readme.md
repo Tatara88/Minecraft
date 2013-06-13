@@ -12,14 +12,16 @@ On server-side, this mod hides all the process of starting the master peer. To m
 
 On client-side, this mod hides all the process of starting a peer and joining the P2P network when informations from the master peer have been received. This way, players don't have to make a separate configuration for each server and don't have to search for these informations.
 
-## How to install it - Client
+## How to install it
+
+### Client
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) mod.
 3. Downloads the latest `AutoP2P-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
 4. It's done.
 
-## How to install it - Server
+### Server
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) mod.
@@ -71,7 +73,7 @@ client {
     * Port: port to listen to.
     * Storage: method used for storage.
 
-## Configuration - Server
+### Server
 
 The configuration file `AutoP2P.cfg` can be found in the `yourserver/config` folder. It contains the following:
 
