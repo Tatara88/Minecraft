@@ -12,8 +12,26 @@ Klaxons are shared via P2P between the players and are not stored on the server.
 
 A klaxon can be heard ingame only if it has been downloaded because of one of those two events. It means that a player won't hear its own klaxon if it has not been uploaded and downloaded before. It can be used as a way to detect if the P2P is working or not.
 
-Once a klaxon has been downloaded, it is saved in the `.minecraft/config/klaxons` folder client-side and in `yourserver/config/klaxons` folder server-side.
+Once a klaxon has been downloaded, it is saved in the `.minecraft/config/klaxons` folder client-side and in the `yourserver/config/klaxons` folder server-side. You can easily check if the P2P is working by looking at these folders.
 
 ## How to craft it
 
 ![Crafting](/resources/crafting.png "Crafting")
+
+> The klaxon is a little bag filled with air that make an annoying noise when pressed
+
+It can be crafted by putting one stick at each side of the grid and one leather at the center.
+
+## How to install it - Client
+
+1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
+2. Installs the P2P and AutoP2P mods.
+3. Downloads the latests `Klaxon-x.x.x-x.x.x.zip` and put it into `.minecraft/mods`.
+4. It's done.
+
+## How to install it - Server
+
+1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
+2. Installs the P2P and AutoP2P mods.
+3. Downloads the latests `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserverfolder/mods`.
+4. It's done.
