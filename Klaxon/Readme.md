@@ -33,5 +33,35 @@ It can be crafted by putting one stick at each side of the grid and one leather 
 
 1. Make sure to have [Forge](http://www.minecraftforge.net/wiki/Installation/Universal) installed.
 2. Installs the [P2P](https://github.com/Nauja/Minecraft/tree/master/P2P) and [AutoP2P](https://github.com/Nauja/Minecraft/tree/master/AutoP2P) mods.
-3. Downloads the latests `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserverfolder/mods`.
+3. Downloads the latests `Klaxon-x.x.x-x.x.x.zip` and put it into `yourserver/mods`.
 4. It's done.
+
+## Configuration
+
+The configuration file `Klaxon.cfg` can be found in the `.minecraft/config` folder client-side and in the `yourserver/config` folder server-side. By default, it contains the following:
+
+```
+# Configuration file
+
+####################
+# general
+####################
+
+general {
+    S:Klaxon=
+}
+
+
+####################
+# item
+####################
+
+item {
+    I:Klaxon=5000
+}
+```
+
+* general
+** Klaxon: absolute path to your klaxon (`.ogg` file).
+* item
+** Klaxon: item identifier.
