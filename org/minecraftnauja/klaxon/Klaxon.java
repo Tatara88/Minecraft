@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -15,17 +14,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraftforge.common.Configuration;
 
-import org.minecraftnauja.autop2p.AutoP2P;
 import org.minecraftnauja.klaxon.item.ItemKlaxon;
 import org.minecraftnauja.p2p.P2P;
-import org.minecraftnauja.p2p.event.ClientEvent;
-import org.minecraftnauja.p2p.event.GetEvent;
-import org.minecraftnauja.p2p.event.P2PAdapter;
-import org.minecraftnauja.p2p.event.P2PListener;
-import org.minecraftnauja.p2p.event.PeerAdapter;
-import org.minecraftnauja.p2p.event.PeerListener;
-import org.minecraftnauja.p2p.event.PutEvent;
-import org.minecraftnauja.p2p.peer.IPeer;
+import org.minecraftnauja.p2p.provider.file.IFileProvider;
+import org.minecraftnauja.p2p.provider.file.event.FileAdapter;
+import org.minecraftnauja.p2p.provider.file.event.IFileProviderEvent;
+import org.minecraftnauja.tomp2p.TomP2P;
+import org.minecraftnauja.tomp2p.event.ClientEvent;
+import org.minecraftnauja.tomp2p.event.GetEvent;
+import org.minecraftnauja.tomp2p.event.P2PAdapter;
+import org.minecraftnauja.tomp2p.event.P2PListener;
+import org.minecraftnauja.tomp2p.event.PeerListener;
 
 import com.google.common.io.Files;
 
@@ -77,7 +76,7 @@ public class Klaxon {
 	/**
 	 * Listener for the peer.
 	 */
-	public static PeerListener peerListener;
+	public static MyFileListener fileListener;
 
 	/**
 	 * Default item identifier.
@@ -133,8 +132,8 @@ public class Klaxon {
 					"Klaxon", "").getString());
 			// Adds the listeners.
 			p2pListener = new MyP2PListener();
-			peerListener = new MyPeerListener();
-			P2P.addListener(p2pListener);
+			fileListener = new MyFileListener();
+			TomP2P.addListener(p2pListener);
 			// Loading and loaded klaxons.
 			loadingKlaxons = new HashSet<String>();
 			loadedKlaxons = new HashSet<String>();
@@ -179,7 +178,8 @@ public class Klaxon {
 	private static synchronized void clientStarted(ClientEvent event) {
 		running = true;
 		clear();
-		event.getPeer().getNotifier().addListener(peerListener);
+		P2P.get(P2P.CLIENT_PROVIDER).getFileProvider()
+				.addListener(fileListener);
 		// Klaxon file exists.
 		if (file.exists() && file.isFile()) {
 			// Uploads the klaxon.
@@ -206,7 +206,8 @@ public class Klaxon {
 	private static synchronized void clientShutdown(ClientEvent event) {
 		running = false;
 		clear();
-		event.getPeer().getNotifier().removeListener(peerListener);
+		P2P.get(P2P.CLIENT_PROVIDER).getFileProvider()
+				.removeListener(fileListener);
 	}
 
 	/**
@@ -252,11 +253,11 @@ public class Klaxon {
 			if (!loadingKlaxons.contains(name)) {
 				FMLLog.log(MOD_ID, Level.INFO, "Must get the klaxon %s", name);
 				loadedKlaxons.remove(name);
-				IPeer peer = P2P.getClient(AutoP2P.MOD_ID, "Client");
-				if (peer != null) {
-					loadingKlaxons.add(name);
-					peer.get(MOD_ID, name);
-				}
+				loadingKlaxons.add(name);
+				File file = new File(klaxons, name + ".ogg");
+				IFileProvider p = P2P.get(P2P.CLIENT_PROVIDER)
+						.getFileProvider();
+				p.download(MOD_ID, name, file);
 			}
 		}
 	}
@@ -267,25 +268,15 @@ public class Klaxon {
 	 * @param event
 	 *            the event.
 	 */
-	private static synchronized void gotKlaxon(GetEvent event) {
-		String name = event.getLocation();
-		try {
-			byte[] data = (byte[]) event.getData();
-			if (data != null) {
-				// Saves klaxon to .ogg file.
-				File file = new File(klaxons, name + ".ogg");
-				Files.write(data, file);
-				FMLLog.log(MOD_ID, Level.INFO, "Klaxon %s saved to %s", name,
-						file.getAbsolutePath());
-				// Adds the klaxon to the sound manager.
-				Minecraft.getMinecraft().sndManager.addSound(name + ".ogg",
-						file);
-				// Adds to the list of loaded klaxons.
-				loadedKlaxons.add(name);
-			}
-		} catch (Exception e) {
-			FMLLog.log(MOD_ID, Level.SEVERE, e, "Could not save the klaxon");
-		}
+	private static synchronized void gotKlaxon(IFileProviderEvent event) {
+		String name = event.getName();
+		File file = event.getFile();
+		FMLLog.log(MOD_ID, Level.INFO, "Klaxon %s saved to %s", name,
+				file.getAbsolutePath());
+		// Adds the klaxon to the sound manager.
+		Minecraft.getMinecraft().sndManager.addSound(name + ".ogg", file);
+		// Adds to the list of loaded klaxons.
+		loadedKlaxons.add(name);
 		loadingKlaxons.remove(name);
 	}
 
@@ -295,8 +286,8 @@ public class Klaxon {
 	 * @param event
 	 *            the event.
 	 */
-	private static synchronized void gotKlaxonFailed(GetEvent event) {
-		String name = event.getLocation();
+	private static synchronized void gotKlaxonFailed(IFileProviderEvent event) {
+		String name = event.getName();
 		loadingKlaxons.remove(name);
 		loadedKlaxons.remove(name);
 		FMLLog.log(MOD_ID, Level.SEVERE, event.getError(),
@@ -327,15 +318,15 @@ public class Klaxon {
 	}
 
 	/**
-	 * Custom listener for the peer.
+	 * Custom listener for the file provider.
 	 */
-	private class MyPeerListener extends PeerAdapter {
+	private class MyFileListener extends FileAdapter {
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onPut(PutEvent event) {
+		public void onFileUploaded(IFileProviderEvent event) {
 			if (event.getChannel().equals(MOD_ID)) {
 				FMLLog.log(MOD_ID, Level.INFO,
 						"Klaxon has been uploaded, notifying players");
@@ -343,7 +334,7 @@ public class Klaxon {
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					DataOutputStream dos = new DataOutputStream(bos);
 					dos.writeInt(PacketType.UploadedKlaxon.ordinal());
-					dos.writeUTF(event.getLocation());
+					dos.writeUTF(event.getName());
 					Packet250CustomPayload packet = new Packet250CustomPayload();
 					packet.channel = MOD_ID;
 					packet.data = bos.toByteArray();
@@ -360,7 +351,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onPutFailed(PutEvent event) {
+		public void onFileUploadException(IFileProviderEvent event) {
 			if (event.getChannel().equals(MOD_ID)) {
 				FMLLog.log(MOD_ID, Level.SEVERE, event.getError(),
 						"Failed to upload the klaxon");
@@ -371,7 +362,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onGet(GetEvent event) {
+		public void onFileDownloaded(IFileProviderEvent event) {
 			if (event.getChannel().equals(MOD_ID)) {
 				gotKlaxon(event);
 			}
@@ -381,7 +372,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onGetFailed(GetEvent event) {
+		public void onFileDownloadException(IFileProviderEvent event) {
 			if (event.getChannel().equals(MOD_ID)) {
 				gotKlaxonFailed(event);
 			}

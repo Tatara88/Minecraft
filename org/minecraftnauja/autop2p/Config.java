@@ -8,7 +8,7 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.storage.StorageDisk;
 import net.tomp2p.storage.StorageMemory;
 
-import org.minecraftnauja.p2p.config.IPeerConfig;
+import org.minecraftnauja.tomp2p.config.IPeerConfig;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

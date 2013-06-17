@@ -10,8 +10,8 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
 import org.minecraftnauja.autop2p.Config.Client;
-import org.minecraftnauja.p2p.P2P;
-import org.minecraftnauja.p2p.config.ClientConfig;
+import org.minecraftnauja.tomp2p.TomP2P;
+import org.minecraftnauja.tomp2p.config.ClientConfig;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.IPacketHandler;
@@ -68,7 +68,7 @@ public class PacketHandler implements IPacketHandler {
 					ClientConfig cc = new ClientConfig(c.address, c.port,
 							serverAddress, serverPort, c.behindFirewall,
 							c.storageType, c.storage);
-					P2P.startClient(AutoP2P.MOD_ID, "Client", username, cc);
+					TomP2P.startClient(username, cc);
 				} catch (IOException e) {
 					FMLLog.log(AutoP2P.MOD_ID, Level.SEVERE, e,
 							"Could not start the p2p client");

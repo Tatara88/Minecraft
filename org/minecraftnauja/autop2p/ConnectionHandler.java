@@ -13,7 +13,7 @@ import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.MinecraftServer;
 
-import org.minecraftnauja.p2p.P2P;
+import org.minecraftnauja.tomp2p.TomP2P;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.IConnectionHandler;
@@ -101,7 +101,7 @@ public class ConnectionHandler implements IConnectionHandler {
 	public void connectionClosed(INetworkManager manager) {
 		// Client side, connection closed, shutdown the p2p client.
 		if (AutoP2P.side == Side.CLIENT) {
-			P2P.shutdown(AutoP2P.MOD_ID, "Client");
+			TomP2P.shutdownClient();
 		}
 	}
 

@@ -3,8 +3,8 @@ package org.minecraftnauja.autop2p;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.minecraftnauja.p2p.P2P;
-import org.minecraftnauja.p2p.config.ServerConfig;
+import org.minecraftnauja.tomp2p.TomP2P;
+import org.minecraftnauja.tomp2p.config.ServerConfig;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -82,7 +82,7 @@ public class AutoP2P {
 					config.server.externalAddress, config.server.port,
 					config.server.behindFirewall, config.server.storageType,
 					config.server.storage);
-			P2P.startServer(MOD_ID, "Server", "Server", sc);
+			TomP2P.startServer("Server", sc);
 		} catch (IOException e) {
 			FMLLog.log(MOD_ID, Level.SEVERE, e,
 					"Could not start the p2p server");
@@ -96,7 +96,7 @@ public class AutoP2P {
 	public void serverStopped(FMLServerStoppedEvent event) {
 		// Server side, server stopped, stops the peer.
 		FMLLog.log(MOD_ID, Level.INFO, "Minecraft server stopped");
-		P2P.shutdown(MOD_ID, "Server");
+		TomP2P.shutdownServer();
 	}
 
 }
