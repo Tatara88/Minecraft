@@ -1,6 +1,6 @@
 package org.minecraftnauja.tomp2p.config;
 
-import org.minecraftnauja.autop2p.Config.StorageType;
+import org.minecraftnauja.tomp2p.Config.StorageType;
 
 /**
  * Peer configuration.

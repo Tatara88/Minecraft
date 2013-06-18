@@ -7,10 +7,9 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 
+import org.minecraftnauja.p2p.provider.ProviderBase;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
 import org.minecraftnauja.tomp2p.config.IPeerConfig;
-import org.minecraftnauja.tomp2p.event.DefaultPeerNotifier;
-import org.minecraftnauja.tomp2p.event.PeerNotifier;
 import org.minecraftnauja.tomp2p.provider.FileProvider;
 
 /**
@@ -19,22 +18,8 @@ import org.minecraftnauja.tomp2p.provider.FileProvider;
  * @param <T>
  *            type of the configuration.
  */
-public abstract class PeerBase<T extends IPeerConfig> implements IPeer<T> {
-
-	/**
-	 * Mod identifier.
-	 */
-	private final String modId;
-
-	/**
-	 * Its key.
-	 */
-	private final String key;
-
-	/**
-	 * Its configuration.
-	 */
-	private final T config;
+public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
+		implements IPeer<T> {
 
 	/**
 	 * Its instance.
@@ -42,70 +27,21 @@ public abstract class PeerBase<T extends IPeerConfig> implements IPeer<T> {
 	private Peer peer;
 
 	/**
-	 * Notifier for this peer.
+	 * Its configuration.
 	 */
-	private final DefaultPeerNotifier notifier;
-
-	/**
-	 * The default domain.
-	 */
-	private String defaultDomain;
+	private T config;
 
 	/**
 	 * The file provider.
 	 */
-	private IFileProvider fileProvider;
+	private final IFileProvider fileProvider;
 
 	/**
-	 * Initializing constructor.
-	 * 
-	 * @param modId
-	 *            mod identifier.
-	 * @param key
-	 *            its key.
-	 * @param config
-	 *            its configuration.
+	 * Default constructor.
 	 */
-	public PeerBase(String modId, String key, T config) {
+	public PeerBase() {
 		super();
-		this.modId = modId;
-		this.key = key;
-		this.config = config;
-		notifier = new DefaultPeerNotifier();
-		defaultDomain = modId;
 		fileProvider = new FileProvider(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getModId() {
-		return modId;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getKey() {
-		return key;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public T getConfig() {
-		return config;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public PeerNotifier getNotifier() {
-		return notifier;
 	}
 
 	/**
@@ -113,7 +49,7 @@ public abstract class PeerBase<T extends IPeerConfig> implements IPeer<T> {
 	 * 
 	 * @return its instance.
 	 */
-	public Peer getPeer() {
+	public synchronized Peer getPeer() {
 		return peer;
 	}
 
@@ -123,7 +59,7 @@ public abstract class PeerBase<T extends IPeerConfig> implements IPeer<T> {
 	 * @param peer
 	 *            new value.
 	 */
-	public void setPeer(Peer peer) {
+	protected synchronized void setPeer(Peer peer) {
 		this.peer = peer;
 	}
 
@@ -131,32 +67,34 @@ public abstract class PeerBase<T extends IPeerConfig> implements IPeer<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isRunning() {
-		return peer.isRunning();
+	public synchronized T getConfig() {
+		return config;
+	}
+
+	/**
+	 * Sets its configuration.
+	 * 
+	 * @param config
+	 *            new value.
+	 */
+	protected synchronized void setConfig(T config) {
+		this.config = config;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isShutdown() {
-		return peer.isShutdown();
+	public synchronized boolean isRunning() {
+		return peer != null && peer.isRunning();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getDefaultDomain() {
-		return defaultDomain;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setDefaultDomain(String domain) {
-		defaultDomain = domain;
+	public synchronized boolean isShutdown() {
+		return peer == null || peer.isShutdown();
 	}
 
 	/**
@@ -183,29 +121,6 @@ public abstract class PeerBase<T extends IPeerConfig> implements IPeer<T> {
 	@Override
 	public FutureDHT get(final String channel, final String location) {
 		return peer.get(Number160.createHash(location)).start();
-	}
-
-	/**
-	 * Gets this peer as a server.
-	 * 
-	 * @return this peer as a server.
-	 */
-	public abstract Server toServer();
-
-	/**
-	 * Gets this peer as a client.
-	 * 
-	 * @return this peer as a client.
-	 */
-	public abstract Client toClient();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return "PeerBase [modId=" + modId + ", key=" + key + ", config="
-				+ config + ", peer=" + peer + "]";
 	}
 
 }

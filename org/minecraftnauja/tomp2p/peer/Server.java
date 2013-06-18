@@ -1,13 +1,21 @@
 package org.minecraftnauja.tomp2p.peer;
 
-import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
 
+import net.tomp2p.connection.Bindings;
 import net.tomp2p.p2p.Peer;
+import net.tomp2p.p2p.PeerMaker;
+import net.tomp2p.peers.Number160;
 
-import org.minecraftnauja.p2p.provider.file.IFileProvider;
-import org.minecraftnauja.p2p.provider.file.event.IFileCallback;
-import org.minecraftnauja.p2p.provider.file.event.IFileListener;
+import org.minecraftnauja.p2p.P2P;
+import org.minecraftnauja.tomp2p.TomP2P;
 import org.minecraftnauja.tomp2p.config.IServerConfig;
+import org.minecraftnauja.tomp2p.exception.AlreadyRunningException;
+
+import cpw.mods.fml.common.FMLLog;
 
 /**
  * Server.
@@ -15,63 +23,64 @@ import org.minecraftnauja.tomp2p.config.IServerConfig;
 public class Server extends PeerBase<IServerConfig> implements IServer {
 
 	/**
-	 * The default location.
+	 * Its identifier.
 	 */
-	private String defaultLocation;
-
-	/**
-	 * Initializing constructor.
-	 * 
-	 * @param modId
-	 *            the mod identifier.
-	 * @param key
-	 *            its key.
-	 * @param config
-	 *            its configuration.
-	 */
-	public Server(String modId, String key, IServerConfig config) {
-		super(modId, key, config);
-		defaultLocation = config.getAddress();
-	}
+	public static final String PEER_ID = "Server";
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getName() {
-		return "Server";
+		return P2P.SERVER_PROVIDER;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getDefaultLocation() {
-		return defaultLocation;
+	public String getId() {
+		return P2P.SERVER_PROVIDER;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setDefaultLocation(String location) {
-		defaultLocation = location;
+	public synchronized void start(IServerConfig config)
+			throws AlreadyRunningException, UnknownHostException, IOException {
+		if (isRunning()) {
+			throw new AlreadyRunningException(this);
+		}
+		FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Server: starting with %s...",
+				config);
+		fireStarting();
+		Bindings b = new Bindings();
+		b.addAddress(InetAddress.getByName(config.getAddress()));
+		Peer peer = new PeerMaker(Number160.createHash(PEER_ID)).setBindings(b)
+				.setPorts(config.getPort()).setEnableIndirectReplication(true)
+				.makeAndListen();
+		setPeer(peer);
+		setConfig(config);
+		peer.getConfiguration().setBehindFirewall(config.isBehindFirewall());
+		config.getStorageType().apply(peer, config);
+		// Notifies.
+		FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Server: started");
+		fireStarted();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Server toServer() {
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Client toClient() {
-		return null;
+	public synchronized void stop() {
+		if (isRunning()) {
+			fireStopping();
+			getPeer().shutdown();
+			setPeer(null);
+			setConfig(null);
+			fireStopped();
+		}
 	}
 
 }

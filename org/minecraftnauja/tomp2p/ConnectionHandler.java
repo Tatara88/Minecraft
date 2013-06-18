@@ -1,4 +1,4 @@
-package org.minecraftnauja.autop2p;
+package org.minecraftnauja.tomp2p;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -13,7 +13,8 @@ import net.minecraft.network.packet.Packet1Login;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.MinecraftServer;
 
-import org.minecraftnauja.tomp2p.TomP2P;
+import org.minecraftnauja.p2p.P2P;
+import org.minecraftnauja.tomp2p.peer.IClient;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.IConnectionHandler;
@@ -34,7 +35,7 @@ public class ConnectionHandler implements IConnectionHandler {
 			INetworkManager manager) {
 		// Sends server configuration.
 		try {
-			FMLLog.log(AutoP2P.MOD_ID, Level.INFO,
+			FMLLog.log(TomP2P.MOD_ID, Level.INFO,
 					"Player logged in, sending server config");
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(bos);
@@ -43,20 +44,20 @@ public class ConnectionHandler implements IConnectionHandler {
 					.getHostString();
 			if (hs.equalsIgnoreCase("localhost") || hs.equals("127.0.0.1")) {
 				// Localhost, send local address.
-				dos.writeUTF(AutoP2P.config.server.address);
+				dos.writeUTF(TomP2P.config.server.address);
 			} else {
 				// Send external address.
-				dos.writeUTF(AutoP2P.config.server.externalAddress);
+				dos.writeUTF(TomP2P.config.server.externalAddress);
 			}
 			//
-			dos.writeInt(AutoP2P.config.server.port);
+			dos.writeInt(TomP2P.config.server.port);
 			Packet250CustomPayload packet = new Packet250CustomPayload();
-			packet.channel = AutoP2P.MOD_ID;
+			packet.channel = TomP2P.MOD_ID;
 			packet.data = bos.toByteArray();
 			packet.length = bos.size();
 			PacketDispatcher.sendPacketToPlayer(packet, player);
 		} catch (IOException e) {
-			FMLLog.log(AutoP2P.MOD_ID, Level.SEVERE, e,
+			FMLLog.log(TomP2P.MOD_ID, Level.SEVERE, e,
 					"Could not send server config to player");
 		}
 	}
@@ -100,9 +101,8 @@ public class ConnectionHandler implements IConnectionHandler {
 	@Override
 	public void connectionClosed(INetworkManager manager) {
 		// Client side, connection closed, shutdown the p2p client.
-		if (AutoP2P.side == Side.CLIENT) {
-			TomP2P.shutdownClient();
+		if (TomP2P.side == Side.CLIENT) {
+			((IClient) P2P.get(P2P.CLIENT_PROVIDER)).stop();
 		}
 	}
-
 }

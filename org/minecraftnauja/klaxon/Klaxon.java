@@ -16,15 +16,15 @@ import net.minecraftforge.common.Configuration;
 
 import org.minecraftnauja.klaxon.item.ItemKlaxon;
 import org.minecraftnauja.p2p.P2P;
+import org.minecraftnauja.p2p.provider.IProvider;
+import org.minecraftnauja.p2p.provider.event.IProviderEvent;
+import org.minecraftnauja.p2p.provider.event.IProviderListener;
+import org.minecraftnauja.p2p.provider.event.ProviderAdapter;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
 import org.minecraftnauja.p2p.provider.file.event.FileAdapter;
+import org.minecraftnauja.p2p.provider.file.event.IFileListener;
 import org.minecraftnauja.p2p.provider.file.event.IFileProviderEvent;
-import org.minecraftnauja.tomp2p.TomP2P;
 import org.minecraftnauja.tomp2p.event.ClientEvent;
-import org.minecraftnauja.tomp2p.event.GetEvent;
-import org.minecraftnauja.tomp2p.event.P2PAdapter;
-import org.minecraftnauja.tomp2p.event.P2PListener;
-import org.minecraftnauja.tomp2p.event.PeerListener;
 
 import com.google.common.io.Files;
 
@@ -43,7 +43,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "Klaxon", name = "Klaxon", version = "1.0.0", dependencies = "required-after:AutoP2P")
+@Mod(modid = "Klaxon", name = "Klaxon", version = "1.0.0", dependencies = "required-after:P2P")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { "Klaxon" }, packetHandler = PacketHandler.class)
 public class Klaxon {
 
@@ -69,14 +69,14 @@ public class Klaxon {
 	public static File file;
 
 	/**
-	 * Listener for the p2p mod.
+	 * Listener for the provider.
 	 */
-	public static P2PListener p2pListener;
+	public static IProviderListener providerListener;
 
 	/**
-	 * Listener for the peer.
+	 * Listener for the file provider.
 	 */
-	public static MyFileListener fileListener;
+	public static IFileListener fileListener;
 
 	/**
 	 * Default item identifier.
@@ -130,10 +130,6 @@ public class Klaxon {
 			// Loads client configuration.
 			file = new File(config.get(Configuration.CATEGORY_GENERAL,
 					"Klaxon", "").getString());
-			// Adds the listeners.
-			p2pListener = new MyP2PListener();
-			fileListener = new MyFileListener();
-			TomP2P.addListener(p2pListener);
 			// Loading and loaded klaxons.
 			loadingKlaxons = new HashSet<String>();
 			loadedKlaxons = new HashSet<String>();
@@ -158,6 +154,14 @@ public class Klaxon {
 			Minecraft.getMinecraft().sndManager.addSound(name + ".ogg", file);
 			FMLLog.log(MOD_ID, Level.INFO, "klaxon name %s", name);
 		}
+		// Adds listeners.
+		if (event.getSide() == Side.CLIENT) {
+			providerListener = new MyProviderListener();
+			fileListener = new MyFileListener();
+			IProvider p = P2P.get(P2P.CLIENT_PROVIDER);
+			p.addListener(providerListener);
+			p.getFileProvider().addListener(fileListener);
+		}
 	}
 
 	/**
@@ -175,7 +179,7 @@ public class Klaxon {
 	 * @param event
 	 *            the event.
 	 */
-	private static synchronized void clientStarted(ClientEvent event) {
+	private static synchronized void clientStarted(IProviderEvent event) {
 		running = true;
 		clear();
 		P2P.get(P2P.CLIENT_PROVIDER).getFileProvider()
@@ -187,13 +191,7 @@ public class Klaxon {
 					+ Minecraft.getMinecraft().thePlayer.username + "a";
 			FMLLog.log(MOD_ID, Level.INFO,
 					"Client started, uploading the klaxon to %s", name);
-			try {
-				byte[] data = Files.toByteArray(file);
-				event.getPeer().put(MOD_ID, name, data);
-			} catch (IOException e) {
-				FMLLog.log(MOD_ID, Level.SEVERE, e,
-						"Could not upload the klaxon");
-			}
+			event.getFileProvider().upload(MOD_ID, file, name);
 		}
 	}
 
@@ -203,11 +201,9 @@ public class Klaxon {
 	 * @param event
 	 *            the event.
 	 */
-	private static synchronized void clientShutdown(ClientEvent event) {
+	private static synchronized void clientShutdown(IProviderEvent event) {
 		running = false;
 		clear();
-		P2P.get(P2P.CLIENT_PROVIDER).getFileProvider()
-				.removeListener(fileListener);
 	}
 
 	/**
@@ -295,15 +291,15 @@ public class Klaxon {
 	}
 
 	/**
-	 * Custom listener for the P2P mod.
+	 * Custom listener for the provider.
 	 */
-	private class MyP2PListener extends P2PAdapter {
+	private class MyProviderListener extends ProviderAdapter {
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onClientStarted(ClientEvent event) {
+		public void onStarted(IProviderEvent event) {
 			clientStarted(event);
 		}
 
@@ -311,7 +307,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onClientShutdown(ClientEvent event) {
+		public void onStopped(IProviderEvent event) {
 			clientShutdown(event);
 		}
 

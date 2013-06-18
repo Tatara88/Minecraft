@@ -5,8 +5,6 @@ import java.io.IOException;
 import net.tomp2p.futures.FutureDHT;
 
 import org.minecraftnauja.p2p.provider.IProvider;
-import org.minecraftnauja.tomp2p.callback.GetCallback;
-import org.minecraftnauja.tomp2p.callback.PutCallback;
 import org.minecraftnauja.tomp2p.config.IPeerConfig;
 import org.minecraftnauja.tomp2p.event.PeerNotifier;
 
@@ -19,18 +17,11 @@ import org.minecraftnauja.tomp2p.event.PeerNotifier;
 public interface IPeer<T extends IPeerConfig> extends IProvider {
 
 	/**
-	 * Gets the mod identifier.
+	 * Gets its identifier.
 	 * 
-	 * @return the mod identifier.
+	 * @return its identifier.
 	 */
-	public String getModId();
-
-	/**
-	 * Gets its key.
-	 * 
-	 * @return its key.
-	 */
-	public String getKey();
+	public String getId();
 
 	/**
 	 * Gets its configuration.
@@ -38,13 +29,6 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	 * @return its configuration.
 	 */
 	public T getConfig();
-
-	/**
-	 * Gets the notifier for this peer.
-	 * 
-	 * @return the notifier for this peer.
-	 */
-	public PeerNotifier getNotifier();
 
 	/**
 	 * Indicates if the peer is running.
@@ -59,36 +43,6 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	 * @return if the peer is shutdown.
 	 */
 	public boolean isShutdown();
-
-	/**
-	 * Gets the default location for this peer.
-	 * 
-	 * @return the default location.
-	 */
-	public String getDefaultLocation();
-
-	/**
-	 * Sets the default location for this peer.
-	 * 
-	 * @param location
-	 *            new value.
-	 */
-	public void setDefaultLocation(String location);
-
-	/**
-	 * Gets the default domain for this peer.
-	 * 
-	 * @return the default domain.
-	 */
-	public String getDefaultDomain();
-
-	/**
-	 * Sets the default domain for this peer.
-	 * 
-	 * @param domain
-	 *            new value.
-	 */
-	public void setDefaultDomain(String domain);
 
 	/**
 	 * Puts data in the DHT.

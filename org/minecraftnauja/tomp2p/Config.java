@@ -1,4 +1,4 @@
-package org.minecraftnauja.autop2p;
+package org.minecraftnauja.tomp2p;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -12,7 +12,6 @@ import org.minecraftnauja.tomp2p.config.IPeerConfig;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * Mod configuration.
@@ -65,7 +64,7 @@ public class Config {
 			client.load(config, event);
 			break;
 		}
-		FMLLog.log(AutoP2P.MOD_ID, Level.INFO, "%s", this);
+		FMLLog.log(TomP2P.MOD_ID, Level.INFO, "%s", this);
 	}
 
 	/**
@@ -146,7 +145,7 @@ public class Config {
 				File f = new File(storage);
 				if (!f.exists()) {
 					if (!f.mkdirs()) {
-						FMLLog.log(AutoP2P.MOD_ID, Level.SEVERE,
+						FMLLog.log(TomP2P.MOD_ID, Level.SEVERE,
 								"Could not make storage directory %s", storage);
 					}
 				}
@@ -225,7 +224,7 @@ public class Config {
 				File f = new File(storage);
 				if (!f.exists()) {
 					if (!f.mkdirs()) {
-						FMLLog.log(AutoP2P.MOD_ID, Level.SEVERE,
+						FMLLog.log(TomP2P.MOD_ID, Level.SEVERE,
 								"Could not make storage directory %s", storage);
 					}
 				}
