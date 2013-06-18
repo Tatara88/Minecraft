@@ -82,7 +82,7 @@ public class P2P {
 	private Map<String, IProvider> providers;
 
 	/**
-	 * {@inheritDoc}
+	 * Pre-initialization.
 	 */
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {

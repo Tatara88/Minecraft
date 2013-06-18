@@ -1,8 +1,8 @@
 [
 {
-  "modid": "P2P",
-  "name": "P2P",
-  "description": "Peer-to-Peer API for Minecraft.",
+  "modid": "TomP2P",
+  "name": "TomP2P",
+  "description": "Implementation of the P2P API using the external library TomP2P.",
   "version": "1.0.0",
   "mcversion": "1.5.2",
   "logoFile": "",
@@ -10,8 +10,8 @@
   "updateUrl": "",
   "authors": ["Nauja"],
   "credits": "",
-  "parent": "",
+  "requiredMods": ["P2P"],
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["P2P"]
 }
 ]

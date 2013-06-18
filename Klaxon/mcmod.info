@@ -10,9 +10,9 @@
   "updateUrl": "",
   "authors": ["Nauja"],
   "credits": "",
-  "requiredMods": ["P2P", "AutoP2P"],
+  "requiredMods": ["P2P"],
   "parent": "",
   "screenshots": [],
-  "dependencies": ["P2P", "AutoP2P"]
+  "dependencies": ["P2P"]
 }
 ]
