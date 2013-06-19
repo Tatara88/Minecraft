@@ -25,6 +25,9 @@ import org.minecraftnauja.p2p.provider.file.event.FileAdapter;
 import org.minecraftnauja.p2p.provider.file.event.FileListener;
 import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
 import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
+import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
+import org.minecraftnauja.p2p.provider.player.event.PlayerAdapter;
+import org.minecraftnauja.p2p.provider.player.task.IPlayerGetAddress;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -244,6 +247,14 @@ public class Klaxon {
 	 */
 	public static synchronized void getKlaxon(String name) {
 		if (running) {
+			IPlayerProvider pp = P2P.get(P2P.CLIENT_PROVIDER).getPlayerProvider();
+			String player = "Nauja";
+			pp.addListener(new PlayerAdapter() {
+				public void onGotAddress(IPlayerGetAddress task) {
+					FMLLog.log(MOD_ID, Level.INFO, "Got player address %s %s", task.getPlayer(), task.getAddress());
+				}
+			});
+			pp.getAddress(MOD_ID, player);
 			if (!loadingKlaxons.contains(name)) {
 				FMLLog.log(MOD_ID, Level.INFO, "Must get the klaxon %s", name);
 				loadedKlaxons.remove(name);
