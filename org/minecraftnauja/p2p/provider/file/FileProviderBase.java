@@ -4,9 +4,9 @@ import java.io.File;
 
 import javax.swing.event.EventListenerList;
 
-import org.minecraftnauja.p2p.provider.file.event.FileProviderEvent;
-import org.minecraftnauja.p2p.provider.file.event.IFileListener;
-import org.minecraftnauja.p2p.provider.file.event.IFileProviderEvent;
+import org.minecraftnauja.p2p.provider.file.event.FileListener;
+import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
+import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
 
 /**
  * Base for files providers.
@@ -29,161 +29,127 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void addListener(IFileListener listener) {
-		listeners.add(IFileListener.class, listener);
+	public void addListener(FileListener listener) {
+		listeners.add(FileListener.class, listener);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void removeListener(IFileListener listener) {
-		listeners.remove(IFileListener.class, listener);
+	public void removeListener(FileListener listener) {
+		listeners.remove(FileListener.class, listener);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void upload(String channel, File file, String name) {
-		upload(channel, file, name, null);
+	public IFileUpload upload(String channel, File file, String name) {
+		return upload(channel, file, name, null);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void download(String channel, String name, File file) {
-		download(channel, name, file, null);
+	public IFileDownload download(String channel, String name, File file) {
+		return download(channel, name, file, null);
 	}
 
 	/**
-	 * Notifies listeners that a file has been uploaded.
+	 * Notifies listeners that a file upload started.
 	 * 
-	 * @param channel
-	 *            the channel.
-	 * @param file
-	 *            the file.
-	 * @param name
-	 *            the name.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileUploaded(String channel, File file, String name) {
-		IFileProviderEvent e = null;
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			if (e == null)
-				e = new FileProviderEvent(this, channel, name, file);
-			l.onFileUploaded(e);
+	protected void fireUpload(IFileUpload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onUpload(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that a file has been uploaded.
+	 * Notifies listeners that a file upload has been completed.
 	 * 
-	 * @param event
-	 *            the event.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileUploaded(IFileProviderEvent event) {
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			l.onFileUploaded(event);
+	protected void fireUploaded(IFileUpload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onUploaded(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that uploading a file caused an exception.
+	 * Notifies listeners that a file upload has been cancelled.
 	 * 
-	 * @param channel
-	 *            the channel.
-	 * @param file
-	 *            the file.
-	 * @param name
-	 *            the name.
-	 * @param error
-	 *            the exception.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileUploadException(String channel, File file,
-			String name, Throwable error) {
-		IFileProviderEvent e = null;
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			if (e == null)
-				e = new FileProviderEvent(this, channel, name, file, error);
-			l.onFileUploadException(e);
+	protected void fireUploadCancelled(IFileUpload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onUploadCancelled(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that uploading a file caused an exception.
+	 * Notifies listeners that a file upload caused an exception.
 	 * 
-	 * @param event
-	 *            the event.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileUploadException(IFileProviderEvent event) {
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			l.onFileUploadException(event);
+	protected void fireUploadException(IFileUpload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onUploadException(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that a file has been downloaded.
+	 * Notifies listeners that a file download started.
 	 * 
-	 * @param channel
-	 *            the channel.
-	 * @param name
-	 *            the name.
-	 * @param file
-	 *            the file.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileDownloaded(String channel, String name, File file) {
-		IFileProviderEvent e = null;
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			if (e == null)
-				e = new FileProviderEvent(this, channel, name, file);
-			l.onFileDownloaded(e);
+	protected void fireDownload(IFileDownload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onDownload(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that a file has been downloaded.
+	 * Notifies listeners that a file download has been completed.
 	 * 
-	 * @param event
-	 *            the event.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileDownloaded(IFileProviderEvent event) {
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			l.onFileDownloaded(event);
+	protected void fireDownloaded(IFileDownload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onDownloaded(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that downloading a file caused an exception.
+	 * Notifies listeners that a file download has been cancelled.
 	 * 
-	 * @param channel
-	 *            the channel.
-	 * @param name
-	 *            the name.
-	 * @param file
-	 *            the file.
-	 * @param error
-	 *            the exception.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileDownloadException(String channel, String name,
-			File file, Throwable error) {
-		IFileProviderEvent e = null;
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			if (e == null)
-				e = new FileProviderEvent(this, channel, name, file, error);
-			l.onFileDownloadException(e);
+	protected void fireDownloadCancelled(IFileDownload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onDownloadCancelled(task);
 		}
 	}
 
 	/**
-	 * Notifies listeners that downloading a file caused an exception.
+	 * Notifies listeners that a file download caused an exception.
 	 * 
-	 * @param event
-	 *            the event.
+	 * @param task
+	 *            the task.
 	 */
-	protected void fireFileDownloadException(IFileProviderEvent event) {
-		for (IFileListener l : listeners.getListeners(IFileListener.class)) {
-			l.onFileDownloadException(event);
+	protected void fireDownloadException(IFileDownload task) {
+		for (FileListener l : listeners.getListeners(FileListener.class)) {
+			l.onDownloadException(task);
 		}
 	}
 

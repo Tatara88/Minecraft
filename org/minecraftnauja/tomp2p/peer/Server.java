@@ -13,7 +13,6 @@ import net.tomp2p.peers.Number160;
 import org.minecraftnauja.p2p.P2P;
 import org.minecraftnauja.tomp2p.TomP2P;
 import org.minecraftnauja.tomp2p.config.IServerConfig;
-import org.minecraftnauja.tomp2p.exception.AlreadyRunningException;
 
 import cpw.mods.fml.common.FMLLog;
 
@@ -48,9 +47,9 @@ public class Server extends PeerBase<IServerConfig> implements IServer {
 	 */
 	@Override
 	public synchronized void start(IServerConfig config)
-			throws AlreadyRunningException, UnknownHostException, IOException {
+			throws UnknownHostException, IOException {
 		if (isRunning()) {
-			throw new AlreadyRunningException(this);
+			return;
 		}
 		FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Server: starting with %s...",
 				config);

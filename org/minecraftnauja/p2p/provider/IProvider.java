@@ -2,6 +2,7 @@ package org.minecraftnauja.p2p.provider;
 
 import org.minecraftnauja.p2p.provider.event.IProviderListener;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
+import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 
 /**
  * Interface for global providers.
@@ -14,6 +15,13 @@ public interface IProvider {
 	 * @return its name.
 	 */
 	public String getName();
+
+	/**
+	 * Gets the player provider.
+	 * 
+	 * @return the player provider.
+	 */
+	public IPlayerProvider getPlayerProvider();
 
 	/**
 	 * Gets the file provider.

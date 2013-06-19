@@ -2,8 +2,10 @@ package org.minecraftnauja.p2p.provider.file;
 
 import java.io.File;
 
-import org.minecraftnauja.p2p.provider.file.event.IFileCallback;
-import org.minecraftnauja.p2p.provider.file.event.IFileListener;
+import org.minecraftnauja.p2p.provider.event.ICallback;
+import org.minecraftnauja.p2p.provider.file.event.FileListener;
+import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
+import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
 
 /**
  * Interface for files providers.
@@ -16,7 +18,7 @@ public interface IFileProvider {
 	 * @param listener
 	 *            the listener to add.
 	 */
-	public void addListener(IFileListener listener);
+	public void addListener(FileListener listener);
 
 	/**
 	 * Removes given listener.
@@ -24,7 +26,7 @@ public interface IFileProvider {
 	 * @param listener
 	 *            the listener to remove.
 	 */
-	public void removeListener(IFileListener listener);
+	public void removeListener(FileListener listener);
 
 	/**
 	 * Uploads given file.
@@ -35,8 +37,9 @@ public interface IFileProvider {
 	 *            file to upload.
 	 * @param name
 	 *            name of uploaded file.
+	 * @return the task.
 	 */
-	public void upload(String channel, File file, String name);
+	public IFileUpload upload(String channel, File file, String name);
 
 	/**
 	 * Uploads given file.
@@ -48,10 +51,11 @@ public interface IFileProvider {
 	 * @param name
 	 *            name of uploaded file.
 	 * @param callback
-	 *            callback function.
+	 *            a callback.
+	 * @return the task.
 	 */
-	public void upload(String channel, File file, String name,
-			IFileCallback callback);
+	public IFileUpload upload(String channel, File file, String name,
+			ICallback<IFileUpload> callback);
 
 	/**
 	 * Downloads file with given name.
@@ -62,8 +66,9 @@ public interface IFileProvider {
 	 *            name of file to download.
 	 * @param file
 	 *            file to create.
+	 * @return the task.
 	 */
-	public void download(String channel, String name, File file);
+	public IFileDownload download(String channel, String name, File file);
 
 	/**
 	 * Downloads file with given name.
@@ -75,9 +80,10 @@ public interface IFileProvider {
 	 * @param file
 	 *            file to create.
 	 * @param callback
-	 *            callback function.
+	 *            a callback.
+	 * @return the task.
 	 */
-	public void download(String channel, String name, File file,
-			IFileCallback callback);
+	public IFileDownload download(String channel, String name, File file,
+			ICallback<IFileDownload> callback);
 
 }

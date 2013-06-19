@@ -22,11 +22,9 @@ import org.minecraftnauja.p2p.provider.event.IProviderListener;
 import org.minecraftnauja.p2p.provider.event.ProviderAdapter;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
 import org.minecraftnauja.p2p.provider.file.event.FileAdapter;
-import org.minecraftnauja.p2p.provider.file.event.IFileListener;
-import org.minecraftnauja.p2p.provider.file.event.IFileProviderEvent;
-import org.minecraftnauja.tomp2p.event.ClientEvent;
-
-import com.google.common.io.Files;
+import org.minecraftnauja.p2p.provider.file.event.FileListener;
+import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
+import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -76,7 +74,7 @@ public class Klaxon {
 	/**
 	 * Listener for the file provider.
 	 */
-	public static IFileListener fileListener;
+	public static FileListener fileListener;
 
 	/**
 	 * Default item identifier.
@@ -261,12 +259,12 @@ public class Klaxon {
 	/**
 	 * Called when a klaxon has been received.
 	 * 
-	 * @param event
-	 *            the event.
+	 * @param task
+	 *            the task.
 	 */
-	private static synchronized void gotKlaxon(IFileProviderEvent event) {
-		String name = event.getName();
-		File file = event.getFile();
+	private static synchronized void gotKlaxon(IFileDownload task) {
+		String name = task.getName();
+		File file = task.getFile();
 		FMLLog.log(MOD_ID, Level.INFO, "Klaxon %s saved to %s", name,
 				file.getAbsolutePath());
 		// Adds the klaxon to the sound manager.
@@ -279,14 +277,14 @@ public class Klaxon {
 	/**
 	 * Called when a klaxon has not been received because of an error.
 	 * 
-	 * @param event
-	 *            the event.
+	 * @param task
+	 *            the task.
 	 */
-	private static synchronized void gotKlaxonFailed(IFileProviderEvent event) {
-		String name = event.getName();
+	private static synchronized void gotKlaxonFailed(IFileDownload task) {
+		String name = task.getName();
 		loadingKlaxons.remove(name);
 		loadedKlaxons.remove(name);
-		FMLLog.log(MOD_ID, Level.SEVERE, event.getError(),
+		FMLLog.log(MOD_ID, Level.SEVERE, task.getError(),
 				"Failed to get the klaxon %s", name);
 	}
 
@@ -322,15 +320,15 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onFileUploaded(IFileProviderEvent event) {
-			if (event.getChannel().equals(MOD_ID)) {
+		public void onUploaded(IFileUpload task) {
+			if (task.getChannel().equals(MOD_ID)) {
 				FMLLog.log(MOD_ID, Level.INFO,
 						"Klaxon has been uploaded, notifying players");
 				try {
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					DataOutputStream dos = new DataOutputStream(bos);
 					dos.writeInt(PacketType.UploadedKlaxon.ordinal());
-					dos.writeUTF(event.getName());
+					dos.writeUTF(task.getName());
 					Packet250CustomPayload packet = new Packet250CustomPayload();
 					packet.channel = MOD_ID;
 					packet.data = bos.toByteArray();
@@ -347,9 +345,9 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onFileUploadException(IFileProviderEvent event) {
-			if (event.getChannel().equals(MOD_ID)) {
-				FMLLog.log(MOD_ID, Level.SEVERE, event.getError(),
+		public void onUploadException(IFileUpload task) {
+			if (task.getChannel().equals(MOD_ID)) {
+				FMLLog.log(MOD_ID, Level.SEVERE, task.getError(),
 						"Failed to upload the klaxon");
 			}
 		}
@@ -358,9 +356,9 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onFileDownloaded(IFileProviderEvent event) {
-			if (event.getChannel().equals(MOD_ID)) {
-				gotKlaxon(event);
+		public void onDownloaded(IFileDownload task) {
+			if (task.getChannel().equals(MOD_ID)) {
+				gotKlaxon(task);
 			}
 		}
 
@@ -368,9 +366,9 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onFileDownloadException(IFileProviderEvent event) {
-			if (event.getChannel().equals(MOD_ID)) {
-				gotKlaxonFailed(event);
+		public void onDownloadException(IFileDownload task) {
+			if (task.getChannel().equals(MOD_ID)) {
+				gotKlaxonFailed(task);
 			}
 		}
 	}

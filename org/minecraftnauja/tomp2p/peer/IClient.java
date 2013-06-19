@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.minecraftnauja.tomp2p.config.ClientConfig;
 import org.minecraftnauja.tomp2p.config.IClientConfig;
-import org.minecraftnauja.tomp2p.exception.AlreadyRunningException;
 
 /**
  * Interface for clients.
@@ -18,13 +17,10 @@ public interface IClient extends IPeer<IClientConfig> {
 	 *            peer identifier.
 	 * @param config
 	 *            client configuration.
-	 * @throws AlreadyRunningException
-	 *             the client is already running.
 	 * @throws IOException
 	 *             error with IO.
 	 */
-	public void start(String id, ClientConfig config)
-			throws AlreadyRunningException, IOException;
+	public void start(String id, ClientConfig config) throws IOException;
 
 	/**
 	 * Stops the client.

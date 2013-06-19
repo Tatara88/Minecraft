@@ -15,7 +15,6 @@ import org.minecraftnauja.p2p.P2P;
 import org.minecraftnauja.tomp2p.TomP2P;
 import org.minecraftnauja.tomp2p.config.ClientConfig;
 import org.minecraftnauja.tomp2p.config.IClientConfig;
-import org.minecraftnauja.tomp2p.exception.AlreadyRunningException;
 
 import cpw.mods.fml.common.FMLLog;
 
@@ -50,9 +49,9 @@ public class Client extends PeerBase<IClientConfig> implements IClient {
 	 */
 	@Override
 	public synchronized void start(String id, ClientConfig config)
-			throws AlreadyRunningException, IOException {
+			throws IOException {
 		if (isRunning()) {
-			throw new AlreadyRunningException(this);
+			return;
 		}
 		Peer peer = null;
 		try {
