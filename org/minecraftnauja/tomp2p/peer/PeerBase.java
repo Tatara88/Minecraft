@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureResponse;
@@ -14,6 +13,7 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.peers.PeerMap;
 import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
+import net.tomp2p.utils.Utils;
 
 import org.minecraftnauja.p2p.provider.ProviderBase;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
@@ -26,8 +26,6 @@ import org.minecraftnauja.tomp2p.packet.PacketGetPlayer;
 import org.minecraftnauja.tomp2p.provider.FileProvider;
 import org.minecraftnauja.tomp2p.provider.PacketProvider;
 import org.minecraftnauja.tomp2p.provider.PlayerProvider;
-
-import cpw.mods.fml.common.FMLLog;
 
 /**
  * Base for peers.
@@ -264,8 +262,8 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 		if (fr.isFailed()) {
 			throw new Exception(fr.getFailedReason());
 		} else {
-			FMLLog.log("Pouet", Level.INFO, "GetPlayer %s", fr.getResponse());
-			return null;
+			return (String) Utils.decodeJavaObject(fr.getResponse()
+					.getPayload1());
 		}
 	}
 
@@ -278,9 +276,6 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 			return null;
 		} else {
 			List<String> l = new ArrayList<String>();
-			if (address.contains(peer.getPeerAddress())) {
-				l.add(getId());
-			}
 			for (PeerAddress pa : address) {
 				try {
 					String s = getPlayer(pa);
