@@ -86,7 +86,9 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 			this.peer.setObjectDataReply(null);
 		}
 		this.peer = peer;
-		peer.setObjectDataReply(this);
+		if (peer != null) {
+			peer.setObjectDataReply(this);
+		}
 	}
 
 	/**
