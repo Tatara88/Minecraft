@@ -4,17 +4,18 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import org.minecraftnauja.p2p.P2P;
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
-import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayers;
 import org.minecraftnauja.toolbox.Toolbox;
 
 /**
- * The player command.
+ * The players command.
  */
-public class PacketCommandPlayer extends PacketCommandBase<IGetPlayer> {
+public class PacketCommandPlayers extends PacketCommandBase<IGetPlayers> {
 
 	/**
 	 * The address.
@@ -24,7 +25,7 @@ public class PacketCommandPlayer extends PacketCommandBase<IGetPlayer> {
 	/**
 	 * Default constructor.
 	 */
-	public PacketCommandPlayer() {
+	public PacketCommandPlayers() {
 		super();
 	}
 
@@ -34,7 +35,7 @@ public class PacketCommandPlayer extends PacketCommandBase<IGetPlayer> {
 	 * @param address
 	 *            the address.
 	 */
-	public PacketCommandPlayer(InetAddress address) {
+	public PacketCommandPlayers(InetAddress address) {
 		super();
 		this.address = address;
 	}
@@ -44,7 +45,7 @@ public class PacketCommandPlayer extends PacketCommandBase<IGetPlayer> {
 	 */
 	@Override
 	public Command getCommand() {
-		return Command.Player;
+		return Command.Players;
 	}
 
 	/**
@@ -68,18 +69,18 @@ public class PacketCommandPlayer extends PacketCommandBase<IGetPlayer> {
 	 */
 	@Override
 	public void execute() {
-		chat("[Getting name of player at address " + address + "]");
+		chat("[Getting names of players at address " + address + "]");
 		IPlayerProvider pp = P2P.get(P2P.CLIENT_PROVIDER).getPlayerProvider();
-		pp.getPlayer(Toolbox.MOD_ID, address, this);
+		pp.getPlayers(Toolbox.MOD_ID, address, this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCompleted(IGetPlayer task) {
+	public void onCompleted(IGetPlayers task) {
 		chat("at address " + task.getAddress() + " there is "
-				+ task.getPlayer());
+				+ Arrays.toString(task.getPlayers()));
 	}
 
 }

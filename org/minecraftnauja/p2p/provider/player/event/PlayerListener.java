@@ -3,7 +3,7 @@ package org.minecraftnauja.p2p.provider.player.event;
 import java.util.EventListener;
 
 import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
-import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayers;
 
 /**
  * Interface for {@code IPlayerProvider} listeners.
@@ -48,7 +48,7 @@ public interface PlayerListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onGetPlayer(IGetPlayer task);
+	public void onGetPlayer(IGetPlayers task);
 
 	/**
 	 * Called when a {@code getPlayer} has been completed.
@@ -56,7 +56,7 @@ public interface PlayerListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onGotPlayer(IGetPlayer task);
+	public void onGotPlayer(IGetPlayers task);
 
 	/**
 	 * Called when a {@code getPlayer} has been cancelled.
@@ -64,7 +64,7 @@ public interface PlayerListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onGetPlayerCancelled(IGetPlayer task);
+	public void onGetPlayerCancelled(IGetPlayers task);
 
 	/**
 	 * Called when a {@code getPlayer} caused an exception.
@@ -72,6 +72,6 @@ public interface PlayerListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onGetPlayerException(IGetPlayer task);
+	public void onGetPlayerException(IGetPlayers task);
 	
 }

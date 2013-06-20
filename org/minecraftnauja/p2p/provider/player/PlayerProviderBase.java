@@ -6,7 +6,7 @@ import javax.swing.event.EventListenerList;
 
 import org.minecraftnauja.p2p.provider.player.event.PlayerListener;
 import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
-import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayers;
 
 /**
  * Base for peers providers.
@@ -53,8 +53,8 @@ public abstract class PlayerProviderBase implements IPlayerProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IGetPlayer getPlayer(String channel, InetAddress address) {
-		return getPlayer(channel, address, null);
+	public IGetPlayers getPlayers(String channel, InetAddress address) {
+		return getPlayers(channel, address, null);
 	}
 
 	/**
@@ -111,7 +111,7 @@ public abstract class PlayerProviderBase implements IPlayerProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireGetPlayer(IGetPlayer task) {
+	protected void fireGetPlayer(IGetPlayers task) {
 		for (PlayerListener l : listeners.getListeners(PlayerListener.class)) {
 			l.onGetPlayer(task);
 		}
@@ -123,7 +123,7 @@ public abstract class PlayerProviderBase implements IPlayerProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireGotPlayer(IGetPlayer task) {
+	protected void fireGotPlayer(IGetPlayers task) {
 		for (PlayerListener l : listeners.getListeners(PlayerListener.class)) {
 			l.onGotPlayer(task);
 		}
@@ -135,7 +135,7 @@ public abstract class PlayerProviderBase implements IPlayerProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireGetPlayerCancelled(IGetPlayer task) {
+	protected void fireGetPlayerCancelled(IGetPlayers task) {
 		for (PlayerListener l : listeners.getListeners(PlayerListener.class)) {
 			l.onGetPlayerCancelled(task);
 		}
@@ -147,7 +147,7 @@ public abstract class PlayerProviderBase implements IPlayerProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireGetPlayerException(IGetPlayer task) {
+	protected void fireGetPlayerException(IGetPlayers task) {
 		for (PlayerListener l : listeners.getListeners(PlayerListener.class)) {
 			l.onGetPlayerException(task);
 		}

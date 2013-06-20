@@ -1,7 +1,7 @@
 package org.minecraftnauja.p2p.provider.player.event;
 
 import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
-import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayers;
 
 /**
  * Adapter for {@code IPlayerProvider} listeners.
@@ -40,28 +40,28 @@ public class PlayerAdapter implements PlayerListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onGetPlayer(IGetPlayer task) {
+	public void onGetPlayer(IGetPlayers task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onGotPlayer(IGetPlayer task) {
+	public void onGotPlayer(IGetPlayers task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onGetPlayerCancelled(IGetPlayer task) {
+	public void onGetPlayerCancelled(IGetPlayers task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onGetPlayerException(IGetPlayer task) {
+	public void onGetPlayerException(IGetPlayers task) {
 	}
 
 }

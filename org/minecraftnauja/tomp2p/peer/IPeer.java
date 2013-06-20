@@ -2,6 +2,7 @@ package org.minecraftnauja.tomp2p.peer;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.List;
 
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureResponse;
@@ -99,12 +100,30 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	public InetAddress getAddress(String player);
 
 	/**
-	 * Gets a player by its address.
+	 * Gets players at given address.
+	 * 
+	 * @param address
+	 *            the address.
+	 * @return the players.
+	 */
+	public List<PeerAddress> getPlayers(InetAddress address);
+
+	/**
+	 * Gets player at given address.
 	 * 
 	 * @param address
 	 *            the address.
 	 * @return the player.
 	 */
-	public String getPlayer(InetAddress address);
+	public String getPlayer(PeerAddress address) throws Exception;
+
+	/**
+	 * Gets players at given address.
+	 * 
+	 * @param address
+	 *            the address.
+	 * @return the players.
+	 */
+	public List<String> getPlayers(List<PeerAddress> address) throws Exception;
 
 }

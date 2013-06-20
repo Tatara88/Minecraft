@@ -78,7 +78,7 @@ public abstract class PacketCommandBase<T extends ITask> implements
 	 */
 	@Override
 	public void onException(T task) {
-		chat("[Failed]");
+		chat("[Failed " + task.getError().getMessage() + "]");
 	}
 
 	/**

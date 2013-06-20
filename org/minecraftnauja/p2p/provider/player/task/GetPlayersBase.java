@@ -1,14 +1,15 @@
 package org.minecraftnauja.p2p.provider.player.task;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 
 /**
  * Base for {@code IPlayerGetPlayer}.
  */
-public abstract class GetPlayerBase extends PlayerTaskBase<IGetPlayer>
-		implements IGetPlayer {
+public abstract class GetPlayersBase extends PlayerTaskBase<IGetPlayers>
+		implements IGetPlayers {
 
 	/**
 	 * The address.
@@ -16,9 +17,9 @@ public abstract class GetPlayerBase extends PlayerTaskBase<IGetPlayer>
 	protected final InetAddress address;
 
 	/**
-	 * The player.
+	 * The players.
 	 */
-	protected String player;
+	protected String[] players;
 
 	/**
 	 * Initializing constructor.
@@ -30,7 +31,7 @@ public abstract class GetPlayerBase extends PlayerTaskBase<IGetPlayer>
 	 * @param address
 	 *            the address.
 	 */
-	public GetPlayerBase(IPlayerProvider source, String channel,
+	public GetPlayersBase(IPlayerProvider source, String channel,
 			InetAddress address) {
 		super(source, channel);
 		this.address = address;
@@ -48,8 +49,8 @@ public abstract class GetPlayerBase extends PlayerTaskBase<IGetPlayer>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getPlayer() {
-		return player;
+	public String[] getPlayers() {
+		return players;
 	}
 
 	/**
@@ -57,9 +58,9 @@ public abstract class GetPlayerBase extends PlayerTaskBase<IGetPlayer>
 	 */
 	@Override
 	public String toString() {
-		return "GetPlayerBase [address=" + address + ", player=" + player
-				+ ", source=" + source + ", channel=" + channel + ", error="
-				+ error + "]";
+		return "GetPlayersBase [address=" + address + ", players="
+				+ Arrays.toString(players) + ", source=" + source
+				+ ", channel=" + channel + ", error=" + error + "]";
 	}
 
 }

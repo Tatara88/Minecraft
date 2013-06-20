@@ -2,6 +2,9 @@ package org.minecraftnauja.tomp2p.peer;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureResponse;
@@ -18,9 +21,13 @@ import org.minecraftnauja.p2p.provider.packet.IPacket;
 import org.minecraftnauja.p2p.provider.packet.IPacketProvider;
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 import org.minecraftnauja.tomp2p.config.IPeerConfig;
+import org.minecraftnauja.tomp2p.packet.ICorePacket;
+import org.minecraftnauja.tomp2p.packet.PacketGetPlayer;
 import org.minecraftnauja.tomp2p.provider.FileProvider;
 import org.minecraftnauja.tomp2p.provider.PacketProvider;
 import org.minecraftnauja.tomp2p.provider.PlayerProvider;
+
+import cpw.mods.fml.common.FMLLog;
 
 /**
  * Base for peers.
@@ -154,7 +161,10 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 	 */
 	@Override
 	public Object reply(PeerAddress sender, Object request) throws Exception {
-		if (request instanceof IPacket) {
+		if (request instanceof ICorePacket) {
+			ICorePacket p = (ICorePacket) request;
+			return p.handle(this, sender, request);
+		} else if (request instanceof IPacket) {
 			IPacket p = (IPacket) request;
 			p.setSource(packetProvider);
 			p.setAddress(sender.getInetAddress());
@@ -194,14 +204,18 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 	 */
 	@Override
 	public PeerAddress getPeerAddress(String player) {
-		Number160 id = Number160.createHash(player);
-		PeerMap pm = peer.getPeerBean().getPeerMap();
-		for (PeerAddress pa : pm.getAll()) {
-			if (pa.getID().equals(id)) {
-				return pa;
+		if (getId().equals(player)) {
+			return peer.getPeerAddress();
+		} else {
+			Number160 id = Number160.createHash(player);
+			PeerMap pm = peer.getPeerBean().getPeerMap();
+			for (PeerAddress pa : pm.getAll()) {
+				if (pa.getID().equals(id)) {
+					return pa;
+				}
 			}
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -221,9 +235,63 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getPlayer(InetAddress address) {
-		// TODO
-		return null;
+	public List<PeerAddress> getPlayers(InetAddress address) {
+		if (address == null) {
+			return null;
+		} else {
+			List<PeerAddress> l = new ArrayList<PeerAddress>();
+			if (peer.getPeerAddress().getInetAddress().equals(address)) {
+				l.add(peer.getPeerAddress());
+			}
+			PeerMap pm = peer.getPeerBean().getPeerMap();
+			for (PeerAddress pa : pm.getAll()) {
+				if (pa.getInetAddress().equals(address)) {
+					l.add(pa);
+				}
+			}
+			return l;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getPlayer(PeerAddress address) throws Exception {
+		FutureResponse fr = peer.sendDirect(address)
+				.setObject(new PacketGetPlayer()).start()
+				.awaitUninterruptibly();
+		if (fr.isFailed()) {
+			throw new Exception(fr.getFailedReason());
+		} else {
+			FMLLog.log("Pouet", Level.INFO, "GetPlayer %s", fr.getResponse());
+			return null;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<String> getPlayers(List<PeerAddress> address) throws Exception {
+		if (address == null) {
+			return null;
+		} else {
+			List<String> l = new ArrayList<String>();
+			if (address.contains(peer.getPeerAddress())) {
+				l.add(getId());
+			}
+			for (PeerAddress pa : address) {
+				try {
+					String s = getPlayer(pa);
+					if (s != null) {
+						l.add(s);
+					}
+				} catch (Exception e) {
+				}
+			}
+			return l;
+		}
 	}
 
 }

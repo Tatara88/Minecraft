@@ -1,14 +1,15 @@
 package org.minecraftnauja.tomp2p.provider;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.minecraftnauja.p2p.exception.AlreadyRunningException;
 import org.minecraftnauja.p2p.provider.event.ICallback;
 import org.minecraftnauja.p2p.provider.player.PlayerProviderBase;
 import org.minecraftnauja.p2p.provider.player.task.GetAddressBase;
-import org.minecraftnauja.p2p.provider.player.task.GetPlayerBase;
+import org.minecraftnauja.p2p.provider.player.task.GetPlayersBase;
 import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
-import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayers;
 import org.minecraftnauja.tomp2p.peer.IPeer;
 
 /**
@@ -51,10 +52,10 @@ public final class PlayerProvider extends PlayerProviderBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IGetPlayer getPlayer(String channel, InetAddress address,
-			ICallback<IGetPlayer> callback) {
+	public IGetPlayers getPlayers(String channel, InetAddress address,
+			ICallback<IGetPlayers> callback) {
 		try {
-			GetPlayer task = new GetPlayer(channel, address);
+			GetPlayers task = new GetPlayers(channel, address);
 			task.start(callback);
 			return task;
 		} catch (AlreadyRunningException e) {
@@ -115,9 +116,9 @@ public final class PlayerProvider extends PlayerProviderBase {
 	}
 
 	/**
-	 * Task for getting a player.
+	 * Task for getting players.
 	 */
-	private final class GetPlayer extends GetPlayerBase {
+	private final class GetPlayers extends GetPlayersBase {
 
 		/**
 		 * Initializing constructor.
@@ -127,7 +128,7 @@ public final class PlayerProvider extends PlayerProviderBase {
 		 * @param address
 		 *            the address.
 		 */
-		public GetPlayer(String channel, InetAddress address) {
+		public GetPlayers(String channel, InetAddress address) {
 			super(PlayerProvider.this, channel, address);
 		}
 
@@ -135,18 +136,32 @@ public final class PlayerProvider extends PlayerProviderBase {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public synchronized void start(final ICallback<IGetPlayer> callback)
+		public synchronized void start(final ICallback<IGetPlayers> callback)
 				throws AlreadyRunningException {
-			player = null;
+			players = null;
+			error = null;
 			if (callback != null) {
 				callback.onStarted(this);
 			}
 			fireGetPlayer(this);
-			player = peer.getPlayer(address);
-			if (callback != null) {
-				callback.onCompleted(this);
+			try {
+				List<String> l = peer.getPlayers(peer.getPlayers(address));
+				if (l != null) {
+					players = l.toArray(new String[l.size()]);
+				} else {
+					players = new String[0];
+				}
+				if (callback != null) {
+					callback.onCompleted(this);
+				}
+				fireGotPlayer(this);
+			} catch (Exception e) {
+				error = e;
+				if (callback != null) {
+					callback.onException(this);
+				}
+				fireGetPlayerException(this);
 			}
-			fireGotPlayer(this);
 		}
 
 		/**

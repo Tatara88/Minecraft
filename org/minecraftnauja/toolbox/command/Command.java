@@ -7,7 +7,7 @@ public enum Command {
 
 	Ping(PacketCommandPing.class),
 	Address(PacketCommandAddress.class),
-	Player(PacketCommandPlayer.class);
+	Players(PacketCommandPlayers.class);
 
 	/**
 	 * Class of the packet.

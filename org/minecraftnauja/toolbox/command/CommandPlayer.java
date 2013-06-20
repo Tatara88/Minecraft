@@ -39,9 +39,9 @@ public class CommandPlayer extends CommandBase {
 	@Override
 	public void processCommand(ICommandSender icommandsender, String[] astring) {
 		try {
-			PacketCommandPlayer p = null;
+			PacketCommandPlayers p = null;
 			if (astring.length == 1) {
-				p = new PacketCommandPlayer(InetAddress.getByName(astring[0]));
+				p = new PacketCommandPlayers(InetAddress.getByName(astring[0]));
 			}
 			if (p != null) {
 				PacketDispatcher.sendPacketToPlayer(p.write(),

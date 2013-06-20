@@ -6,7 +6,7 @@ import org.minecraftnauja.p2p.provider.ISubProvider;
 import org.minecraftnauja.p2p.provider.event.ICallback;
 import org.minecraftnauja.p2p.provider.player.event.PlayerListener;
 import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
-import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayers;
 
 /**
  * Interface for peers providers.
@@ -39,7 +39,7 @@ public interface IPlayerProvider extends ISubProvider<PlayerListener> {
 			ICallback<IGetAddress> callback);
 
 	/**
-	 * Gets the player at given address.
+	 * Gets the players at given address.
 	 * 
 	 * @param channel
 	 *            the channel.
@@ -47,10 +47,10 @@ public interface IPlayerProvider extends ISubProvider<PlayerListener> {
 	 *            the address.
 	 * @return the task.
 	 */
-	public IGetPlayer getPlayer(String channel, InetAddress address);
+	public IGetPlayers getPlayers(String channel, InetAddress address);
 
 	/**
-	 * Gets the player at given address.
+	 * Gets the players at given address.
 	 * 
 	 * @param channel
 	 *            the channel.
@@ -60,7 +60,7 @@ public interface IPlayerProvider extends ISubProvider<PlayerListener> {
 	 *            a callback.
 	 * @return the task.
 	 */
-	public IGetPlayer getPlayer(String channel, InetAddress address,
-			ICallback<IGetPlayer> callback);
+	public IGetPlayers getPlayers(String channel, InetAddress address,
+			ICallback<IGetPlayers> callback);
 
 }

@@ -5,7 +5,7 @@ import java.net.InetAddress;
 /**
  * Task for getting a player by its address.
  */
-public interface IGetPlayer extends IPlayerTask {
+public interface IGetPlayers extends IPlayerTask {
 
 	/**
 	 * Gets the address.
@@ -15,10 +15,10 @@ public interface IGetPlayer extends IPlayerTask {
 	public InetAddress getAddress();
 
 	/**
-	 * Gets the player.
+	 * Gets the players.
 	 * 
-	 * @return the player.
+	 * @return the players.
 	 */
-	public String getPlayer();
+	public String[] getPlayers();
 
 }
