@@ -10,14 +10,17 @@ import org.minecraftnauja.tomp2p.peer.Server;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Mod.ServerStarted;
+import cpw.mods.fml.common.Mod.ServerAboutToStart;
 import cpw.mods.fml.common.Mod.ServerStopped;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = "TomP2P", name = "TomP2P", version = "1.0.0", dependencies = "required-after:P2P")
@@ -59,13 +62,21 @@ public class TomP2P {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Init
+	public void init(FMLInitializationEvent event) {
+		GameRegistry.registerPlayerTracker(new PlayerTracker());
+	}
+
+	/**
 	 * Called when the Minecraft server started.
 	 * 
 	 * @param event
 	 *            the event.
 	 */
-	@ServerStarted
-	public void serverStarted(FMLServerStartedEvent event) {
+	@ServerAboutToStart
+	public void serverAboutToStart(FMLServerAboutToStartEvent event) {
 		try {
 			Config.Server c = config.server;
 			ServerConfig sc = new ServerConfig(c.address, c.externalAddress,

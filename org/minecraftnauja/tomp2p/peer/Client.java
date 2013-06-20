@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.logging.Level;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.tomp2p.connection.Bindings;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDiscover;
@@ -53,11 +55,14 @@ public class Client extends PeerBase<IClientConfig> implements IClient {
 		if (isRunning()) {
 			return;
 		}
+		EntityPlayer p = Minecraft.getMinecraft().thePlayer;
 		Peer peer = null;
 		try {
 			// Starts the peer.
 			FMLLog.log(TomP2P.MOD_ID, Level.INFO,
 					"Client %s: starting with %s...", id, config);
+			p.addChatMessage("[TomP2P] Connecting to "
+					+ config.getServerAddress() + ':' + config.getServerPort());
 			fireStarting();
 			Bindings b = new Bindings();
 			b.addAddress(InetAddress.getByName(config.getAddress()));
@@ -73,6 +78,7 @@ public class Client extends PeerBase<IClientConfig> implements IClient {
 			FutureDiscover fd = peer.discover().setInetAddress(inetAddress)
 					.setPorts(config.getServerPort()).start();
 			FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client: discovering...");
+			p.addChatMessage("[TomP2P] Discovering...");
 			fd.awaitUninterruptibly();
 			if (fd.isSuccess()) {
 				FMLLog.log(TomP2P.MOD_ID, Level.INFO,
@@ -89,16 +95,21 @@ public class Client extends PeerBase<IClientConfig> implements IClient {
 					this.id = id;
 					// Notifies.
 					FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client: started");
+					p.addChatMessage("[TomP2P] Connected");
 					fireStarted();
 				} else {
 					FMLLog.log(TomP2P.MOD_ID, Level.SEVERE,
 							"Client: could not bootstrap");
+					p.addChatMessage("[TomP2P] Bootstrap error");
 				}
 			} else {
 				FMLLog.log(TomP2P.MOD_ID, Level.SEVERE,
 						"Client: failed because of %s", fd.getFailedReason());
+				p.addChatMessage("[TomP2P] " + fd.getFailedReason());
 			}
 		} catch (IOException e) {
+			p.addChatMessage("[TomP2P] " + e.getStackTrace()[0] + ": "
+					+ e.getMessage());
 			if (peer != null) {
 				peer.shutdown();
 			}

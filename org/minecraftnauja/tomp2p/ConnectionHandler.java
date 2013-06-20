@@ -31,35 +31,19 @@ public class ConnectionHandler implements IConnectionHandler {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void connectionClosed(INetworkManager manager) {
+		// Client side, connection closed, shutdown the p2p client.
+		if (TomP2P.side == Side.CLIENT) {
+			((IClient) P2P.get(P2P.CLIENT_PROVIDER)).stop();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void playerLoggedIn(Player player, NetHandler netHandler,
 			INetworkManager manager) {
-		// Sends server configuration.
-		try {
-			FMLLog.log(TomP2P.MOD_ID, Level.INFO,
-					"Player logged in, sending server config");
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			DataOutputStream dos = new DataOutputStream(bos);
-			// Localhost or not.
-			String hs = ((InetSocketAddress) manager.getSocketAddress())
-					.getHostString();
-			if (hs.equalsIgnoreCase("localhost") || hs.equals("127.0.0.1")) {
-				// Localhost, send local address.
-				dos.writeUTF(TomP2P.config.server.address);
-			} else {
-				// Send external address.
-				dos.writeUTF(TomP2P.config.server.externalAddress);
-			}
-			//
-			dos.writeInt(TomP2P.config.server.port);
-			Packet250CustomPayload packet = new Packet250CustomPayload();
-			packet.channel = TomP2P.MOD_ID;
-			packet.data = bos.toByteArray();
-			packet.length = bos.size();
-			PacketDispatcher.sendPacketToPlayer(packet, player);
-		} catch (IOException e) {
-			FMLLog.log(TomP2P.MOD_ID, Level.SEVERE, e,
-					"Could not send server config to player");
-		}
 	}
 
 	/**
@@ -95,14 +79,4 @@ public class ConnectionHandler implements IConnectionHandler {
 			MinecraftServer server, INetworkManager manager) {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void connectionClosed(INetworkManager manager) {
-		// Client side, connection closed, shutdown the p2p client.
-		if (TomP2P.side == Side.CLIENT) {
-			((IClient) P2P.get(P2P.CLIENT_PROVIDER)).stop();
-		}
-	}
 }
