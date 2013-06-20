@@ -43,8 +43,7 @@ public class CommandAddress extends CommandBase {
 				p = new PacketCommandAddress(astring[0]);
 			}
 			if (p != null) {
-				p.write();
-				PacketDispatcher.sendPacketToPlayer(p,
+				PacketDispatcher.sendPacketToPlayer(p.write(),
 						(Player) getCommandSenderAsPlayer(icommandsender));
 			}
 		} catch (Exception e) {

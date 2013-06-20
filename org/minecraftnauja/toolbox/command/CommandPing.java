@@ -45,8 +45,7 @@ public class CommandPing extends CommandBase {
 						astring[1]));
 			}
 			if (p != null) {
-				p.write();
-				PacketDispatcher.sendPacketToPlayer(p,
+				PacketDispatcher.sendPacketToPlayer(p.write(),
 						(Player) getCommandSenderAsPlayer(icommandsender));
 			}
 		} catch (Exception e) {

@@ -44,8 +44,7 @@ public class CommandPlayer extends CommandBase {
 				p = new PacketCommandPlayer(InetAddress.getByName(astring[0]));
 			}
 			if (p != null) {
-				p.write();
-				PacketDispatcher.sendPacketToPlayer(p,
+				PacketDispatcher.sendPacketToPlayer(p.write(),
 						(Player) getCommandSenderAsPlayer(icommandsender));
 			}
 		} catch (Exception e) {

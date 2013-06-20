@@ -7,8 +7,8 @@ import java.io.IOException;
 import org.minecraftnauja.p2p.P2P;
 import org.minecraftnauja.p2p.provider.packet.IPacketProvider;
 import org.minecraftnauja.p2p.provider.packet.task.ISendTo;
-import org.minecraftnauja.ping.PacketPing;
 import org.minecraftnauja.toolbox.Toolbox;
+import org.minecraftnauja.toolbox.packet.PacketPing;
 
 /**
  * The ping command.

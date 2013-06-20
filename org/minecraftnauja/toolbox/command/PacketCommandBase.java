@@ -15,8 +15,8 @@ import org.minecraftnauja.toolbox.Toolbox;
 /**
  * Base for packets.
  */
-public abstract class PacketCommandBase<T extends ITask> extends
-		Packet250CustomPayload implements ICallback<T> {
+public abstract class PacketCommandBase<T extends ITask> implements
+		ICallback<T> {
 
 	/**
 	 * Gets the command.
@@ -31,14 +31,16 @@ public abstract class PacketCommandBase<T extends ITask> extends
 	 * @throws IOException
 	 *             error with IO.
 	 */
-	public void write() throws IOException {
+	public Packet250CustomPayload write() throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
 		dos.writeInt(getCommand().ordinal());
 		write(dos);
-		channel = Toolbox.MOD_ID;
-		data = bos.toByteArray();
-		length = bos.size();
+		Packet250CustomPayload p = new Packet250CustomPayload();
+		p.channel = Toolbox.MOD_ID;
+		p.data = bos.toByteArray();
+		p.length = bos.size();
+		return p;
 	}
 
 	/**
@@ -70,7 +72,6 @@ public abstract class PacketCommandBase<T extends ITask> extends
 	public void chat(String msg) {
 		Minecraft.getMinecraft().thePlayer.addChatMessage(msg);
 	}
-
 
 	/**
 	 * {@inheritDoc}
