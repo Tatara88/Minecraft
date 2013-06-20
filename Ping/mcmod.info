@@ -1,0 +1,17 @@
+[
+{
+  "modid": "Ping",
+  "name": "Ping",
+  "description": "Ping others players.",
+  "version": "1.0.0",
+  "mcversion": "1.5.2",
+  "logoFile": "",
+  "url": "https://github.com/Nauja/minecraft",
+  "updateUrl": "",
+  "authors": ["Nauja"],
+  "credits": "",
+  "requiredMods": ["P2P"],
+  "screenshots": [],
+  "dependencies": ["P2P"]
+}
+]
