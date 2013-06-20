@@ -39,6 +39,7 @@ public class CommandPing extends CommandBase {
 	public void processCommand(ICommandSender icommandsender, String[] astring) {
 		if (astring.length >= 1 && astring.length <= 2) {
 			try {
+				// When a player does the /ping command, send him this packet.
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(bos);
 				dos.writeInt(astring.length);

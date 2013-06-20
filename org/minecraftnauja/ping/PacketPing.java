@@ -2,6 +2,9 @@ package org.minecraftnauja.ping;
 
 import org.minecraftnauja.p2p.provider.packet.PacketBase;
 
+/**
+ * Packet sent when pinging someone.
+ */
 public class PacketPing extends PacketBase {
 
 	/**
@@ -14,6 +17,12 @@ public class PacketPing extends PacketBase {
 	 */
 	public int time;
 
+	/**
+	 * Initializing constructor.
+	 * 
+	 * @param time
+	 *            how many time this packet must be sent.
+	 */
 	public PacketPing(int time) {
 		super();
 		this.time = time;
