@@ -15,14 +15,14 @@ import cpw.mods.fml.common.network.Player;
 /**
  * Player command.
  */
-public class CommandPlayer extends CommandBase {
+public class CommandPlayers extends CommandBase {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getCommandName() {
-		return "player";
+		return "players";
 	}
 
 	/**
