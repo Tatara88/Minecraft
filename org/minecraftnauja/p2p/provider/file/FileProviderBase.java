@@ -5,8 +5,8 @@ import java.io.File;
 import javax.swing.event.EventListenerList;
 
 import org.minecraftnauja.p2p.provider.file.event.FileListener;
-import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
-import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
+import org.minecraftnauja.p2p.provider.file.task.IDownload;
+import org.minecraftnauja.p2p.provider.file.task.IUpload;
 
 /**
  * Base for files providers.
@@ -45,7 +45,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IFileUpload upload(String channel, File file, String name) {
+	public IUpload upload(String channel, File file, String name) {
 		return upload(channel, file, name, null);
 	}
 
@@ -53,7 +53,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IFileDownload download(String channel, String name, File file) {
+	public IDownload download(String channel, String name, File file) {
 		return download(channel, name, file, null);
 	}
 
@@ -63,7 +63,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireUpload(IFileUpload task) {
+	protected void fireUpload(IUpload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onUpload(task);
 		}
@@ -75,7 +75,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireUploaded(IFileUpload task) {
+	protected void fireUploaded(IUpload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onUploaded(task);
 		}
@@ -87,7 +87,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireUploadCancelled(IFileUpload task) {
+	protected void fireUploadCancelled(IUpload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onUploadCancelled(task);
 		}
@@ -99,7 +99,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireUploadException(IFileUpload task) {
+	protected void fireUploadException(IUpload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onUploadException(task);
 		}
@@ -111,7 +111,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireDownload(IFileDownload task) {
+	protected void fireDownload(IDownload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onDownload(task);
 		}
@@ -123,7 +123,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireDownloaded(IFileDownload task) {
+	protected void fireDownloaded(IDownload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onDownloaded(task);
 		}
@@ -135,7 +135,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireDownloadCancelled(IFileDownload task) {
+	protected void fireDownloadCancelled(IDownload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onDownloadCancelled(task);
 		}
@@ -147,7 +147,7 @@ public abstract class FileProviderBase implements IFileProvider {
 	 * @param task
 	 *            the task.
 	 */
-	protected void fireDownloadException(IFileDownload task) {
+	protected void fireDownloadException(IDownload task) {
 		for (FileListener l : listeners.getListeners(FileListener.class)) {
 			l.onDownloadException(task);
 		}

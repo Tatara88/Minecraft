@@ -1,7 +1,7 @@
 package org.minecraftnauja.p2p.provider.file.event;
 
-import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
-import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
+import org.minecraftnauja.p2p.provider.file.task.IDownload;
+import org.minecraftnauja.p2p.provider.file.task.IUpload;
 
 /**
  * Adapter for {@code IFileProvider} listeners.
@@ -12,56 +12,56 @@ public class FileAdapter implements FileListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onUpload(IFileUpload task) {
+	public void onUpload(IUpload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onUploaded(IFileUpload task) {
+	public void onUploaded(IUpload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onUploadCancelled(IFileUpload task) {
+	public void onUploadCancelled(IUpload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onUploadException(IFileUpload task) {
+	public void onUploadException(IUpload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDownload(IFileDownload task) {
+	public void onDownload(IDownload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDownloaded(IFileDownload task) {
+	public void onDownloaded(IDownload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDownloadCancelled(IFileDownload task) {
+	public void onDownloadCancelled(IDownload task) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDownloadException(IFileDownload task) {
+	public void onDownloadException(IDownload task) {
 	}
 
 }

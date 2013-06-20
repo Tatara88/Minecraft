@@ -2,6 +2,7 @@ package org.minecraftnauja.p2p.provider;
 
 import org.minecraftnauja.p2p.provider.event.IProviderListener;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
+import org.minecraftnauja.p2p.provider.packet.IPacketProvider;
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 
 /**
@@ -29,6 +30,13 @@ public interface IProvider {
 	 * @return the file provider.
 	 */
 	public IFileProvider getFileProvider();
+
+	/**
+	 * Gets the packet provider.
+	 * 
+	 * @return the packet provider.
+	 */
+	public IPacketProvider getPacketProvider();
 
 	/**
 	 * Adds given listener.

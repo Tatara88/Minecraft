@@ -9,10 +9,10 @@ import net.tomp2p.futures.FutureDHT;
 import org.minecraftnauja.p2p.exception.AlreadyRunningException;
 import org.minecraftnauja.p2p.provider.event.ICallback;
 import org.minecraftnauja.p2p.provider.file.FileProviderBase;
-import org.minecraftnauja.p2p.provider.file.task.FileDownloadBase;
-import org.minecraftnauja.p2p.provider.file.task.FileUploadBase;
-import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
-import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
+import org.minecraftnauja.p2p.provider.file.task.DownloadBase;
+import org.minecraftnauja.p2p.provider.file.task.IDownload;
+import org.minecraftnauja.p2p.provider.file.task.IUpload;
+import org.minecraftnauja.p2p.provider.file.task.UploadBase;
 import org.minecraftnauja.tomp2p.peer.IPeer;
 
 import com.google.common.io.Files;
@@ -42,8 +42,8 @@ public final class FileProvider extends FileProviderBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IFileUpload upload(final String channel, final File file,
-			final String name, final ICallback<IFileUpload> callback) {
+	public IUpload upload(final String channel, final File file,
+			final String name, final ICallback<IUpload> callback) {
 		try {
 			FileUpload task = new FileUpload(channel, file, name);
 			task.start(callback);
@@ -57,8 +57,8 @@ public final class FileProvider extends FileProviderBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IFileDownload download(final String channel, final String name,
-			final File file, final ICallback<IFileDownload> callback) {
+	public IDownload download(final String channel, final String name,
+			final File file, final ICallback<IDownload> callback) {
 		try {
 			FileDownload task = new FileDownload(channel, name, file);
 			task.start(callback);
@@ -71,7 +71,7 @@ public final class FileProvider extends FileProviderBase {
 	/**
 	 * Task for file uploading.
 	 */
-	private final class FileUpload extends FileUploadBase {
+	private final class FileUpload extends UploadBase {
 
 		/**
 		 * If the task is running.
@@ -96,7 +96,7 @@ public final class FileProvider extends FileProviderBase {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public synchronized void start(final ICallback<IFileUpload> callback)
+		public synchronized void start(final ICallback<IUpload> callback)
 				throws AlreadyRunningException {
 			if (running != null) {
 				throw new AlreadyRunningException(this);
@@ -108,7 +108,7 @@ public final class FileProvider extends FileProviderBase {
 				}
 				fireUpload(FileUpload.this);
 				// Puts the file.
-				running = peer.put(channel, name, Files.toByteArray(file));
+				running = peer.put(name, Files.toByteArray(file));
 				running.addCancellation(new Cancellable() {
 					public void cancel() {
 						// Cancelled the file upload.
@@ -174,7 +174,7 @@ public final class FileProvider extends FileProviderBase {
 	/**
 	 * Task for file downloading.
 	 */
-	private final class FileDownload extends FileDownloadBase {
+	private final class FileDownload extends DownloadBase {
 
 		/**
 		 * If the task is running.
@@ -199,7 +199,7 @@ public final class FileProvider extends FileProviderBase {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public synchronized void start(final ICallback<IFileDownload> callback)
+		public synchronized void start(final ICallback<IDownload> callback)
 				throws AlreadyRunningException {
 			if (running != null) {
 				throw new AlreadyRunningException(this);
@@ -209,7 +209,7 @@ public final class FileProvider extends FileProviderBase {
 			}
 			fireDownload(this);
 			// Downloads the file.
-			running = peer.get(channel, name);
+			running = peer.get(name);
 			running.addCancellation(new Cancellable() {
 				public void cancel() {
 					// Cancelled the file upload.

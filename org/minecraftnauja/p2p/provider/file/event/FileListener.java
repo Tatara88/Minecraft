@@ -2,8 +2,8 @@ package org.minecraftnauja.p2p.provider.file.event;
 
 import java.util.EventListener;
 
-import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
-import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
+import org.minecraftnauja.p2p.provider.file.task.IDownload;
+import org.minecraftnauja.p2p.provider.file.task.IUpload;
 
 /**
  * Interface for {@code IFileProvider} listeners.
@@ -16,7 +16,7 @@ public interface FileListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onUpload(IFileUpload task);
+	public void onUpload(IUpload task);
 
 	/**
 	 * Called when a file upload has been completed.
@@ -24,7 +24,7 @@ public interface FileListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onUploaded(IFileUpload task);
+	public void onUploaded(IUpload task);
 
 	/**
 	 * Called when a file upload has been cancelled.
@@ -32,14 +32,14 @@ public interface FileListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onUploadCancelled(IFileUpload task);
+	public void onUploadCancelled(IUpload task);
 
 	/**
 	 * Called when a file upload caused an exception.
 	 * 
 	 * @param task
 	 */
-	public void onUploadException(IFileUpload task);
+	public void onUploadException(IUpload task);
 
 	/**
 	 * Called when a file download started.
@@ -47,7 +47,7 @@ public interface FileListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onDownload(IFileDownload task);
+	public void onDownload(IDownload task);
 
 	/**
 	 * Called when a file download has been completed.
@@ -55,7 +55,7 @@ public interface FileListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onDownloaded(IFileDownload task);
+	public void onDownloaded(IDownload task);
 
 	/**
 	 * Called when a file download has been cancelled.
@@ -63,13 +63,13 @@ public interface FileListener extends EventListener {
 	 * @param task
 	 *            the task.
 	 */
-	public void onDownloadCancelled(IFileDownload task);
+	public void onDownloadCancelled(IDownload task);
 
 	/**
 	 * Called when a file download caused an exception.
 	 * 
 	 * @param task
 	 */
-	public void onDownloadException(IFileDownload task);
+	public void onDownloadException(IDownload task);
 
 }

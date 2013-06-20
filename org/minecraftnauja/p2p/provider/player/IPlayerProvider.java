@@ -1,29 +1,17 @@
 package org.minecraftnauja.p2p.provider.player;
 
+import java.net.InetAddress;
+
+import org.minecraftnauja.p2p.provider.ISubProvider;
 import org.minecraftnauja.p2p.provider.event.ICallback;
 import org.minecraftnauja.p2p.provider.player.event.PlayerListener;
-import org.minecraftnauja.p2p.provider.player.task.IPlayerGetAddress;
+import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
+import org.minecraftnauja.p2p.provider.player.task.IGetPlayer;
 
 /**
  * Interface for peers providers.
  */
-public interface IPlayerProvider {
-
-	/**
-	 * Adds given listener.
-	 * 
-	 * @param listener
-	 *            the listener to add.
-	 */
-	public void addListener(PlayerListener listener);
-
-	/**
-	 * Removes given listener.
-	 * 
-	 * @param listener
-	 *            the listener to remove.
-	 */
-	public void removeListener(PlayerListener listener);
+public interface IPlayerProvider extends ISubProvider<PlayerListener> {
 
 	/**
 	 * Gets the address of given player.
@@ -34,7 +22,7 @@ public interface IPlayerProvider {
 	 *            the player.
 	 * @return the task.
 	 */
-	public IPlayerGetAddress getAddress(String channel, String player);
+	public IGetAddress getAddress(String channel, String player);
 
 	/**
 	 * Gets the address of given player.
@@ -47,7 +35,32 @@ public interface IPlayerProvider {
 	 *            a callback.
 	 * @return the task.
 	 */
-	public IPlayerGetAddress getAddress(String channel, String player,
-			ICallback<IPlayerGetAddress> callback);
+	public IGetAddress getAddress(String channel, String player,
+			ICallback<IGetAddress> callback);
+
+	/**
+	 * Gets the player at given address.
+	 * 
+	 * @param channel
+	 *            the channel.
+	 * @param address
+	 *            the address.
+	 * @return the task.
+	 */
+	public IGetPlayer getPlayer(String channel, InetAddress address);
+
+	/**
+	 * Gets the player at given address.
+	 * 
+	 * @param channel
+	 *            the channel.
+	 * @param address
+	 *            the address.
+	 * @param callback
+	 *            a callback.
+	 * @return the task.
+	 */
+	public IGetPlayer getPlayer(String channel, InetAddress address,
+			ICallback<IGetPlayer> callback);
 
 }

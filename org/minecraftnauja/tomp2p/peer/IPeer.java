@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import net.tomp2p.futures.FutureDHT;
+import net.tomp2p.futures.FutureResponse;
+import net.tomp2p.peers.PeerAddress;
 
 import org.minecraftnauja.p2p.provider.IProvider;
 import org.minecraftnauja.tomp2p.config.IPeerConfig;
@@ -47,8 +49,6 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	/**
 	 * Puts data in the DHT.
 	 * 
-	 * @param channel
-	 *            the channel.
 	 * @param location
 	 *            key.
 	 * @param data
@@ -58,19 +58,36 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	 *             error with IO.
 	 * 
 	 */
-	public FutureDHT put(String channel, String location, Object data)
-			throws IOException;
+	public FutureDHT put(String location, Object data) throws IOException;
 
 	/**
 	 * Gets data from the DHT.
 	 * 
-	 * @param channel
-	 *            the channel.
 	 * @param location
 	 *            key.
 	 * @return the {@code FutureDHT}.
 	 */
-	public FutureDHT get(String channel, String location);
+	public FutureDHT get(String location);
+
+	/**
+	 * Sends an object to the peer at given address.
+	 * 
+	 * @param address
+	 *            the address.
+	 * @param object
+	 *            the object.
+	 * @return the {@code FutureResponse}.
+	 */
+	public FutureResponse sendDirect(PeerAddress address, Object object);
+
+	/**
+	 * Gets the address of a player.
+	 * 
+	 * @param player
+	 *            the player.
+	 * @return its address.
+	 */
+	public PeerAddress getPeerAddress(String player);
 
 	/**
 	 * Gets the address of a player.
@@ -80,5 +97,14 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	 * @return its address.
 	 */
 	public InetAddress getAddress(String player);
+
+	/**
+	 * Gets a player by its address.
+	 * 
+	 * @param address
+	 *            the address.
+	 * @return the player.
+	 */
+	public String getPlayer(InetAddress address);
 
 }

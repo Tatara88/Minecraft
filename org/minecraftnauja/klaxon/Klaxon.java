@@ -23,11 +23,11 @@ import org.minecraftnauja.p2p.provider.event.ProviderAdapter;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
 import org.minecraftnauja.p2p.provider.file.event.FileAdapter;
 import org.minecraftnauja.p2p.provider.file.event.FileListener;
-import org.minecraftnauja.p2p.provider.file.task.IFileDownload;
-import org.minecraftnauja.p2p.provider.file.task.IFileUpload;
+import org.minecraftnauja.p2p.provider.file.task.IDownload;
+import org.minecraftnauja.p2p.provider.file.task.IUpload;
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 import org.minecraftnauja.p2p.provider.player.event.PlayerAdapter;
-import org.minecraftnauja.p2p.provider.player.task.IPlayerGetAddress;
+import org.minecraftnauja.p2p.provider.player.task.IGetAddress;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -247,14 +247,6 @@ public class Klaxon {
 	 */
 	public static synchronized void getKlaxon(String name) {
 		if (running) {
-			IPlayerProvider pp = P2P.get(P2P.CLIENT_PROVIDER).getPlayerProvider();
-			String player = "Nauja";
-			pp.addListener(new PlayerAdapter() {
-				public void onGotAddress(IPlayerGetAddress task) {
-					FMLLog.log(MOD_ID, Level.INFO, "Got player address %s %s", task.getPlayer(), task.getAddress());
-				}
-			});
-			pp.getAddress(MOD_ID, player);
 			if (!loadingKlaxons.contains(name)) {
 				FMLLog.log(MOD_ID, Level.INFO, "Must get the klaxon %s", name);
 				loadedKlaxons.remove(name);
@@ -273,7 +265,7 @@ public class Klaxon {
 	 * @param task
 	 *            the task.
 	 */
-	private static synchronized void gotKlaxon(IFileDownload task) {
+	private static synchronized void gotKlaxon(IDownload task) {
 		String name = task.getName();
 		File file = task.getFile();
 		FMLLog.log(MOD_ID, Level.INFO, "Klaxon %s saved to %s", name,
@@ -291,7 +283,7 @@ public class Klaxon {
 	 * @param task
 	 *            the task.
 	 */
-	private static synchronized void gotKlaxonFailed(IFileDownload task) {
+	private static synchronized void gotKlaxonFailed(IDownload task) {
 		String name = task.getName();
 		loadingKlaxons.remove(name);
 		loadedKlaxons.remove(name);
@@ -331,7 +323,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onUploaded(IFileUpload task) {
+		public void onUploaded(IUpload task) {
 			if (task.getChannel().equals(MOD_ID)) {
 				FMLLog.log(MOD_ID, Level.INFO,
 						"Klaxon has been uploaded, notifying players");
@@ -356,7 +348,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onUploadException(IFileUpload task) {
+		public void onUploadException(IUpload task) {
 			if (task.getChannel().equals(MOD_ID)) {
 				FMLLog.log(MOD_ID, Level.SEVERE, task.getError(),
 						"Failed to upload the klaxon");
@@ -367,7 +359,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onDownloaded(IFileDownload task) {
+		public void onDownloaded(IDownload task) {
 			if (task.getChannel().equals(MOD_ID)) {
 				gotKlaxon(task);
 			}
@@ -377,7 +369,7 @@ public class Klaxon {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void onDownloadException(IFileDownload task) {
+		public void onDownloadException(IDownload task) {
 			if (task.getChannel().equals(MOD_ID)) {
 				gotKlaxonFailed(task);
 			}
