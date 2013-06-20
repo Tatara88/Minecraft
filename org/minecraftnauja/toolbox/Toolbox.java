@@ -6,7 +6,7 @@ import org.minecraftnauja.p2p.provider.event.IProviderEvent;
 import org.minecraftnauja.p2p.provider.event.ProviderAdapter;
 import org.minecraftnauja.toolbox.command.CommandAddress;
 import org.minecraftnauja.toolbox.command.CommandPing;
-import org.minecraftnauja.toolbox.command.CommandPlayer;
+import org.minecraftnauja.toolbox.command.CommandPlayers;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -58,7 +58,7 @@ public class Toolbox {
 		// Register the ping command.
 		event.registerServerCommand(new CommandPing());
 		event.registerServerCommand(new CommandAddress());
-		event.registerServerCommand(new CommandPlayer());
+		event.registerServerCommand(new CommandPlayers());
 	}
 
 	/**
