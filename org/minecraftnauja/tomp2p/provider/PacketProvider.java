@@ -2,7 +2,6 @@ package org.minecraftnauja.tomp2p.provider;
 
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.futures.Cancellable;
-import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureResponse;
 import net.tomp2p.peers.PeerAddress;
 
@@ -110,8 +109,8 @@ public final class PacketProvider extends PacketProviderBase {
 						fireSendToCancelled(SendTo.this);
 					}
 				});
-				task.addListener(new BaseFutureListener<FutureDHT>() {
-					public void operationComplete(FutureDHT future)
+				task.addListener(new BaseFutureListener<FutureResponse>() {
+					public void operationComplete(FutureResponse future)
 							throws Exception {
 						// File uploaded.
 						task = null;
