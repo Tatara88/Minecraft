@@ -4,6 +4,7 @@ import java.util.EventObject;
 
 import org.minecraftnauja.p2p.provider.IProvider;
 import org.minecraftnauja.p2p.provider.file.IFileProvider;
+import org.minecraftnauja.p2p.provider.packet.IPacketProvider;
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
 
 /**
@@ -43,6 +44,14 @@ public class ProviderEvent extends EventObject implements IProviderEvent {
 	@Override
 	public IFileProvider getFileProvider() {
 		return getSource().getFileProvider();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IPacketProvider getPacketProvider() {
+		return getSource().getPacketProvider();
 	}
 
 	/**
