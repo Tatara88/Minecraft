@@ -131,6 +131,7 @@ public class GuiColoredWoolSavedColors extends GuiScreen {
 	 */
 	public GuiColoredWoolSavedColors(EntityPlayer player,
 			TileEntityColoredWool tileEntity, Color color) {
+		super();
 		this.player = player;
 		this.tileEntity = tileEntity;
 		selectedColor = color;

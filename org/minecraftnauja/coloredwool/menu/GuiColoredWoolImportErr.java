@@ -58,6 +58,7 @@ public class GuiColoredWoolImportErr extends GuiScreen {
 	 */
 	public GuiColoredWoolImportErr(EntityPlayer player,
 			TileEntityColoredWool tileEntity, Color selectedColor, String error) {
+		super();
 		this.player = player;
 		this.tileEntity = tileEntity;
 		this.selectedColor = selectedColor;

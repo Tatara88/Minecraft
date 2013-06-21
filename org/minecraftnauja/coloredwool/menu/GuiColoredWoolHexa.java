@@ -78,6 +78,7 @@ public class GuiColoredWoolHexa extends GuiScreen {
 	 */
 	public GuiColoredWoolHexa(EntityPlayer player,
 			TileEntityColoredWool tileEntity, Color color) {
+		super();
 		this.player = player;
 		this.tileEntity = tileEntity;
 		setSelectedColor(color);

@@ -106,6 +106,7 @@ public class GuiColoredWoolImport extends GuiScreen {
 	 */
 	public GuiColoredWoolImport(EntityPlayer player,
 			TileEntityColoredWool tileEntity, Color color) {
+		super();
 		this.player = player;
 		this.tileEntity = tileEntity;
 		this.selectedColor = color;

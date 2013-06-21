@@ -1,7 +1,6 @@
 package org.minecraftnauja.coloredwool.block;
 
 import java.util.Random;
-import java.util.logging.Level;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -20,7 +19,6 @@ import net.minecraft.world.World;
 import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityFactory;
 
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -307,11 +305,15 @@ public abstract class BlockFactory extends BlockContainer {
 	protected abstract String getIconPrefix();
 
 	/**
-	 * Gets the gui for the image.
+	 * Opens the menu image.
 	 * 
-	 * @return the gui for the image.
+	 * @param player
+	 *            the player.
+	 * @param entity
+	 *            the entity.
 	 */
-	protected abstract int getGuiImage();
+	protected abstract void openMenuImage(EntityPlayer player,
+			TileEntityFactory entity);
 
 	/**
 	 * Gets the gui for the furnace.
@@ -348,13 +350,11 @@ public abstract class BlockFactory extends BlockContainer {
 			return true;
 		} else if ((metadata == 0 && l == 3)
 				|| (metadata >= 1 && metadata <= 3 && l == metadata - 1)) {
-			par5EntityPlayer.openGui(ColoredWool.instance, getGuiImage(),
-					par1World, par2, par3, par4);
+			openMenuImage(par5EntityPlayer, entity);
 			return true;
 		} else if ((metadata == 6 && l == 2) || (metadata == 8 && l == 0)
 				|| (metadata == 7 && l == 3) || (metadata == 5 && l == 1)) {
-			par5EntityPlayer.openGui(ColoredWool.instance, getGuiImage(),
-					par1World, par2, par3, par4);
+			openMenuImage(par5EntityPlayer, entity);
 			return true;
 		} else if ((metadata == 8 && l == 1) || (metadata == 6 && l == 3)
 				|| (metadata == 5 && l == 2) || (metadata == 7 && l == 0)) {

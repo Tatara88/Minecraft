@@ -18,27 +18,27 @@ public class GuiColoredWoolMenu extends GuiScreen {
 	/**
 	 * Hexadecimal button.
 	 */
-	private static final int HEXA = 0;
+	private static final char HEXA = 0;
 
 	/**
 	 * Saved colors button.
 	 */
-	private static final int SAVED_COLORS = 1;
+	private static final char SAVED_COLORS = 1;
 
 	/**
 	 * Last color button.
 	 */
-	private static final int LAST_COLOR = 2;
+	private static final char LAST_COLOR = 2;
 
 	/**
 	 * Import image button.
 	 */
-	private static final int IMPORT_IMAGE = 3;
+	private static final char IMPORT_IMAGE = 3;
 
 	/**
 	 * Done button.
 	 */
-	private static final int DONE = 4;
+	private static final char DONE = 4;
 
 	/**
 	 * Player.
@@ -75,6 +75,7 @@ public class GuiColoredWoolMenu extends GuiScreen {
 	 */
 	public GuiColoredWoolMenu(EntityPlayer player,
 			TileEntityColoredWool tileEntity, Color color) {
+		super();
 		this.player = player;
 		this.tileEntity = tileEntity;
 		this.selectedColor = color;
