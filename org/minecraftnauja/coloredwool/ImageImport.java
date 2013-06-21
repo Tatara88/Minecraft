@@ -141,14 +141,7 @@ public class ImageImport {
 			if ((loadTileEntity instanceof TileEntityColoredWool)) {
 				TileEntityColoredWool currentBlockEntity = (TileEntityColoredWool) loadTileEntity;
 				if (currentBlockEntity != null) {
-					currentBlockEntity.setColor(pix.getRed(), pix.getGreen(),
-							pix.getBlue());
-					/*
-					worldObj.markBlockForRenderUpdate(originX + xOffset,
-							originY + yOffset, originZ + zOffset);
-					if (ColoredWool.isMultiplayer()) {
-						currentBlockEntity.sendColorPacket();
-					}*/
+					currentBlockEntity.sendColorToServer(pix.getRGB());
 				}
 			}
 		}
