@@ -1,16 +1,21 @@
 package org.minecraftnauja.coloredwool.tileentity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.logging.Level;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
+import org.minecraftnauja.coloredwool.Packet;
 
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 /**
  * Colored wool entity.
@@ -98,11 +103,10 @@ public class TileEntityColoredWool extends TileEntity {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound nbttagcompound = new NBTTagCompound();
-		writeToNBT(nbttagcompound);
-		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0,
-				nbttagcompound);
+	public net.minecraft.network.packet.Packet getDescriptionPacket() {
+		NBTTagCompound tag = new NBTTagCompound();
+		writeToNBT(tag);
+		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, tag);
 	}
 
 	/**
@@ -135,9 +139,53 @@ public class TileEntityColoredWool extends TileEntity {
 				ColoredWool.coloredWool.blockID, 0, 0);
 	}
 
-	private void sendColor() {
-		worldObj.addBlockEvent(xCoord, yCoord, zCoord,
-				ColoredWool.coloredWool.blockID, 1, color);
+	/**
+	 * Sends the color to players.
+	 */
+	public void sendColorToPlayers() {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			dos.writeInt(Packet.UpdateColoredWoolClient.ordinal());
+			dos.writeInt(xCoord);
+			dos.writeInt(yCoord);
+			dos.writeInt(zCoord);
+			dos.writeInt(color);
+			Packet250CustomPayload p = new Packet250CustomPayload();
+			p.channel = ColoredWool.MOD_ID;
+			p.data = bos.toByteArray();
+			p.length = bos.size();
+			PacketDispatcher.sendPacketToAllPlayers(p);
+		} catch (IOException e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not send packet");
+		}
+	}
+
+	/**
+	 * Sends the color to server.
+	 * 
+	 * @param color
+	 *            the color.
+	 */
+	public void sendColorToServer(int color) {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			dos.writeInt(Packet.UpdateColoredWoolServer.ordinal());
+			dos.writeInt(xCoord);
+			dos.writeInt(yCoord);
+			dos.writeInt(zCoord);
+			dos.writeInt(color);
+			Packet250CustomPayload p = new Packet250CustomPayload();
+			p.channel = ColoredWool.MOD_ID;
+			p.data = bos.toByteArray();
+			p.length = bos.size();
+			PacketDispatcher.sendPacketToServer(p);
+		} catch (IOException e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not send packet");
+		}
 	}
 
 	/**
@@ -238,7 +286,7 @@ public class TileEntityColoredWool extends TileEntity {
 			} else {
 				entity.color |= ((c & 0xFF) << offset);
 			}
-			entity.sendColor();
+			entity.sendColorToPlayers();
 		}
 
 	}

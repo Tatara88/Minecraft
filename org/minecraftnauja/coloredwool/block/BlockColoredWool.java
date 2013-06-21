@@ -1,5 +1,7 @@
 package org.minecraftnauja.coloredwool.block;
 
+import java.awt.Color;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,8 +13,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
-import org.minecraftnauja.coloredwool.client.GuiColoredBlockMenu;
-import org.minecraftnauja.coloredwool.server.TileEntityColor;
+import org.minecraftnauja.coloredwool.menu.GuiColoredWoolMenu;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
 import cpw.mods.fml.relauncher.Side;
@@ -110,11 +111,12 @@ public class BlockColoredWool extends Block implements ITileEntityProvider {
 			return true;
 		case Menu:
 			// Menu color selection.
-			/*
-			 * TileEntityColor tileentitycolor1 = (TileEntityColor) world.b(i,
-			 * j, k); ModLoader.OpenGUI(player, new GuiColoredBlockMenu(player,
-			 * tileentitycolor1, tileentitycolor1.getColor()));
-			 */
+			if (par1World.isRemote) {
+				TileEntityColoredWool e = (TileEntityColoredWool) par1World
+						.getBlockTileEntity(par2, par3, par4);
+				ModLoader.openGUI(par5EntityPlayer, new GuiColoredWoolMenu(
+						par5EntityPlayer, e, new Color(e.color)));
+			}
 			return true;
 		default:
 			break;

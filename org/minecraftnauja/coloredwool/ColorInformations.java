@@ -3,22 +3,15 @@ package org.minecraftnauja.coloredwool;
 import java.awt.Color;
 
 public final class ColorInformations {
-	
-	private String name;
+
 	private String hex;
 	private int rgb;
 	private Color color;
 
-	public ColorInformations(String name, String hex, int rgb,
-			Color color) {
-		this.name = name;
+	public ColorInformations(String hex, int rgb, Color color) {
 		this.hex = hex;
 		this.rgb = rgb;
 		this.color = color;
-	}
-
-	public String getName() {
-		return this.name;
 	}
 
 	public String getHex() {

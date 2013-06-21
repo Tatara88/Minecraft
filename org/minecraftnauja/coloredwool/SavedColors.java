@@ -1,20 +1,27 @@
 package org.minecraftnauja.coloredwool;
 
 import java.awt.Color;
-import java.io.PrintStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
+import java.util.logging.Level;
+
+import cpw.mods.fml.common.FMLLog;
 
 public class SavedColors {
 
 	private static final Map savedColors = new HashMap();
 
 	private static int nbColors = 0;
+
+	private static File file;
+
+	private static Properties properties;
 
 	public static boolean addColor(String name, Color color) {
 		if ((name == null) || (color == null)) {
@@ -24,22 +31,22 @@ public class SavedColors {
 				+ ((char) color.getGreen() << '\b') + (char) color.getBlue();
 		String hex = Integer.toHexString(rgb);
 		ColorInformations coloredblockcolorinformations = new ColorInformations(
-				name, hex, rgb, color);
+				hex, rgb, color);
 		if (savedColors.put(color, coloredblockcolorinformations) == null) {
 			nbColors += 1;
 		}
 		return true;
 	}
 
-	public static boolean addColor(String name, String hex) {
-		if ((name == null) || (hex == null)) {
+	public static boolean addColor(String hex) {
+		if (hex == null) {
 			return false;
 		}
 		Color color = Color.decode("0x" + hex);
 		int rgb = ((char) color.getRed() << '\020')
 				+ ((char) color.getGreen() << '\b') + (char) color.getBlue();
 		ColorInformations coloredblockcolorinformations = new ColorInformations(
-				name, hex, rgb, color);
+				hex, rgb, color);
 		if (savedColors.put(color, coloredblockcolorinformations) == null) {
 			nbColors += 1;
 		}
@@ -74,32 +81,47 @@ public class SavedColors {
 		return savedColors.entrySet().iterator();
 	}
 
-	public static void saveToProps(Properties properties) {
+	public static void save() {
 		try {
-			int i = 0;
-			Iterator iterator = getColorsIterator();
-			while (iterator.hasNext()) {
-				Map.Entry entry = (Map.Entry) iterator.next();
-				ColorInformations coloredblockcolorinformations = (ColorInformations) entry
-						.getValue();
-				properties.put("Color." + i,
-						coloredblockcolorinformations.getHex());
-				i++;
+			if (properties != null) {
+				properties.clear();
+				int i = 0;
+				Iterator iterator = getColorsIterator();
+				while (iterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) iterator.next();
+					ColorInformations coloredblockcolorinformations = (ColorInformations) entry
+							.getValue();
+					properties.put("Color." + i,
+							coloredblockcolorinformations.getHex());
+					i++;
+				}
+				FileOutputStream fos = new FileOutputStream(file);
+				properties.store(fos, "");
+				fos.close();
 			}
-		} catch (Exception exception) {
-			System.out.println("SavedColors: error while saving colors.");
+		} catch (Exception e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not save colors");
 		}
 	}
 
-	public static void loadFromProps(Properties properties) {
+	public static void load(File file) {
 		try {
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			SavedColors.file = file;
+			FileInputStream fis = new FileInputStream(file);
+			properties = new Properties();
+			fis.close();
 			Enumeration enumeration = properties.keys();
 			while (enumeration.hasMoreElements()) {
 				String name = (String) enumeration.nextElement();
 				loadElement(properties, name);
 			}
-		} catch (Exception exception) {
-			System.out.println("SavedColors: error while loading colors.");
+		} catch (Exception e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not load colors");
 		}
 	}
 
@@ -108,12 +130,10 @@ public class SavedColors {
 			if (!name.startsWith("Color.")) {
 				return;
 			}
-			int pos = name.indexOf(46);
-			String number = name.substring(pos + 1, name.length());
-			String hex = (String) properties.get(name);
-			addColor(number, hex);
-		} catch (Exception exception) {
-			System.out.println("SavedColors: error with key \"" + name + "\".");
+			addColor((String) properties.get(name));
+		} catch (Exception e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not load element %s", name);
 		}
 	}
 

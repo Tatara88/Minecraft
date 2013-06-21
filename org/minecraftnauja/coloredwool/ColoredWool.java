@@ -1,5 +1,7 @@
 package org.minecraftnauja.coloredwool;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import net.minecraft.block.Block;
@@ -18,17 +20,15 @@ import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 @Mod(modid = "ColoredWool", name = "ColoredWool", version = "1.0.0")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false)
+@NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { "ColoredWool" }, packetHandler = PacketHandler.class)
 public class ColoredWool {
 
 	/**
@@ -93,11 +93,19 @@ public class ColoredWool {
 	public static Item coloredBrush;
 
 	/**
+	 * Image to import.
+	 */
+	public static ImageImport imageImport;
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {
 		config = Config.load(event);
+		File f = new File(event.getModConfigurationDirectory(),
+				"savedColors.properties");
+		SavedColors.load(f);
 	}
 
 	/**
@@ -189,14 +197,18 @@ public class ColoredWool {
 				"xzx", 'x', iis, 'y', gls, 'z', pls, 'u', rds);
 		GameRegistry.addRecipe(new ItemStack(modelFactoryIdle), "xyx", "zuz",
 				"xzx", 'x', igs, 'y', gls, 'z', pls, 'u', rds);
-
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Gets a local image.
+	 * 
+	 * @param path
+	 *            its path.
+	 * @return the image.
 	 */
-	@PostInit
-	public void postInit(FMLPostInitializationEvent event) {
+	public static BufferedImage getLocalImage(String path) {
+		// TODO.
+		return null;
 	}
 
 	/*
