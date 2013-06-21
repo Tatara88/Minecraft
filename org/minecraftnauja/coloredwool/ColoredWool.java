@@ -15,6 +15,7 @@ import org.minecraftnauja.coloredwool.block.BlockPictureFactory;
 import org.minecraftnauja.coloredwool.block.FactoryState;
 import org.minecraftnauja.coloredwool.item.ItemColoredBrush;
 import org.minecraftnauja.coloredwool.item.ItemColoredDye;
+import org.minecraftnauja.coloredwool.menu.GuiHandler;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
 import cpw.mods.fml.common.Mod;
@@ -24,6 +25,7 @@ import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
@@ -197,6 +199,7 @@ public class ColoredWool {
 				"xzx", 'x', iis, 'y', gls, 'z', pls, 'u', rds);
 		GameRegistry.addRecipe(new ItemStack(modelFactoryIdle), "xyx", "zuz",
 				"xzx", 'x', igs, 'y', gls, 'z', pls, 'u', rds);
+		NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
 	}
 
 	/**

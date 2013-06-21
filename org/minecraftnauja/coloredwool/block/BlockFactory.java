@@ -17,6 +17,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityFactory;
 
 import cpw.mods.fml.common.FMLLog;
@@ -41,7 +42,7 @@ public abstract class BlockFactory extends BlockContainer {
 	/**
 	 * Its state.
 	 */
-	private final FactoryState state;
+	protected final FactoryState state;
 
 	/**
 	 * Icon for bottom side.
@@ -306,6 +307,20 @@ public abstract class BlockFactory extends BlockContainer {
 	protected abstract String getIconPrefix();
 
 	/**
+	 * Gets the gui for the image.
+	 * 
+	 * @return the gui for the image.
+	 */
+	protected abstract int getGuiImage();
+
+	/**
+	 * Gets the gui for the furnace.
+	 * 
+	 * @return the gui for the furnace.
+	 */
+	protected abstract int getGuiFurnace();
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -314,15 +329,81 @@ public abstract class BlockFactory extends BlockContainer {
 			float par8, float par9) {
 		if (par1World.isRemote) {
 			return true;
-		} else {
-			TileEntityFactory tef = (TileEntityFactory) par1World
-					.getBlockTileEntity(par2, par3, par4);
-			if (tef != null) {
-				// TODO display gui.
-			}
+		}
+		if (par3 < (int) par5EntityPlayer.posY - 1) {
+			return false;
+		}
+		int l = MathHelper
+				.floor_double((double) (par5EntityPlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+		int metadata = par1World.getBlockMetadata(par2, par3, par4);
+		TileEntityFactory entity = (TileEntityFactory) par1World
+				.getBlockTileEntity(par2, par3, par4);
+		if (entity == null) {
+			return false;
+		}
+
+		if (metadata >= 0 && metadata <= 3 && metadata == l) {
+			par5EntityPlayer.openGui(ColoredWool.instance, getGuiFurnace(),
+					par1World, par2, par3, par4);
+			return true;
+		} else if ((metadata == 0 && l == 3)
+				|| (metadata >= 1 && metadata <= 3 && l == metadata - 1)) {
+			par5EntityPlayer.openGui(ColoredWool.instance, getGuiImage(),
+					par1World, par2, par3, par4);
+			return true;
+		} else if ((metadata == 6 && l == 2) || (metadata == 8 && l == 0)
+				|| (metadata == 7 && l == 3) || (metadata == 5 && l == 1)) {
+			par5EntityPlayer.openGui(ColoredWool.instance, getGuiImage(),
+					par1World, par2, par3, par4);
+			return true;
+		} else if ((metadata == 8 && l == 1) || (metadata == 6 && l == 3)
+				|| (metadata == 5 && l == 2) || (metadata == 7 && l == 0)) {
+			par5EntityPlayer.openGui(ColoredWool.instance, getGuiFurnace(),
+					par1World, par2, par3, par4);
 			return true;
 		}
+		return false;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onBlockClicked(World par1World, int par2, int par3, int par4,
+			EntityPlayer par5EntityPlayer) {
+		if (par1World.isRemote) {
+			return;
+		}
+		if (par3 < (int) par5EntityPlayer.posY) {
+			return;
+		}
+		int l = MathHelper
+				.floor_double((double) (par5EntityPlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+		int metadata = par1World.getBlockMetadata(par2, par3, par4);
+		if ((metadata == 3 && l == 2) || (metadata == 1 && l == 0)
+				|| (metadata == 0 && l == 3) || (metadata == 2 && l == 1)
+				|| (metadata == 5 && l == 1) || (metadata == 7 && l == 3)
+				|| (metadata == 8 && l == 0) || (metadata == 6 && l == 2)) {
+			onClicked(par1World, par2, par3, par4, par5EntityPlayer);
+		}
+	}
+
+	/**
+	 * Called when the block has been clicked.
+	 * 
+	 * @param world
+	 *            the world.
+	 * @param x
+	 *            x-coordinate.
+	 * @param y
+	 *            y-coordinate.
+	 * @param z
+	 *            z-coordinate.
+	 * @param player
+	 *            the player.
+	 */
+	protected abstract void onClicked(World world, int x, int y, int z,
+			EntityPlayer player);
 
 	/**
 	 * {@inheritDoc}

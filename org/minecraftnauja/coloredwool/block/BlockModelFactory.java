@@ -1,9 +1,11 @@
 package org.minecraftnauja.coloredwool.block;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
+import org.minecraftnauja.coloredwool.menu.Gui;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
 
 import cpw.mods.fml.relauncher.Side;
@@ -67,37 +69,69 @@ public class BlockModelFactory extends BlockFactory {
 		return new TileEntityModelFactory();
 	}
 
-	/**
-	 * Updates the factory state depending on whether or not it is burning.
-	 * 
-	 * @param burning
-	 *            active state.
-	 * @param world
-	 *            the world.
-	 * @param x
-	 *            x-coordinate.
-	 * @param y
-	 *            y-coordinate.
-	 * @param z
-	 *            z-coordinate.
-	 */
-	public static void updateFurnaceBlockState(boolean active, World par1World,
+	public static void updateFactoryBlockState(boolean burn, World par1World,
 			int x, int y, int z) {
+		TileEntity entity = par1World.getBlockTileEntity(x, y, z);
+		if (entity == null)
+			return;
+		if (!(entity instanceof TileEntityModelFactory)) {
+			return;
+		}
+		TileEntityModelFactory factory = (TileEntityModelFactory) entity;
+		updateFactoryBlockState(factory.isActivated, burn, par1World, x, y, z);
+	}
+
+	public static void updateFactoryBlockState(boolean active, boolean burn,
+			World par1World, int x, int y, int z) {
+		TileEntity entity = par1World.getBlockTileEntity(x, y, z);
+		if (entity == null)
+			return;
+		if (!(entity instanceof TileEntityModelFactory)) {
+			return;
+		}
+		TileEntityModelFactory factory = (TileEntityModelFactory) entity;
 		int l = par1World.getBlockMetadata(x, y, z);
-		TileEntity tileentity = par1World.getBlockTileEntity(x, y, z);
-		keepFactoryInventory = true;
 		if (active) {
-			par1World
-					.setBlock(x, y, z, ColoredWool.modelFactoryBurning.blockID);
+			if (burn)
+				par1World.setBlock(x, y, z,
+						ColoredWool.modelFactoryBurning.blockID, l, 2);
+			else
+				par1World.setBlock(x, y, z,
+						ColoredWool.modelFactoryActive.blockID, l, 2);
 		} else {
-			par1World.setBlock(x, y, z, ColoredWool.modelFactoryIdle.blockID);
+			par1World.setBlock(x, y, z, ColoredWool.modelFactoryIdle.blockID,
+					l, 2);
 		}
-		keepFactoryInventory = false;
-		par1World.setBlockMetadataWithNotify(x, y, z, l, 2);
-		if (tileentity != null) {
-			tileentity.validate();
-			par1World.setBlockTileEntity(x, y, z, tileentity);
-		}
+		factory.isActivated = active;
+		factory.isBurning = burn;
+		factory.validate();
+		par1World.setBlockTileEntity(x, y, z, factory);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onClicked(World world, int x, int y, int z,
+			EntityPlayer player) {
+		updateFactoryBlockState(state == FactoryState.Idle,
+				state == FactoryState.Burning, world, x, y, z);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int getGuiImage() {
+		return Gui.ModelFactoryImage.ordinal();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int getGuiFurnace() {
+		return Gui.ModelFactoryFurnace.ordinal();
 	}
 
 }

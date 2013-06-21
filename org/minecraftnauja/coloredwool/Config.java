@@ -1,10 +1,6 @@
 package org.minecraftnauja.coloredwool;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-
 import net.minecraftforge.common.Configuration;
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -283,7 +279,7 @@ public final class Config {
 		/**
 		 * Don't erase blocks with given ids.
 		 */
-		public int[] dontEraseTheseIds = {};
+		public String dontEraseTheseIds = "";
 
 		/**
 		 * Items are not required to use the factory.
@@ -312,7 +308,7 @@ public final class Config {
 			dontEraseAnything = config.get(category, "DontEraseAnything",
 					dontEraseAnything).getBoolean(dontEraseAnything);
 			dontEraseTheseIds = config.get(category, "DontEraseTheseIds",
-					dontEraseTheseIds).getIntList();
+					dontEraseTheseIds).getString();
 			dontRequireItems = config.get(category, "DontRequireItems",
 					dontRequireItems).getBoolean(dontRequireItems);
 			dontRequireFuel = config.get(category, "DontRequireFuel",
@@ -327,8 +323,7 @@ public final class Config {
 		@Override
 		public String toString() {
 			return "Factory [dontEraseAnything=" + dontEraseAnything
-					+ ", dontEraseTheseIds="
-					+ Arrays.toString(dontEraseTheseIds)
+					+ ", dontEraseTheseIds=" + dontEraseTheseIds
 					+ ", dontRequireItems=" + dontRequireItems
 					+ ", dontRequireFuel=" + dontRequireFuel + ", instantCook="
 					+ instantCook + "]";
@@ -362,8 +357,7 @@ public final class Config {
 		@Override
 		public String toString() {
 			return "PictureFactory [dontEraseAnything=" + dontEraseAnything
-					+ ", dontEraseTheseIds="
-					+ Arrays.toString(dontEraseTheseIds)
+					+ ", dontEraseTheseIds=" + dontEraseTheseIds
 					+ ", dontRequireItems=" + dontRequireItems
 					+ ", dontRequireFuel=" + dontRequireFuel + ", instantCook="
 					+ instantCook + "]";
@@ -397,8 +391,7 @@ public final class Config {
 		@Override
 		public String toString() {
 			return "ModelFactory [dontEraseAnything=" + dontEraseAnything
-					+ ", dontEraseTheseIds="
-					+ Arrays.toString(dontEraseTheseIds)
+					+ ", dontEraseTheseIds=" + dontEraseTheseIds
 					+ ", dontRequireItems=" + dontRequireItems
 					+ ", dontRequireFuel=" + dontRequireFuel + ", instantCook="
 					+ instantCook + "]";
