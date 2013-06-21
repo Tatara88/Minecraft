@@ -182,17 +182,22 @@ public final class Config {
 		/**
 		 * Initial value for red component.
 		 */
-		public int initColorRed = 0;
+		public int initColorRed = 56;
 
 		/**
 		 * Initial value for green component.
 		 */
-		public int initColorGreen = 0;
+		public int initColorGreen = 56;
 
 		/**
 		 * Initial value for blue component.
 		 */
-		public int initColorBlue = 0;
+		public int initColorBlue = 56;
+
+		/**
+		 * Initial color.
+		 */
+		public int initColor = 0;
 
 		/**
 		 * Initial value for number of steps required to reach 255.
@@ -207,7 +212,7 @@ public final class Config {
 		/**
 		 * How the color is chosen.
 		 */
-		public ColorSelection colorSelection = ColorSelection.None;
+		public ColorSelection colorSelection = ColorSelection.Menu;
 
 		/**
 		 * Loads the configuration.
@@ -220,6 +225,8 @@ public final class Config {
 			initColorGreen = get(config, "InitColorGreen", initColorGreen, 0,
 					255);
 			initColorBlue = get(config, "InitColorBlue", initColorBlue, 0, 255);
+			initColor = ((initColorRed & 0xFF) << 16)
+					+ ((initColorGreen & 0xFF) << 8) + (initColorBlue & 0xFF);
 			maxColorStep = get(config, "MaxColorStep", maxColorStep, 1,
 					Integer.MAX_VALUE);
 			initColorStep = get(config, "InitColorStep", initColorStep, 1,

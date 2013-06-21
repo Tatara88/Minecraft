@@ -1,56 +1,7 @@
 package org.minecraftnauja.coloredwool.server;
 /*     */ public class BlockColor extends lb
 /*     */ {
-/*     */   public static na block;
-/*     */   public static int blockId;
-/*     */   public static final char SELECTION_NONE = '\000';
-/*     */   public static final char SELECTION_MANUAL = '\001';
-/*     */   public static final char SELECTION_MENU = '\002';
-/*  48 */   public static char colorSelection = '\002';
-/*     */ 
-/*     */   protected BlockColor(int i, int j, hj material)
-/*     */   {
-/*  62 */     super(i, j, material);
-/*     */   }
-/*     */ 
-/*     */   public static void initialise()
-/*     */   {
-/*  74 */     colorSelection = getSelectionMode();
-/*  75 */     if (mod_ColoredBlock.findFreeIds)
-/*  76 */       blockId = ModLoaderMp.GetFreeBlockId();
-/*     */     else {
-/*  78 */       blockId = mod_ColoredBlock.properties.get("Ids", "ColoredBlockId", Integer.valueOf(100)).intValue();
-/*     */     }
-/*     */ 
-/*  81 */     block = new BlockColor(blockId, na.ac.bm, hj.l).c(0.8F).a(na.k).a("coloredBlock");
-/*     */ 
-/*  83 */     ModLoader.RegisterBlock(block);
-/*     */ 
-/*  85 */     ModLoader.AddShapelessRecipe(new fy(block, 1), new Object[] { new fy(ItemColoredDye.item, 1), new fy(na.ac, 1) });
-/*     */     try
-/*     */     {
-/*  90 */       ((int[])ModLoader.getPrivateValue(pt.class, na.as, 0))[blockId] = 30;
-/*  91 */       ((int[])ModLoader.getPrivateValue(pt.class, na.as, 1))[blockId] = 60;
-/*     */     }
-/*     */     catch (Exception e)
-/*     */     {
-/*     */     }
-/*     */   }
-/*     */ 
-/*     */   public static char getSelectionMode()
-/*     */   {
-/* 100 */     String value = mod_ColoredBlock.properties.get("ColoredBlock", "ColorSelection", "menu");
-/* 101 */     if (value.equals("manual")) {
-/* 102 */       return '\001';
-/*     */     }
-/* 104 */     return !value.equals("menu") ? '\000' : '\002';
-/*     */   }
-/*     */ 
-/*     */   public int a(int i, int j)
-/*     */   {
-/* 119 */     return this.bm;
-/*     */   }
-/*     */ 
+	
 /*     */   public boolean a(dj world, int i, int j, int k, em player)
 /*     */   {
 /* 136 */     if (world.B) {
@@ -102,10 +53,6 @@ package org.minecraftnauja.coloredwool.server;
 /*     */     }
 /*     */   }
 /*     */ 
-/*     */   protected jh a_()
-/*     */   {
-/* 202 */     return new TileEntityColor();
-/*     */   }
 /*     */ }
 
 /* Location:           C:\Users\jeremy\Downloads\ColoredBlock v0.7 - 1.7.3 Server (1)\

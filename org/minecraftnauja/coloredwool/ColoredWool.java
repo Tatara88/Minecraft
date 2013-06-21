@@ -7,12 +7,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import org.minecraftnauja.coloredwool.block.BlockColoredCloth;
+import org.minecraftnauja.coloredwool.block.BlockColoredWool;
 import org.minecraftnauja.coloredwool.block.BlockModelFactory;
 import org.minecraftnauja.coloredwool.block.BlockPictureFactory;
 import org.minecraftnauja.coloredwool.block.FactoryState;
 import org.minecraftnauja.coloredwool.item.ItemColoredBrush;
 import org.minecraftnauja.coloredwool.item.ItemColoredDye;
+import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -105,7 +106,7 @@ public class ColoredWool {
 	@Init
 	public void load(final FMLInitializationEvent event) throws IOException {
 		// Colored wool.
-		coloredWool = new BlockColoredCloth(config.ids.coloredWoolId)
+		coloredWool = new BlockColoredWool(config.ids.coloredWoolId)
 				.setHardness(Block.cloth.blockHardness)
 				.setStepSound(Block.cloth.stepSound)
 				.setUnlocalizedName("coloredWool");
@@ -151,6 +152,8 @@ public class ColoredWool {
 		// Register.
 		LanguageRegistry.addName(coloredWool, "Colored Wool");
 		GameRegistry.registerBlock(coloredWool, "coloredWool");
+		GameRegistry.registerTileEntity(TileEntityColoredWool.class,
+				"coloredWool");
 		LanguageRegistry.addName(pictureFactoryBurning, "Picture Factory");
 		GameRegistry.registerBlock(pictureFactoryBurning,
 				"pictureFactoryBurning");

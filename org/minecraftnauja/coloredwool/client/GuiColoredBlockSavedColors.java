@@ -4,6 +4,8 @@ package org.minecraftnauja.coloredwool.client;
 /*     */ import java.util.List;
 /*     */ import java.util.Map.Entry;
 /*     */ import org.lwjgl.input.Keyboard;
+import org.minecraftnauja.coloredwool.ColorInformations;
+import org.minecraftnauja.coloredwool.SavedColors;
 import org.minecraftnauja.coloredwool.ColoredWool;
 /*     */ 
 /*     */ public class GuiColoredBlockSavedColors extends da
@@ -53,10 +55,10 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /* 152 */     this.e.add(this.doneButton = new ke(5, this.c / 2 + 84, this.d - 28, 70, 20, "Done"));
 /* 153 */     updateColors();
 /* 154 */     this.previousButton.g = ((this.maxColors > 0) && (this.startIndex > 0));
-/* 155 */     this.nextButton.g = ((this.maxColors > 0) && (this.startIndex + this.nbColors < ColoredBlockSavedColors.getNbColors()));
-/* 156 */     this.addButton.g = (!ColoredBlockSavedColors.containsColor(this.parentColor));
+/* 155 */     this.nextButton.g = ((this.maxColors > 0) && (this.startIndex + this.nbColors < SavedColors.getNbColors()));
+/* 156 */     this.addButton.g = (!SavedColors.containsColor(this.parentColor));
 /* 157 */     this.deleteButton.g = (this.selectedColorButton != null);
-/* 158 */     this.clearButton.g = (ColoredBlockSavedColors.getNbColors() > 0);
+/* 158 */     this.clearButton.g = (SavedColors.getNbColors() > 0);
 /*     */   }
 /*     */ 
 /*     */   protected void updateScreenTitle()
@@ -64,7 +66,7 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /* 165 */     if (this.selectedColorButton == null) {
 /* 166 */       this.screenTitle = "Saved colors";
 /*     */     } else {
-/* 168 */       ColoredBlockColorInformations coloredblockcolorinformations = this.selectedColorButton.color;
+/* 168 */       ColorInformations coloredblockcolorinformations = this.selectedColorButton.color;
 /* 169 */       this.screenTitle = ("Saved color 0x" + coloredblockcolorinformations.getHex());
 /*     */     }
 /*     */   }
@@ -95,7 +97,7 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /* 198 */     int k1 = 0;
 /* 199 */     int l1 = 0;
 /* 200 */     int i2 = 0;
-/* 201 */     Iterator iterator = ColoredBlockSavedColors.getColorsIterator();
+/* 201 */     Iterator iterator = SavedColors.getColorsIterator();
 /* 202 */     while ((iterator.hasNext()) && (i2 < this.startIndex)) {
 /* 203 */       iterator.next();
 /* 204 */       i2++;
@@ -105,7 +107,7 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /* 208 */     while ((iterator.hasNext()) && (l1 < i1))
 /*     */     {
 /* 211 */       Map.Entry entry = (Map.Entry)iterator.next();
-/* 212 */       ColoredBlockColorInformations color = (ColoredBlockColorInformations)entry.getValue();
+/* 212 */       ColorInformations color = (ColorInformations)entry.getValue();
 /* 213 */       GuiColoredBlockColorButton button = new GuiColoredBlockColorButton(9 + i2, i + (20 + l) * k1, byte0 + (20 + j1) * l1, 20, 20, color);
 /* 214 */       if (color.getColor().equals(this.selectedColor)) {
 /* 215 */         this.selectedColorButton = button;
@@ -156,7 +158,7 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /*     */   protected void addSelectedColor()
 /*     */   {
 /* 279 */     Color color = this.parentColor;
-/* 280 */     ColoredBlockSavedColors.addColor("", color);
+/* 280 */     SavedColors.addColor("", color);
 /* 281 */     this.selectedColor = color;
 /* 282 */     b();
 /*     */   }
@@ -178,12 +180,12 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /* 303 */     if (this.selectedColorButton == null) {
 /* 304 */       return;
 /*     */     }
-/* 306 */     ColoredBlockColorInformations color = this.selectedColorButton.color;
-/* 307 */     ColoredBlockSavedColors.removeColor(color.getColor());
+/* 306 */     ColorInformations color = this.selectedColorButton.color;
+/* 307 */     SavedColors.removeColor(color.getColor());
 /* 308 */     this.selectedColorButton.selected = false;
 /* 309 */     this.selectedColorButton = null;
 /* 310 */     this.selectedColor = null;
-/* 311 */     if (this.startIndex >= ColoredBlockSavedColors.getNbColors()) {
+/* 311 */     if (this.startIndex >= SavedColors.getNbColors()) {
 /* 312 */       this.startIndex = 0;
 /*     */     }
 /* 314 */     b();
@@ -196,7 +198,7 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /* 323 */       this.selectedColorButton = null;
 /* 324 */       this.selectedColor = null;
 /*     */     }
-/* 326 */     ColoredBlockSavedColors.clear();
+/* 326 */     SavedColors.clear();
 /* 327 */     this.startIndex = 0;
 /* 328 */     b();
 /*     */   }
@@ -213,7 +215,7 @@ import org.minecraftnauja.coloredwool.ColoredWool;
 /*     */   protected void nextColors(int i)
 /*     */   {
 /* 346 */     this.startIndex += i;
-/* 347 */     int j = ColoredBlockSavedColors.getNbColors();
+/* 347 */     int j = SavedColors.getNbColors();
 /* 348 */     if (this.startIndex > j) {
 /* 349 */       this.startIndex = (j - 1);
 /*     */     }

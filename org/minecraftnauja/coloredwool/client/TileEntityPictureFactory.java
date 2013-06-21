@@ -4,7 +4,7 @@ package org.minecraftnauja.coloredwool.client;
 /*     */ import java.io.PrintStream;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
-import org.minecraftnauja.coloredwool.block.BlockColoredCloth;
+import org.minecraftnauja.coloredwool.block.BlockColoredWool;
 /*     */ 
 /*     */ public class TileEntityPictureFactory extends ow
 /*     */   implements lw
@@ -165,7 +165,7 @@ import org.minecraftnauja.coloredwool.block.BlockColoredCloth;
 /* 296 */     if (this.dyeItemStacks[5] == null) {
 /* 297 */       return false;
 /*     */     }
-/* 299 */     return this.dyeItemStacks[5].a().bf == BlockColoredCloth.blockId;
+/* 299 */     return this.dyeItemStacks[5].a().bf == BlockColoredWool.blockId;
 /*     */   }
 /*     */ 
 /*     */   public boolean[] findItemsToSmelt()
@@ -335,9 +335,9 @@ import org.minecraftnauja.coloredwool.block.BlockColoredCloth;
 /* 505 */       z = this.g - 1 - (this.imageHeight - this.currentLine);
 /*     */     }
 /* 507 */     if (!blockAlreadyColored(x, y, z, entity)) {
-/* 508 */       this.d.f(x, y, z, BlockColoredCloth.blockId);
+/* 508 */       this.d.f(x, y, z, BlockColoredWool.blockId);
 /* 509 */       this.d.a(x, y, z, entity);
-/* 510 */       if (this.d.a(x, y, z) != BlockColoredCloth.blockId) {
+/* 510 */       if (this.d.a(x, y, z) != BlockColoredWool.blockId) {
 /* 511 */         return true;
 /*     */       }
 /*     */     }

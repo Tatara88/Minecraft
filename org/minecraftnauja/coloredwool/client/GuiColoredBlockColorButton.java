@@ -1,17 +1,20 @@
 package org.minecraftnauja.coloredwool.client;
 /*    */ import java.awt.Color;
+
+import org.minecraftnauja.coloredwool.ColorInformations;
+
 /*    */ import net.minecraft.client.Minecraft;
 /*    */ 
 /*    */ public class GuiColoredBlockColorButton extends ke
 /*    */ {
-/*    */   public ColoredBlockColorInformations color;
+/*    */   public ColorInformations color;
 /*    */   public final int xColor;
 /*    */   public final int yColor;
 /*    */   public final int widthColor;
 /*    */   public final int heightColor;
 /*    */   public boolean selected;
 /*    */ 
-/*    */   public GuiColoredBlockColorButton(int i, int j, int k, int w, int h, ColoredBlockColorInformations color)
+/*    */   public GuiColoredBlockColorButton(int i, int j, int k, int w, int h, ColorInformations color)
 /*    */   {
 /* 56 */     super(i, j, k, w, h, "");
 /* 57 */     this.color = color;
