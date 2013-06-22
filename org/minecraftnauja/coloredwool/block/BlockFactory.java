@@ -329,9 +329,6 @@ public abstract class BlockFactory extends BlockContainer {
 	public boolean onBlockActivated(World par1World, int par2, int par3,
 			int par4, EntityPlayer par5EntityPlayer, int par6, float par7,
 			float par8, float par9) {
-		if (par1World.isRemote) {
-			return true;
-		}
 		if (par3 < (int) par5EntityPlayer.posY - 1) {
 			return false;
 		}
@@ -350,11 +347,15 @@ public abstract class BlockFactory extends BlockContainer {
 			return true;
 		} else if ((metadata == 0 && l == 3)
 				|| (metadata >= 1 && metadata <= 3 && l == metadata - 1)) {
-			openMenuImage(par5EntityPlayer, entity);
+			if (par1World.isRemote) {
+				openMenuImage(par5EntityPlayer, entity);
+			}
 			return true;
 		} else if ((metadata == 6 && l == 2) || (metadata == 8 && l == 0)
 				|| (metadata == 7 && l == 3) || (metadata == 5 && l == 1)) {
-			openMenuImage(par5EntityPlayer, entity);
+			if (par1World.isRemote) {
+				openMenuImage(par5EntityPlayer, entity);
+			}
 			return true;
 		} else if ((metadata == 8 && l == 1) || (metadata == 6 && l == 3)
 				|| (metadata == 5 && l == 2) || (metadata == 7 && l == 0)) {

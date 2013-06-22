@@ -5,15 +5,17 @@ import java.awt.Color;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
-import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Menu for hexadecimal color.
  */
+@SideOnly(Side.CLIENT)
 public class GuiColoredWoolHexa extends GuiScreen {
 
 	/**
@@ -42,14 +44,9 @@ public class GuiColoredWoolHexa extends GuiScreen {
 	private GuiButton doneButton;
 
 	/**
-	 * Player.
+	 * Main menu.
 	 */
-	private final EntityPlayer player;
-
-	/**
-	 * Tile entity.
-	 */
-	private final TileEntityColoredWool tileEntity;
+	private final GuiColoredWoolMenu menu;
 
 	/**
 	 * Selected color.
@@ -71,17 +68,15 @@ public class GuiColoredWoolHexa extends GuiScreen {
 	 * 
 	 * @param player
 	 *            player.
-	 * @param tileEntity
-	 *            tile entity.
+	 * @param menu
+	 *            main menu.
 	 * @param color
 	 *            selected color.
 	 */
-	public GuiColoredWoolHexa(EntityPlayer player,
-			TileEntityColoredWool tileEntity, Color color) {
+	public GuiColoredWoolHexa(GuiColoredWoolMenu menu) {
 		super();
-		this.player = player;
-		this.tileEntity = tileEntity;
-		setSelectedColor(color);
+		this.menu = menu;
+		setSelectedColor(menu.selectedColor);
 	}
 
 	/**
@@ -143,8 +138,8 @@ public class GuiColoredWoolHexa extends GuiScreen {
 		if (par1GuiButton.enabled) {
 			if (par1GuiButton.id == DONE) {
 				Keyboard.enableRepeatEvents(false);
-				ModLoader.openGUI(player, new GuiColoredWoolMenu(player,
-						tileEntity, getSelectedColor()));
+				menu.selectedColor = getSelectedColor();
+				ModLoader.openGUI(menu.player, menu);
 			}
 		}
 	}

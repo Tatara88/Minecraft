@@ -1,22 +1,30 @@
 package org.minecraftnauja.coloredwool.menu;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.util.logging.Level;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
 import org.minecraftnauja.coloredwool.ColoredWool;
-import org.minecraftnauja.coloredwool.ImageImport;
-import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
+import org.minecraftnauja.coloredwool.Orientation;
+import org.minecraftnauja.coloredwool.Packet;
+
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * Menu for importing images.
+ * Base for the import image menu.
  */
+@SideOnly(Side.CLIENT)
 public class GuiColoredWoolImport extends GuiScreen {
 
 	/**
@@ -40,29 +48,9 @@ public class GuiColoredWoolImport extends GuiScreen {
 	private static final char Y_ORIENTATION = 3;
 
 	/**
-	 * Player.
-	 */
-	protected EntityPlayer player;
-
-	/**
-	 * Tile tileEntity.
-	 */
-	protected TileEntityColoredWool tileEntity;
-
-	/**
-	 * Selected color.
-	 */
-	protected Color selectedColor;
-
-	/**
 	 * Text field.
 	 */
 	private GuiTextField fileInput;
-
-	/**
-	 * Input string.
-	 */
-	private String fileInputString;
 
 	/**
 	 * Start button.
@@ -87,29 +75,62 @@ public class GuiColoredWoolImport extends GuiScreen {
 	/**
 	 * X-orientation.
 	 */
-	private int xOrient;
+	protected Orientation xOrient;
 
 	/**
 	 * Y-orientation.
 	 */
-	private int yOrient;
+	protected Orientation yOrient;
+
+	/**
+	 * X-coordinate.
+	 */
+	private final int x;
+
+	/**
+	 * Y-coordinate.
+	 */
+	private final int y;
+
+	/**
+	 * Z-coordinate.
+	 */
+	private final int z;
+
+	/**
+	 * Main menu.
+	 */
+	private final GuiColoredWoolMenu menu;
 
 	/**
 	 * Initializing constructor.
 	 * 
-	 * @param player
-	 *            player.
-	 * @param tileEntity
-	 *            the tile tileEntity.
-	 * @param color
-	 *            selected color.
+	 * @param menu
+	 *            main menu.
+	 * @param x
+	 *            x-coordinate.
+	 * @param y
+	 *            y-coordinate.
+	 * @param z
+	 *            z-coordinate.
 	 */
-	public GuiColoredWoolImport(EntityPlayer player,
-			TileEntityColoredWool tileEntity, Color color) {
+	public GuiColoredWoolImport(GuiColoredWoolMenu menu, int x, int y, int z) {
 		super();
-		this.player = player;
-		this.tileEntity = tileEntity;
-		this.selectedColor = color;
+		this.menu = menu;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		xOrient = Orientation.West;
+		yOrient = Orientation.Up;
+	}
+
+	/**
+	 * Gets the player.
+	 * 
+	 * @return the player.
+	 */
+	public EntityPlayer getPlayer() {
+		return menu.player;
 	}
 
 	/**
@@ -127,9 +148,9 @@ public class GuiColoredWoolImport extends GuiScreen {
 		buttonList.add(cancelButton = new GuiButton(CANCEL, width / 2 + 10,
 				height / 4 + 120, 70, 20, "Cancel"));
 		buttonList.add(xOrientButton = new GuiButton(X_ORIENTATION,
-				width / 2 - 110, height / 4 + 60, 100, 20, "North"));
+				width / 2 - 110, height / 4 + 60, 100, 20, xOrient.toString()));
 		buttonList.add(yOrientButton = new GuiButton(Y_ORIENTATION,
-				width / 2 + 10, height / 4 + 60, 100, 20, "North"));
+				width / 2 + 10, height / 4 + 60, 100, 20, yOrient.toString()));
 		Keyboard.enableRepeatEvents(true);
 	}
 
@@ -157,33 +178,46 @@ public class GuiColoredWoolImport extends GuiScreen {
 		if (par1GuiButton.enabled) {
 			switch (par1GuiButton.id) {
 			case START:
-				startImport();
+				sendPacketToServer();
+				mc.displayGuiScreen(null);
 				break;
 			case CANCEL:
 				Keyboard.enableRepeatEvents(false);
-				ModLoader.openGUI(player, new GuiColoredWoolMenu(player,
-						tileEntity, selectedColor));
+				ModLoader.openGUI(menu.player, menu);
 				break;
 			case X_ORIENTATION:
-				xOrient += 1;
-				xOrient %= 6;
-				String orient = getDirection(xOrient);
-				if (orient == "Unknown") {
-					xOrient = 0;
-					orient = "North";
-				}
-				xOrientButton.displayString = orient;
+				xOrient = xOrient.getNext();
+				xOrientButton.displayString = xOrient.toString();
 				break;
 			case Y_ORIENTATION:
-				yOrient += 1;
-				yOrient %= 6;
-				String orient2 = getDirection(yOrient);
-				if (orient2 == "Unknown") {
-					yOrient = 0;
-					orient2 = "North";
-				}
-				yOrientButton.displayString = orient2;
+				yOrient = yOrient.getNext();
+				yOrientButton.displayString = yOrient.toString();
 			}
+		}
+	}
+
+	/**
+	 * Sends the packet to server.
+	 */
+	private void sendPacketToServer() {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			dos.writeInt(Packet.ImportImage.ordinal());
+			dos.writeInt(x);
+			dos.writeInt(y);
+			dos.writeInt(z);
+			dos.writeUTF(fileInput.getText());
+			dos.writeInt(xOrient.ordinal());
+			dos.writeInt(yOrient.ordinal());
+			Packet250CustomPayload p = new Packet250CustomPayload();
+			p.channel = ColoredWool.MOD_ID;
+			p.data = bos.toByteArray();
+			p.length = bos.size();
+			PacketDispatcher.sendPacketToServer(p);
+		} catch (Exception e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not send packet");
 		}
 	}
 
@@ -195,57 +229,6 @@ public class GuiColoredWoolImport extends GuiScreen {
 		if (fileInput.isFocused()) {
 			fileInput.textboxKeyTyped(par1, par2);
 		}
-	}
-
-	/**
-	 * Gets the name of given orientation.
-	 * 
-	 * @param orient
-	 *            the orientation.
-	 * @return the name.
-	 */
-	private String getDirection(int orient) {
-		switch (orient) {
-		case 0:
-			return "North";
-		case 1:
-			return "South";
-		case 2:
-			return "East";
-		case 3:
-			return "West";
-		case 4:
-			return "Up";
-		case 5:
-			return "Down";
-		}
-		return "Unknown";
-	}
-
-	/**
-	 * Starts the import.
-	 */
-	private void startImport() {
-		if ((xOrient == yOrient)
-				|| ((xOrient == yOrient - 1) && (yOrient % 2 == 1))
-				|| ((yOrient == xOrient - 1) && (xOrient % 2 == 1))) {
-			ModLoader.openGUI(player, new GuiColoredWoolImportErr(player,
-					tileEntity, selectedColor,
-					"ERROR: Image axis must use different orientation axes!"));
-			return;
-		}
-
-		fileInputString = fileInput.getText();
-		BufferedImage image = ColoredWool.getLocalImage(fileInputString);
-		if (image == null) {
-			ModLoader.openGUI(player, new GuiColoredWoolImportErr(player,
-					tileEntity, selectedColor, "ERROR: Image load failed."));
-			return;
-		}
-		int test = image.getHeight();
-		ColoredWool.imageImport = new ImageImport(player, tileEntity, image,
-				xOrient, yOrient);
-		mc.displayGuiScreen(null);
 	}
 
 }

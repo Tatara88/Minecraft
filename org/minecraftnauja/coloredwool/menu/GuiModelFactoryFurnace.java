@@ -7,9 +7,13 @@ import org.lwjgl.opengl.GL11;
 import org.minecraftnauja.coloredwool.block.ContainerModelFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Gui for the model factory furnace.
  */
+@SideOnly(Side.CLIENT)
 public class GuiModelFactoryFurnace extends GuiContainer {
 
 	/**

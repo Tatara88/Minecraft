@@ -10,13 +10,13 @@ import net.minecraft.world.World;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
 public class ImageImport {
+
 	public boolean importFinished;
 	private EntityPlayer player;
-	private TileEntityColoredWool entity;
 	private BufferedImage image;
 	private World worldObj;
-	private int xOrient;
-	private int yOrient;
+	private Orientation xOrient;
+	private Orientation yOrient;
 	private int xCurrent;
 	private int yCurrent;
 	private int originX;
@@ -31,80 +31,27 @@ public class ImageImport {
 	private int yya;
 	private int yza;
 
-	public ImageImport(EntityPlayer player, TileEntityColoredWool entity,
-			BufferedImage image, int xOrient, int yOrient) {
+	public ImageImport(EntityPlayer player, int x, int y, int z,
+			BufferedImage image, Orientation xOrient, Orientation yOrient) {
 		importFinished = false;
 		this.player = player;
-		this.entity = entity;
 		this.image = image;
 		this.xOrient = xOrient;
 		this.yOrient = yOrient;
 		worldObj = player.worldObj;
 		xCurrent = 0;
 		yCurrent = 0;
-		originX = entity.xCoord;
-		originY = entity.yCoord;
-		originZ = entity.zCoord;
+		originX = x;
+		originY = y;
+		originZ = z;
 		imageHeight = image.getHeight();
 		imageWidth = image.getWidth();
-		findXOrientation(xOrient);
-		findYOrientation(yOrient);
-	}
-
-	public void findXOrientation(int xOrient) {
-		xxa = 0;
-		xya = 0;
-		xza = 0;
-		switch (xOrient) {
-		case 0:
-			xxa = -1;
-			break;
-		case 1:
-			xxa = 1;
-			break;
-		case 2:
-			xza = -1;
-			break;
-		case 3:
-			xza = 1;
-			break;
-		case 4:
-			xya = 1;
-			break;
-		case 5:
-			xya = -1;
-			break;
-		default:
-			xxa = 1;
-		}
-	}
-
-	public void findYOrientation(int yOrient) {
-		yxa = 0;
-		yya = 0;
-		yza = 0;
-		switch (yOrient) {
-		case 0:
-			yxa = -1;
-			break;
-		case 1:
-			yxa = 1;
-			break;
-		case 2:
-			yza = -1;
-			break;
-		case 3:
-			yza = 1;
-			break;
-		case 4:
-			yya = 1;
-			break;
-		case 5:
-			yya = -1;
-			break;
-		default:
-			yza = 1;
-		}
+		xxa = xOrient.getDX();
+		xya = xOrient.getDY();
+		xza = xOrient.getDZ();
+		yxa = yOrient.getDX();
+		yya = yOrient.getDY();
+		yza = yOrient.getDZ();
 	}
 
 	public void imageTick() {
@@ -141,7 +88,8 @@ public class ImageImport {
 			if ((loadTileEntity instanceof TileEntityColoredWool)) {
 				TileEntityColoredWool currentBlockEntity = (TileEntityColoredWool) loadTileEntity;
 				if (currentBlockEntity != null) {
-					currentBlockEntity.sendColorToServer(pix.getRGB());
+					currentBlockEntity.color = pix.getRGB();
+					currentBlockEntity.sendColorToPlayers();
 				}
 			}
 		}
@@ -156,4 +104,5 @@ public class ImageImport {
 			}
 		}
 	}
+
 }

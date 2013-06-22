@@ -1,13 +1,11 @@
 package org.minecraftnauja.coloredwool.block;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.src.ModLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.menu.Gui;
-import org.minecraftnauja.coloredwool.menu.GuiPictureFactoryImage;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
 
@@ -126,8 +124,7 @@ public class BlockPictureFactory extends BlockFactory {
 	 */
 	@Override
 	protected void openMenuImage(EntityPlayer player, TileEntityFactory entity) {
-		ModLoader.openGUI(player, new GuiPictureFactoryImage(
-				(TileEntityPictureFactory) entity));
+		ColoredWool.proxy.openPictureFactoryImage(player, (TileEntityPictureFactory) entity);
 	}
 
 	/**

@@ -10,9 +10,13 @@ import net.minecraft.src.ModLoader;
 import org.lwjgl.input.Keyboard;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
- * Menu for the colored wool.
+ * Colored wool menu.
  */
+@SideOnly(Side.CLIENT)
 public class GuiColoredWoolMenu extends GuiScreen {
 
 	/**
@@ -48,7 +52,7 @@ public class GuiColoredWoolMenu extends GuiScreen {
 	/**
 	 * Tile entity.
 	 */
-	protected TileEntityColoredWool tileEntity;
+	private final TileEntityColoredWool tileEntity;
 
 	/**
 	 * Last selected color.
@@ -69,7 +73,7 @@ public class GuiColoredWoolMenu extends GuiScreen {
 	 * @param player
 	 *            player.
 	 * @param tileEntity
-	 *            the tile entity.
+	 *            tile entity.
 	 * @param color
 	 *            selected color.
 	 */
@@ -103,15 +107,15 @@ public class GuiColoredWoolMenu extends GuiScreen {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Closes the gui.
 	 */
-	@Override
-	public void onGuiClosed() {
+	public void close() {
 		Keyboard.enableRepeatEvents(false);
 		if (selectedColor != null) {
 			lastColor = selectedColor;
 			tileEntity.sendColorToServer(selectedColor.getRGB());
 		}
+		mc.displayGuiScreen(null);
 	}
 
 	/**
@@ -131,21 +135,20 @@ public class GuiColoredWoolMenu extends GuiScreen {
 		if (par1GuiButton.enabled) {
 			switch (par1GuiButton.id) {
 			case HEXA:
-				ModLoader.openGUI(player, new GuiColoredWoolHexa(player,
-						tileEntity, selectedColor));
+				ModLoader.openGUI(player, new GuiColoredWoolHexa(this));
 				break;
 			case SAVED_COLORS:
-				ModLoader.openGUI(player, new GuiColoredWoolSavedColors(player,
-						tileEntity, selectedColor));
+				ModLoader.openGUI(player, new GuiColoredWoolSavedColors(this));
 				break;
 			case LAST_COLOR:
 				selectedColor = lastColor;
 			case DONE:
-				mc.displayGuiScreen(null);
+				close();
 				break;
 			case IMPORT_IMAGE:
-				ModLoader.openGUI(player, new GuiColoredWoolImport(player,
-						tileEntity, selectedColor));
+				ModLoader.openGUI(player,
+						new GuiColoredWoolImport(this, tileEntity.xCoord,
+								tileEntity.yCoord, tileEntity.zCoord));
 				break;
 			}
 		}

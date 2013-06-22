@@ -176,6 +176,11 @@ public final class Config {
 		private static final String CATEGORY = "coloredwool";
 
 		/**
+		 * Folder for images.
+		 */
+		public String folder = "";
+
+		/**
 		 * Initial value for red component.
 		 */
 		public int initColorRed = 56;
@@ -217,6 +222,7 @@ public final class Config {
 		 *            the configuration.
 		 */
 		private ColoredWool(Configuration config) {
+			folder = config.get(CATEGORY, "Folder", folder).getString();
 			initColorRed = get(config, "InitColorRed", initColorRed, 0, 255);
 			initColorGreen = get(config, "InitColorGreen", initColorGreen, 0,
 					255);
@@ -257,11 +263,11 @@ public final class Config {
 		 */
 		@Override
 		public String toString() {
-			return "ColoredWool [initColorRed=" + initColorRed
-					+ ", initColorGreen=" + initColorGreen + ", initColorBlue="
-					+ initColorBlue + ", initColorStep=" + initColorStep
-					+ ", maxColorStep=" + maxColorStep + ", colorSelection="
-					+ colorSelection + "]";
+			return "ColoredWool [folder=" + folder + ", initColorRed="
+					+ initColorRed + ", initColorGreen=" + initColorGreen
+					+ ", initColorBlue=" + initColorBlue + ", initColorStep="
+					+ initColorStep + ", maxColorStep=" + maxColorStep
+					+ ", colorSelection=" + colorSelection + "]";
 		}
 
 	}

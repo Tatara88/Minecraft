@@ -4,16 +4,15 @@ import java.awt.Color;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
-import org.minecraftnauja.coloredwool.menu.GuiColoredWoolMenu;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
 import cpw.mods.fml.relauncher.Side;
@@ -32,7 +31,7 @@ public class BlockColoredWool extends Block implements ITileEntityProvider {
 	 */
 	public BlockColoredWool(int par1) {
 		super(par1, Block.cloth.blockMaterial);
-		setCreativeTab(Block.cloth.getCreativeTabToDisplayOn());
+		setCreativeTab(CreativeTabs.tabBlock);
 	}
 
 	/**
@@ -114,8 +113,8 @@ public class BlockColoredWool extends Block implements ITileEntityProvider {
 			if (par1World.isRemote) {
 				TileEntityColoredWool e = (TileEntityColoredWool) par1World
 						.getBlockTileEntity(par2, par3, par4);
-				ModLoader.openGUI(par5EntityPlayer, new GuiColoredWoolMenu(
-						par5EntityPlayer, e, new Color(e.color)));
+				ColoredWool.proxy.openColoredWoolMenu(par5EntityPlayer, e,
+						new Color(e.color));
 			}
 			return true;
 		default:

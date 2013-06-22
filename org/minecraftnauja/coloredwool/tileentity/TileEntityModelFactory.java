@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
@@ -16,7 +17,6 @@ import org.minecraftnauja.coloredwool.block.BlockModelFactory;
  */
 public class TileEntityModelFactory extends TileEntityFactory {
 
-	protected String imageName;
 	protected BufferedImage imageTop;
 	protected BufferedImage imageBottom;
 	protected BufferedImage imageLeft;
@@ -147,10 +147,7 @@ public class TileEntityModelFactory extends TileEntityFactory {
 		currentX = pos[0];
 		currentY = pos[1];
 		currentZ = pos[2];
-		int argb = pos[3];
-
-		TileEntityColoredWool entity = new TileEntityColoredWool();
-		entity.setColor(argb >> 16 & 0xFF, argb >> 8 & 0xFF, argb & 0xFF);
+		int rgb = pos[3] & 0xFFFFFF;
 
 		int l = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		int x = xCoord;
@@ -190,12 +187,22 @@ public class TileEntityModelFactory extends TileEntityFactory {
 			z = zCoord - 2 - currentZ;
 		}
 
-		if (!blockAlreadyColored(x, y, z, entity)) {
-			worldObj.setBlock(x, y, z, ColoredWool.coloredWool.blockID);
-			worldObj.setBlockTileEntity(x, y, z, entity);
-			if (worldObj.getBlockId(x, y, z) != ColoredWool.coloredWool.blockID) {
-				return true;
+		if (!blockAlreadyColored(x, y, z, rgb)) {
+			TileEntityColoredWool t = null;
+			TileEntity e = worldObj.getBlockTileEntity(x, y, z);
+			if (e != null && e instanceof TileEntityColoredWool) {
+				t = (TileEntityColoredWool) e;
+			} else {
+				t = new TileEntityColoredWool();
+				worldObj.setBlock(x, y, z, ColoredWool.coloredWool.blockID);
+				if (worldObj.getBlockId(x, y, z) != ColoredWool.coloredWool.blockID) {
+					return true;
+				} else {
+					worldObj.setBlockTileEntity(x, y, z, t);
+				}
 			}
+			t.color = rgb;
+			t.sendColorToPlayers();
 		}
 
 		currentZ -= 1;
@@ -451,10 +458,10 @@ public class TileEntityModelFactory extends TileEntityFactory {
 		currentItemBurnTime = TileEntityFurnace.getItemBurnTime(coalItemStack);
 	}
 
-	public String getImageName() {
-		return imageName;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setImageToGenerate(String name) {
 		if (name.equals(imageName)) {
 			return;

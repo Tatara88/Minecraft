@@ -1,7 +1,5 @@
 package org.minecraftnauja.coloredwool.menu;
 
-import javax.swing.JOptionPane;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -9,6 +7,10 @@ import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class GuiPictureFactoryImage extends GuiScreen {
 
 	/**
@@ -58,17 +60,17 @@ public class GuiPictureFactoryImage extends GuiScreen {
 	@Override
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
-		this.screenTitle = "Choose image to generate";
-		this.nameButton = new GuiTextField(fontRenderer, this.width / 2 - 100,
-				60, 200, 20);
+		screenTitle = "Choose image to generate";
+		nameButton = new GuiTextField(fontRenderer, width / 2 - 100, 60, 200,
+				20);
 		nameButton.setText(entity.getImageName());
-		this.nameButton.setEnabled(true);
+		nameButton.setEnabled(true);
 		nameButton.setFocused(true);
-		this.nameButton.setMaxStringLength(42);
+		nameButton.setMaxStringLength(42);
 		buttonList.clear();
-		this.doneButton = new GuiButton(DONE, this.width / 2 - 100,
-				this.height / 4 + 120, "Done");
-		this.buttonList.add(this.doneButton);
+		doneButton = new GuiButton(DONE, width / 2 - 100, height / 4 + 120,
+				"Done");
+		buttonList.add(doneButton);
 		checkName();
 	}
 
@@ -76,14 +78,9 @@ public class GuiPictureFactoryImage extends GuiScreen {
 	 * Closes the gui.
 	 */
 	public void close() {
-		try {
-			String name = this.nameButton.getText();
-			entity.sendImageToServer(name);
-			this.entity.setImageToGenerate(name);
-			mc.displayGuiScreen(null);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
+		String name = nameButton.getText();
+		entity.sendImageToServer(name);
+		mc.displayGuiScreen(null);
 	}
 
 	/**
@@ -114,7 +111,7 @@ public class GuiPictureFactoryImage extends GuiScreen {
 	 */
 	@Override
 	protected void keyTyped(char par1, int par2) {
-		this.nameButton.textboxKeyTyped(par1, par2);
+		nameButton.textboxKeyTyped(par1, par2);
 		checkName();
 		if (par1 == '\r') {
 			actionPerformed(doneButton);
@@ -127,9 +124,9 @@ public class GuiPictureFactoryImage extends GuiScreen {
 	 * @return if it is valid.
 	 */
 	public boolean checkName() {
-		String s = this.nameButton.getText();
+		String s = nameButton.getText();
 		boolean flag = s.length() > 0;
-		this.doneButton.enabled = flag;
+		doneButton.enabled = flag;
 		return flag;
 	}
 

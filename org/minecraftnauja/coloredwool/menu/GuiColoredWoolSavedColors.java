@@ -6,18 +6,19 @@ import java.util.Map;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
 import org.minecraftnauja.coloredwool.ColorInformations;
-import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.SavedColors;
-import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Menu for saved colors.
  */
+@SideOnly(Side.CLIENT)
 public class GuiColoredWoolSavedColors extends GuiScreen {
 
 	/**
@@ -90,14 +91,9 @@ public class GuiColoredWoolSavedColors extends GuiScreen {
 	private int nbColors;
 
 	/**
-	 * Player.
+	 * Main menu.
 	 */
-	private final EntityPlayer player;
-
-	/**
-	 * Tile entity.
-	 */
-	private final TileEntityColoredWool tileEntity;
+	private final GuiColoredWoolMenu menu;
 
 	/**
 	 * Selected color.
@@ -122,20 +118,14 @@ public class GuiColoredWoolSavedColors extends GuiScreen {
 	/**
 	 * Initializing constructor.
 	 * 
-	 * @param player
-	 *            player.
-	 * @param tileEntity
-	 *            tile entity.
-	 * @param color
-	 *            selected color.
+	 * @param menu
+	 *            main menu.
 	 */
-	public GuiColoredWoolSavedColors(EntityPlayer player,
-			TileEntityColoredWool tileEntity, Color color) {
+	public GuiColoredWoolSavedColors(GuiColoredWoolMenu menu) {
 		super();
-		this.player = player;
-		this.tileEntity = tileEntity;
-		selectedColor = color;
-		parentColor = color;
+		this.menu = menu;
+		selectedColor = menu.selectedColor;
+		parentColor = menu.selectedColor;
 		startIndex = 0;
 	}
 
@@ -263,8 +253,8 @@ public class GuiColoredWoolSavedColors extends GuiScreen {
 					if (selectedColor == null) {
 						selectedColor = parentColor;
 					}
-					ModLoader.openGUI(player, new GuiColoredWoolMenu(player,
-							tileEntity, selectedColor));
+					menu.selectedColor = selectedColor;
+					ModLoader.openGUI(menu.player, menu);
 					break;
 				case DELETE_COLOR:
 					deleteSelectedColor();

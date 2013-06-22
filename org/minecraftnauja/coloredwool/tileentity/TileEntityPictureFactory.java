@@ -1,22 +1,25 @@
 package org.minecraftnauja.coloredwool.tileentity;
 
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.Config.Factory;
 import org.minecraftnauja.coloredwool.block.BlockPictureFactory;
 
+import cpw.mods.fml.common.FMLLog;
+
 /**
  * Picture factory tile entity.
  */
 public class TileEntityPictureFactory extends TileEntityFactory {
 
-	protected String imageName;
 	protected BufferedImage image;
 	protected int imageWidth;
 	protected int imageHeight;
@@ -135,10 +138,7 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 		}
 		currentColumn = pos[0];
 		currentLine = pos[1];
-		int argb = pos[2];
-
-		TileEntityColoredWool entity = new TileEntityColoredWool();
-		entity.setColor(argb >> 16 & 0xFF, argb >> 8 & 0xFF, argb & 0xFF);
+		int rgb = pos[2] & 0xFFFFFF;
 
 		int l = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		int x = xCoord;
@@ -169,12 +169,22 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 			x = xCoord - imageWidth / 2 + currentColumn;
 			z = zCoord - 1 - (imageHeight - currentLine);
 		}
-		if (!blockAlreadyColored(x, y, z, entity)) {
-			worldObj.setBlock(x, y, z, ColoredWool.coloredWool.blockID);
-			worldObj.setBlockTileEntity(x, y, z, entity);
-			if (worldObj.getBlockId(x, y, z) != ColoredWool.coloredWool.blockID) {
-				return true;
+		if (!blockAlreadyColored(x, y, z, rgb)) {
+			TileEntityColoredWool t = null;
+			TileEntity e = worldObj.getBlockTileEntity(x, y, z);
+			if (e != null && e instanceof TileEntityColoredWool) {
+				t = (TileEntityColoredWool) e;
+			} else {
+				t = new TileEntityColoredWool();
+				worldObj.setBlock(x, y, z, ColoredWool.coloredWool.blockID);
+				if (worldObj.getBlockId(x, y, z) != ColoredWool.coloredWool.blockID) {
+					return true;
+				} else {
+					worldObj.setBlockTileEntity(x, y, z, t);
+				}
 			}
+			t.color = rgb;
+			t.sendColorToPlayers();
 		}
 
 		currentColumn += 1;
@@ -224,29 +234,31 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 	}
 
 	public void updateProgressWidth() {
-		if ((image == null) || (imageWidth < 1)) {
+		if (imageWidth < 1) {
 			progressWidth = 0;
+		} else {
+			progressWidth = ((int) (currentColumn / imageWidth * 100.0F));
 		}
-		progressWidth = ((int) (currentColumn / imageWidth * 100.0F));
 	}
 
 	public void updateProgressHeight() {
-		if ((image == null) || (imageHeight < 1)) {
+		if (imageHeight < 1) {
 			progressHeight = 0;
+		} else {
+			progressHeight = ((int) ((imageHeight - (currentLine + 1))
+					/ imageHeight * 100.0F));
 		}
-		progressHeight = ((int) ((imageHeight - (currentLine + 1))
-				/ imageHeight * 100.0F));
 	}
 
 	public int getImageProgressWidth(int i) {
-		if ((image == null) || (imageWidth < 1)) {
+		if (!worldObj.isRemote && ((image == null) || (imageWidth < 1))) {
 			return 0;
 		}
 		return progressWidth * i / 100;
 	}
 
 	public int getImageProgressHeight(int i) {
-		if ((image == null) || (imageHeight < 1)) {
+		if (!worldObj.isRemote && ((image == null) || (imageHeight < 1))) {
 			return 0;
 		}
 		return progressHeight * i / 100;
@@ -269,6 +281,8 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
 		super.writeToNBT(par1NBTTagCompound);
 		par1NBTTagCompound.setString("ImageName", imageName);
+		par1NBTTagCompound.setInteger("ImageWidth", imageWidth);
+		par1NBTTagCompound.setInteger("ImageHeight", imageHeight);
 		par1NBTTagCompound.setInteger("ImageLine", currentLine);
 		par1NBTTagCompound.setInteger("ImageColumn", currentColumn);
 		par1NBTTagCompound.setInteger("GenerationTime", factoryGenerationTime);
@@ -301,7 +315,9 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 	@Override
 	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
 		super.readFromNBT(par1NBTTagCompound);
-		setImageToGenerate(par1NBTTagCompound.getString("ImageName"));
+		imageName = par1NBTTagCompound.getString("ImageName");
+		imageWidth = par1NBTTagCompound.getInteger("ImageWidth");
+		imageHeight = par1NBTTagCompound.getInteger("ImageHeight");
 		currentLine = par1NBTTagCompound.getInteger("ImageLine");
 		currentColumn = par1NBTTagCompound.getInteger("ImageColumn");
 		updateProgressWidth();
@@ -328,10 +344,10 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 		currentItemBurnTime = TileEntityFurnace.getItemBurnTime(coalItemStack);
 	}
 
-	public String getImageName() {
-		return imageName;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setImageToGenerate(String name) {
 		if (name.equals(imageName)) {
 			return;
@@ -348,6 +364,8 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 		image = ColoredWool.getLocalImage(name);
 		if (image == null) {
 			return;
+		} else {
+			sendImageToPlayers();
 		}
 		imageWidth = image.getWidth();
 		imageHeight = image.getHeight();

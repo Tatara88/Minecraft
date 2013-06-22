@@ -3,6 +3,12 @@ package org.minecraftnauja.coloredwool;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+
+import javax.imageio.ImageIO;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,21 +23,29 @@ import org.minecraftnauja.coloredwool.item.ItemColoredBrush;
 import org.minecraftnauja.coloredwool.item.ItemColoredDye;
 import org.minecraftnauja.coloredwool.menu.GuiHandler;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
+import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
+import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
 
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PreInit;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = "ColoredWool", name = "ColoredWool", version = "1.0.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { "ColoredWool" }, packetHandler = PacketHandler.class)
-public class ColoredWool {
+public class ColoredWool implements ITickHandler {
 
 	/**
 	 * Mod identifier.
@@ -43,6 +57,12 @@ public class ColoredWool {
 	 */
 	@Instance("ColoredWool")
 	public static ColoredWool instance;
+
+	/**
+	 * Proxy instance.
+	 */
+	@SidedProxy(clientSide = "org.minecraftnauja.coloredwool.ClientProxy", serverSide = "org.minecraftnauja.coloredwool.CommonProxy")
+	public static CommonProxy proxy;
 
 	/**
 	 * Mod configuration.
@@ -95,15 +115,21 @@ public class ColoredWool {
 	public static Item coloredBrush;
 
 	/**
-	 * Image to import.
+	 * The side.
 	 */
-	public static ImageImport imageImport;
+	public static Side side;
+
+	/**
+	 * List of image import.
+	 */
+	private static List<ImageImport> imageImport;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {
+		side = event.getSide();
 		config = Config.load(event);
 		File f = new File(event.getModConfigurationDirectory(),
 				"savedColors.properties");
@@ -167,17 +193,29 @@ public class ColoredWool {
 		LanguageRegistry.addName(pictureFactoryBurning, "Picture Factory");
 		GameRegistry.registerBlock(pictureFactoryBurning,
 				"pictureFactoryBurning");
+		GameRegistry.registerTileEntity(TileEntityPictureFactory.class,
+				"pictureFactoryBurning");
 		LanguageRegistry.addName(pictureFactoryActive, "Picture Factory");
 		GameRegistry
 				.registerBlock(pictureFactoryActive, "pictureFactoryActive");
+		GameRegistry.registerTileEntity(TileEntityPictureFactory.class,
+				"pictureFactoryActive");
 		LanguageRegistry.addName(pictureFactoryIdle, "Picture Factory");
 		GameRegistry.registerBlock(pictureFactoryIdle, "pictureFactoryIdle");
+		GameRegistry.registerTileEntity(TileEntityPictureFactory.class,
+				"pictureFactoryIdle");
 		LanguageRegistry.addName(modelFactoryBurning, "Model Factory");
 		GameRegistry.registerBlock(modelFactoryBurning, "modelFactoryBurning");
+		GameRegistry.registerTileEntity(TileEntityModelFactory.class,
+				"modelFactoryBurning");
 		LanguageRegistry.addName(modelFactoryActive, "Model Factory");
 		GameRegistry.registerBlock(modelFactoryActive, "modelFactoryActive");
+		GameRegistry.registerTileEntity(TileEntityModelFactory.class,
+				"modelFactoryActive");
 		LanguageRegistry.addName(modelFactoryIdle, "Model Factory");
 		GameRegistry.registerBlock(modelFactoryIdle, "modelFactoryIdle");
+		GameRegistry.registerTileEntity(TileEntityModelFactory.class,
+				"modelFactoryIdle");
 		LanguageRegistry.addName(coloredDye, "Colored Dye");
 		LanguageRegistry.addName(coloredBrush, "Colored Brush");
 		// Craft.
@@ -200,6 +238,9 @@ public class ColoredWool {
 		GameRegistry.addRecipe(new ItemStack(modelFactoryIdle), "xyx", "zuz",
 				"xzx", 'x', igs, 'y', gls, 'z', pls, 'u', rds);
 		NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
+		// Tick.
+		TickRegistry.registerTickHandler(this, event.getSide());
+		imageImport = new CopyOnWriteArrayList<ImageImport>();
 	}
 
 	/**
@@ -210,87 +251,69 @@ public class ColoredWool {
 	 * @return the image.
 	 */
 	public static BufferedImage getLocalImage(String path) {
-		// TODO.
+		try {
+			return ImageIO.read(new File(config.coloredWool.folder, path));
+		} catch (Exception e) {
+			FMLLog.log(MOD_ID, Level.SEVERE, e, "Image not found");
+			return null;
+		}
+	}
+
+	/**
+	 * Adds an image import.
+	 * 
+	 * @param imageImport
+	 *            the image import to add.
+	 */
+	public static void addImageImport(ImageImport imageImport) {
+		ColoredWool.imageImport.add(imageImport);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+		if ((side == Side.SERVER && type.equals(EnumSet.of(TickType.SERVER)))
+				|| (side == Side.CLIENT && type.equals(EnumSet
+						.of(TickType.CLIENT)))) {
+			for (ImageImport ii : imageImport) {
+				ii.imageTick();
+				if (ii.importFinished) {
+					imageImport.remove(ii);
+				}
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public EnumSet<TickType> ticks() {
+		switch (side) {
+		case CLIENT:
+			return EnumSet.of(TickType.CLIENT);
+		case SERVER:
+			return EnumSet.of(TickType.SERVER);
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void tickStart(EnumSet<TickType> type, Object... tickData) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getLabel() {
 		return null;
 	}
 
-	/*
-	 * public static boolean findFreeIds; public static int onBlockColorChanged
-	 * = 0;
-	 * 
-	 * public static int onBlockRightClick = 1;
-	 * 
-	 * public static int onBlockPlayNote = 2;
-	 * 
-	 * public static int onBlockRequestColor = 3; public static ColoredBlock
-	 * instance; public static ColoredBlockProperties properties; public static
-	 * File imagesDir; public static ImageImport imageImport = null; public long
-	 * importTimer;
-	 * 
-	 * public ColoredBlock() { instance = this; ModLoader.SetInGameHook(this,
-	 * true, false);
-	 * 
-	 * properties = ColoredBlockProperties.create(this); imagesDir = new
-	 * File(Minecraft.b(), "/mods/ColoredBlock/Images/"); loadSettings();
-	 * loadSavedColors();
-	 * 
-	 * ItemColoredDye.initialise(); ItemColoredBrush.initialise();
-	 * BlockColoredCloth.initialise(); TileEntityColor.initialise();
-	 * TileEntityPictureFactory.initialise(); BlockPictureFactory.initialise();
-	 * TileEntityModelFactory.initialise(); BlockModelFactory.initialise();
-	 * saveIds();
-	 * 
-	 * this.importTimer = System.currentTimeMillis(); }
-	 * 
-	 * public static void loadSavedColors() {
-	 * ColoredBlockSavedColors.loadFromProps(properties.get("SavedColors")); }
-	 * 
-	 * public static void saveSavedColors() { try { Properties props =
-	 * properties.get("SavedColors");
-	 * ColoredBlockSavedColors.saveToProps(props);
-	 * properties.save("SavedColors"); } catch (Exception exception) {
-	 * System.out
-	 * .println("mod_ColoredBlock: error while saving saved colors."); } }
-	 * 
-	 * public static BufferedImage getLocalImage(String name) { try {
-	 * FileInputStream fis = new FileInputStream(imagesDir.getPath() + "/" +
-	 * name); BufferedImage bufferedimage = ImageIO.read(fis); fis.close();
-	 * return bufferedimage; } catch (Exception exception) { } return null; }
-	 * 
-	 * public boolean OnTickInGame(Minecraft minecraft) { if ((imageImport !=
-	 * null) && (System.currentTimeMillis() >= this.importTimer)) {
-	 * this.importTimer = (System.currentTimeMillis() + 32L); if
-	 * (imageImport.importFinished) imageImport = null; else {
-	 * imageImport.imageTick(); } } return false; }
-	 * 
-	 * public void HandlePacket(Packet230ModLoader packet) { if
-	 * (packet.packetType == 20) {
-	 * BlockPictureFactory.handleOpenGuiImage(packet); return; } if
-	 * (packet.packetType == 30) { BlockModelFactory.handleOpenGuiImage(packet);
-	 * return; } int[] ai = packet.dataInt; int i = ai[0]; int j = ai[1]; int k
-	 * = ai[2]; fd world = ModLoader.getMinecraftInstance().f; TileEntityColor
-	 * tileEntityColor = (TileEntityColor) world.b(i, j, k); if
-	 * (packet.packetType == onBlockColorChanged) { int l = ai[3]; int j1 =
-	 * ai[4]; int l1 = ai[5]; tileEntityColor.setColor(l, j1, l1); world.j(i, j,
-	 * k); } else if (packet.packetType == onBlockRightClick) { int i1 = ai[3];
-	 * int k1 = ai[4]; int i2 = ai[5]; dc player =
-	 * ModLoader.getMinecraftInstance().h; ModLoader.OpenGUI(player, new
-	 * GuiColoredBlockMenu(player, tileEntityColor, new Color(i1, k1, i2))); }
-	 * else if (packet.packetType == onBlockPlayNote) {
-	 * tileEntityColor.displayParticle(world, i, j, k); } }
-	 * 
-	 * public da HandleGUI(int type) { if (type ==
-	 * BlockPictureFactory.guiFurnaceId) { TileEntityPictureFactory entity = new
-	 * TileEntityPictureFactory(); return new
-	 * GuiPictureFactoryFurnace(getPlayer().c, entity); } if (type ==
-	 * BlockModelFactory.guiFurnaceId) { TileEntityModelFactory entity = new
-	 * TileEntityModelFactory(); return new
-	 * GuiModelFactoryFurnace(getPlayer().c, entity); } return null; }
-	 * 
-	 * public static boolean isMultiplayer() { return
-	 * ModLoader.getMinecraftInstance().f.B; }
-	 * 
-	 * public static gs getPlayer() { return ModLoader.getMinecraftInstance().h;
-	 * }
-	 */
 }

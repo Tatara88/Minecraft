@@ -5,9 +5,13 @@ import net.minecraft.client.gui.GuiButton;
 
 import org.minecraftnauja.coloredwool.ColorInformations;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Button displaying a color.
  */
+@SideOnly(Side.CLIENT)
 public class GuiColorButton extends GuiButton {
 
 	/**

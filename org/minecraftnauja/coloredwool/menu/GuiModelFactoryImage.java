@@ -7,14 +7,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
-import org.minecraftnauja.coloredwool.ColoredWool;
-import org.minecraftnauja.coloredwool.block.BlockModelFactory;
 import org.minecraftnauja.coloredwool.client.GuiModelFactoryMenu;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Gui for the model factory.
  */
+@SideOnly(Side.CLIENT)
 public class GuiModelFactoryImage extends GuiScreen {
 
 	/**
@@ -107,8 +109,7 @@ public class GuiModelFactoryImage extends GuiScreen {
 
 	public void close() {
 		String name = nameButton.getText();
-		entity.sendImageNameToServer(name);
-		entity.setImageToGenerate(name);
+		entity.sendImageToServer(name);
 		mc.displayGuiScreen(null);
 	}
 

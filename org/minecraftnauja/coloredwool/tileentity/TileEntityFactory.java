@@ -1,14 +1,28 @@
 package org.minecraftnauja.coloredwool.tileentity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.Config.Factory;
+import org.minecraftnauja.coloredwool.Packet;
+
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 /**
  * Factory tile entity.
@@ -16,6 +30,7 @@ import org.minecraftnauja.coloredwool.Config.Factory;
 public abstract class TileEntityFactory extends TileEntity implements
 		ISidedInventory {
 
+	protected String imageName;
 	public int factoryBurnTime;
 	public int currentItemBurnTime;
 	protected ItemStack[] dyeItemStacks;
@@ -48,32 +63,32 @@ public abstract class TileEntityFactory extends TileEntity implements
 	@Override
 	public ItemStack decrStackSize(int par1, int par2) {
 		if (par1 == 6) {
-			if (this.coalItemStack == null) {
+			if (coalItemStack == null) {
 				return null;
 			}
-			if (this.coalItemStack.stackSize <= par2) {
-				ItemStack itemstack = this.coalItemStack;
-				this.coalItemStack = null;
+			if (coalItemStack.stackSize <= par2) {
+				ItemStack itemstack = coalItemStack;
+				coalItemStack = null;
 				return itemstack;
 			}
-			ItemStack itemstack = this.coalItemStack.splitStack(par2);
-			if (this.coalItemStack.stackSize == 0) {
-				this.coalItemStack = null;
+			ItemStack itemstack = coalItemStack.splitStack(par2);
+			if (coalItemStack.stackSize == 0) {
+				coalItemStack = null;
 			}
 			return itemstack;
 		}
-		if ((par1 >= 0) && (par1 < this.dyeItemStacks.length)) {
-			if (this.dyeItemStacks[par1] == null) {
+		if ((par1 >= 0) && (par1 < dyeItemStacks.length)) {
+			if (dyeItemStacks[par1] == null) {
 				return null;
 			}
-			if (this.dyeItemStacks[par1].stackSize <= par2) {
-				ItemStack itemstack = this.dyeItemStacks[par1];
-				this.dyeItemStacks[par1] = null;
+			if (dyeItemStacks[par1].stackSize <= par2) {
+				ItemStack itemstack = dyeItemStacks[par1];
+				dyeItemStacks[par1] = null;
 				return itemstack;
 			}
-			ItemStack itemstack = this.dyeItemStacks[par1].splitStack(par2);
-			if (this.dyeItemStacks[par1].stackSize == 0) {
-				this.dyeItemStacks[par1] = null;
+			ItemStack itemstack = dyeItemStacks[par1].splitStack(par2);
+			if (dyeItemStacks[par1].stackSize == 0) {
+				dyeItemStacks[par1] = null;
 			}
 			return itemstack;
 		}
@@ -86,9 +101,9 @@ public abstract class TileEntityFactory extends TileEntity implements
 	@Override
 	public void setInventorySlotContents(int par1, ItemStack par2ItemStack) {
 		if (par1 == 6)
-			this.coalItemStack = par2ItemStack;
-		else if ((par1 >= 0) && (par1 < this.dyeItemStacks.length)) {
-			this.dyeItemStacks[par1] = par2ItemStack;
+			coalItemStack = par2ItemStack;
+		else if ((par1 >= 0) && (par1 < dyeItemStacks.length)) {
+			dyeItemStacks[par1] = par2ItemStack;
 		}
 		if ((par2ItemStack != null)
 				&& (par2ItemStack.stackSize > getInventoryStackLimit()))
@@ -96,59 +111,59 @@ public abstract class TileEntityFactory extends TileEntity implements
 	}
 
 	public int getBurnTimeRemainingScaled(int i) {
-		if (this.currentItemBurnTime == 0) {
-			this.currentItemBurnTime = 200;
+		if (currentItemBurnTime == 0) {
+			currentItemBurnTime = 200;
 		}
-		return this.factoryBurnTime * i / this.currentItemBurnTime;
+		return factoryBurnTime * i / currentItemBurnTime;
 	}
 
 	public boolean isBurning() {
-		return this.factoryBurnTime > 0;
+		return factoryBurnTime > 0;
 	}
 
 	public boolean hasRedRose() {
-		if (this.dyeItemStacks[0] == null) {
+		if (dyeItemStacks[0] == null) {
 			return false;
 		}
-		return (this.dyeItemStacks[0].getItem().itemID == Item.dyePowder.itemID)
-				&& (this.dyeItemStacks[0].getItemDamage() == 1);
+		return (dyeItemStacks[0].getItem().itemID == Item.dyePowder.itemID)
+				&& (dyeItemStacks[0].getItemDamage() == 1);
 	}
 
 	public boolean hasCactusGreen() {
-		if (this.dyeItemStacks[1] == null) {
+		if (dyeItemStacks[1] == null) {
 			return false;
 		}
-		return (this.dyeItemStacks[1].getItem().itemID == Item.dyePowder.itemID)
-				&& (this.dyeItemStacks[1].getItemDamage() == 2);
+		return (dyeItemStacks[1].getItem().itemID == Item.dyePowder.itemID)
+				&& (dyeItemStacks[1].getItemDamage() == 2);
 	}
 
 	public boolean hasLapisLazuli() {
-		if (this.dyeItemStacks[2] == null) {
+		if (dyeItemStacks[2] == null) {
 			return false;
 		}
-		return (this.dyeItemStacks[2].getItem().itemID == Item.dyePowder.itemID)
-				&& (this.dyeItemStacks[2].getItemDamage() == 4);
+		return (dyeItemStacks[2].getItem().itemID == Item.dyePowder.itemID)
+				&& (dyeItemStacks[2].getItemDamage() == 4);
 	}
 
 	public boolean hasColoredDye() {
-		if (this.dyeItemStacks[3] == null) {
+		if (dyeItemStacks[3] == null) {
 			return false;
 		}
-		return this.dyeItemStacks[3].getItem().itemID == ColoredWool.coloredDye.itemID;
+		return dyeItemStacks[3].getItem().itemID == ColoredWool.coloredDye.itemID;
 	}
 
 	public boolean hasWool() {
-		if (this.dyeItemStacks[4] == null) {
+		if (dyeItemStacks[4] == null) {
 			return false;
 		}
-		return this.dyeItemStacks[4].getItem().itemID == Block.cloth.blockID;
+		return dyeItemStacks[4].getItem().itemID == Block.cloth.blockID;
 	}
 
 	public boolean hasColoredWool() {
-		if (this.dyeItemStacks[5] == null) {
+		if (dyeItemStacks[5] == null) {
 			return false;
 		}
-		return this.dyeItemStacks[5].getItem().itemID == ColoredWool.coloredWool.blockID;
+		return dyeItemStacks[5].getItem().itemID == ColoredWool.coloredWool.blockID;
 	}
 
 	public boolean[] findItemsToSmelt() {
@@ -193,12 +208,11 @@ public abstract class TileEntityFactory extends TileEntity implements
 		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this) {
 			return false;
 		}
-		return par1EntityPlayer.getDistanceSq(this.xCoord + 0.5D,
-				this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
+		return par1EntityPlayer.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D,
+				zCoord + 0.5D) <= 64.0D;
 	}
 
-	public boolean blockAlreadyColored(int i, int j, int k,
-			TileEntityColoredWool entity) {
+	public boolean blockAlreadyColored(int i, int j, int k, int color) {
 		int id = worldObj.getBlockId(i, j, k);
 		if ((id > 0)
 				&& ((getConfig().dontEraseAnything) || (getConfig().dontEraseTheseIds
@@ -213,7 +227,7 @@ public abstract class TileEntityFactory extends TileEntity implements
 			return false;
 		}
 		TileEntityColoredWool tmp2 = (TileEntityColoredWool) tmp;
-		return tmp2.color == entity.color;
+		return tmp2.color == color;
 	}
 
 	/**
@@ -222,6 +236,113 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 * @return the configuration.
 	 */
 	protected abstract Factory getConfig();
+
+	/**
+	 * Gets the image name.
+	 * 
+	 * @return the image name.
+	 */
+	public String getImageName() {
+		return imageName;
+	}
+
+	/**
+	 * Sets the image name.
+	 * 
+	 * @param name
+	 *            new name.
+	 */
+	public void setImageName(String name) {
+		imageName = name;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setWorldObj(World par1World) {
+		super.setWorldObj(par1World);
+		if (par1World != null && !par1World.isRemote && imageName != null) {
+			String name = imageName;
+			imageName = null;
+			setImageToGenerate(name);
+		}
+	}
+
+	/**
+	 * Sets the new image to generate.
+	 * 
+	 * @param name
+	 *            new image name.
+	 */
+	public abstract void setImageToGenerate(String name);
+
+	/**
+	 * Sends the new selected image to players.
+	 */
+	public void sendImageToPlayers() {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			dos.writeInt(Packet.UpdatePictureFactoryImageClient.ordinal());
+			dos.writeInt(xCoord);
+			dos.writeInt(yCoord);
+			dos.writeInt(zCoord);
+			dos.writeUTF(imageName);
+			Packet250CustomPayload p = new Packet250CustomPayload();
+			p.channel = ColoredWool.MOD_ID;
+			p.data = bos.toByteArray();
+			p.length = bos.size();
+			PacketDispatcher.sendPacketToAllPlayers(p);
+		} catch (IOException e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not send packet");
+		}
+	}
+
+	/**
+	 * Sends the new selected image to server.
+	 * 
+	 * @param name
+	 *            image name.
+	 */
+	public void sendImageToServer(String name) {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			dos.writeInt(Packet.UpdatePictureFactoryImageServer.ordinal());
+			dos.writeInt(xCoord);
+			dos.writeInt(yCoord);
+			dos.writeInt(zCoord);
+			dos.writeUTF(name);
+			Packet250CustomPayload p = new Packet250CustomPayload();
+			p.channel = ColoredWool.MOD_ID;
+			p.data = bos.toByteArray();
+			p.length = bos.size();
+			PacketDispatcher.sendPacketToServer(p);
+		} catch (IOException e) {
+			FMLLog.log(ColoredWool.MOD_ID, Level.SEVERE, e,
+					"Could not send packet");
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public net.minecraft.network.packet.Packet getDescriptionPacket() {
+		NBTTagCompound tag = new NBTTagCompound();
+		writeToNBT(tag);
+		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, tag);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
+		readFromNBT(pkt.customParam1);
+	}
 
 	/**
 	 * {@inheritDoc}

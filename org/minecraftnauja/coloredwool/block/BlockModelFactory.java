@@ -6,7 +6,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
-import org.minecraftnauja.coloredwool.client.GuiModelFactoryMenu;
 import org.minecraftnauja.coloredwool.menu.Gui;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
@@ -126,7 +125,7 @@ public class BlockModelFactory extends BlockFactory {
 	 */
 	@Override
 	protected void openMenuImage(EntityPlayer player, TileEntityFactory entity) {
-		ModLoader.openGUI(player, new GuiModelFactoryMenu(player, entity));
+		//ModLoader.openGUI(player, new GuiModelFactoryMenu(player, entity));
 	}
 
 	/**

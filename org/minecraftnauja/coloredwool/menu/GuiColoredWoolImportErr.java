@@ -1,38 +1,20 @@
 package org.minecraftnauja.coloredwool.menu;
 
-import java.awt.Color;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.src.ModLoader;
-
-import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
 
 /**
  * Menu for error when importing image.
  */
+@SideOnly(Side.CLIENT)
 public class GuiColoredWoolImportErr extends GuiScreen {
 
 	/**
 	 * Ok button.
 	 */
 	private static final char OK = 0;
-
-	/**
-	 * Player.
-	 */
-	private final EntityPlayer player;
-
-	/**
-	 * Tile entity.
-	 */
-	private final TileEntityColoredWool tileEntity;
-
-	/**
-	 * Selected color.
-	 */
-	private Color selectedColor;
 
 	/**
 	 * Error message.
@@ -47,21 +29,11 @@ public class GuiColoredWoolImportErr extends GuiScreen {
 	/**
 	 * Initializing constructor.
 	 * 
-	 * @param player
-	 *            player.
-	 * @param tileEntity
-	 *            tile entity.
-	 * @param selectedColor
-	 *            selected color.
 	 * @param error
 	 *            error message.
 	 */
-	public GuiColoredWoolImportErr(EntityPlayer player,
-			TileEntityColoredWool tileEntity, Color selectedColor, String error) {
+	public GuiColoredWoolImportErr(String error) {
 		super();
-		this.player = player;
-		this.tileEntity = tileEntity;
-		this.selectedColor = selectedColor;
 		this.errormessage = error;
 	}
 
@@ -93,8 +65,7 @@ public class GuiColoredWoolImportErr extends GuiScreen {
 		if (par1GuiButton.enabled) {
 			switch (par1GuiButton.id) {
 			case OK:
-				ModLoader.openGUI(player, new GuiColoredWoolMenu(player,
-						tileEntity, selectedColor));
+				mc.displayGuiScreen(null);
 				break;
 			}
 		}
