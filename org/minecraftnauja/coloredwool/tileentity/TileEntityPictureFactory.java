@@ -36,6 +36,7 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 	 * Default constructor.
 	 */
 	public TileEntityPictureFactory() {
+		super();
 		imageName = "";
 		dyeItemStacks = new ItemStack[6];
 	}
@@ -69,10 +70,10 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 			fuel = true;
 		}
 
-		if (isActivated && !isBurning && (smelt) && (fuel)) {
+		if (isActivated && !isBurning && smelt && fuel) {
 			BlockPictureFactory.updateFactoryBlockState(true, true, worldObj,
 					xCoord, yCoord, zCoord);
-		} else if (isBurning && ((!isActivated) || (!fuel) || (!smelt))) {
+		} else if (isBurning && (!isActivated || !fuel || !smelt)) {
 			BlockPictureFactory.updateFactoryBlockState(isActivated, false,
 					worldObj, xCoord, yCoord, zCoord);
 		}
@@ -80,7 +81,7 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 			factoryBurnTime -= 1;
 		}
 		if (!worldObj.isRemote) {
-			if ((factoryBurnTime == 0) && (smelt)) {
+			if (factoryBurnTime == 0 && smelt) {
 				factoryBurnTime = TileEntityFurnace
 						.getItemBurnTime(coalItemStack);
 				if (ColoredWool.config.pictureFactory.dontRequireFuel) {
@@ -94,7 +95,7 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 					}
 				}
 			}
-			if ((isBurning()) && (smelt)) {
+			if (isBurning() && smelt) {
 				factoryCookTime += 16;
 				if (ColoredWool.config.pictureFactory.instantCook) {
 					factoryCookTime = 200;

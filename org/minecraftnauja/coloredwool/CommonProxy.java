@@ -5,6 +5,7 @@ import java.awt.Color;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
+import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
 
 /**
@@ -36,6 +37,18 @@ public class CommonProxy {
 	 */
 	public void openPictureFactoryImage(EntityPlayer player,
 			TileEntityPictureFactory tileEntity) {
+	}
+
+	/**
+	 * Opens the model factory menu for the image.
+	 * 
+	 * @param player
+	 *            player.
+	 * @param tileEntity
+	 *            tile entity.
+	 */
+	public void openModelFactoryMenu(EntityPlayer player,
+			TileEntityModelFactory tileEntity) {
 	}
 
 }

@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import org.minecraftnauja.coloredwool.menu.GuiColoredWoolImportErr;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityColoredWool;
-import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
+import org.minecraftnauja.coloredwool.tileentity.TileEntityFactory;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
@@ -117,16 +117,16 @@ public enum Packet {
 	},
 
 	/**
-	 * Updates the picture factory's image server-side.
+	 * Updates the factory's image server-side.
 	 */
-	UpdatePictureFactoryImageServer {
+	UpdateFactoryImageServer {
 
 		public void handle(Packet250CustomPayload packet, DataInputStream dis,
 				EntityPlayer player) throws IOException {
 			TileEntity e = player.worldObj.getBlockTileEntity(dis.readInt(),
 					dis.readInt(), dis.readInt());
-			if (e != null && e instanceof TileEntityPictureFactory) {
-				TileEntityPictureFactory w = (TileEntityPictureFactory) e;
+			if (e != null && e instanceof TileEntityFactory) {
+				TileEntityFactory w = (TileEntityFactory) e;
 				w.setImageToGenerate(dis.readUTF());
 			}
 		}
@@ -134,16 +134,16 @@ public enum Packet {
 	},
 
 	/**
-	 * Updates the picture factory's image client-side.
+	 * Updates the factory's image client-side.
 	 */
-	UpdatePictureFactoryImageClient {
+	UpdateFactoryImageClient {
 
 		public void handle(Packet250CustomPayload packet, DataInputStream dis,
 				EntityPlayer player) throws IOException {
 			TileEntity e = player.worldObj.getBlockTileEntity(dis.readInt(),
 					dis.readInt(), dis.readInt());
-			if (e != null && e instanceof TileEntityPictureFactory) {
-				TileEntityPictureFactory w = (TileEntityPictureFactory) e;
+			if (e != null && e instanceof TileEntityFactory) {
+				TileEntityFactory w = (TileEntityFactory) e;
 				w.setImageName(dis.readUTF());
 			}
 		}

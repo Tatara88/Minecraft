@@ -284,7 +284,7 @@ public abstract class TileEntityFactory extends TileEntity implements
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(bos);
-			dos.writeInt(Packet.UpdatePictureFactoryImageClient.ordinal());
+			dos.writeInt(Packet.UpdateFactoryImageClient.ordinal());
 			dos.writeInt(xCoord);
 			dos.writeInt(yCoord);
 			dos.writeInt(zCoord);
@@ -310,7 +310,7 @@ public abstract class TileEntityFactory extends TileEntity implements
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(bos);
-			dos.writeInt(Packet.UpdatePictureFactoryImageServer.ordinal());
+			dos.writeInt(Packet.UpdateFactoryImageServer.ordinal());
 			dos.writeInt(xCoord);
 			dos.writeInt(yCoord);
 			dos.writeInt(zCoord);

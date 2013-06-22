@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
-import org.minecraftnauja.coloredwool.client.GuiModelFactoryMenu;
+import org.minecraftnauja.coloredwool.Model;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
 
 import cpw.mods.fml.relauncher.Side;
@@ -64,7 +64,10 @@ public class GuiModelFactoryImage extends GuiScreen {
 	 */
 	private int updateCounter;
 
-	private char type;
+	/**
+	 * Model type.
+	 */
+	private Model type;
 
 	/**
 	 * Initializing constructor.
@@ -77,7 +80,7 @@ public class GuiModelFactoryImage extends GuiScreen {
 	 *            type.
 	 */
 	public GuiModelFactoryImage(EntityPlayer player,
-			TileEntityModelFactory entity, char type) {
+			TileEntityModelFactory entity, Model type) {
 		super();
 		this.player = player;
 		this.entity = entity;
@@ -98,9 +101,9 @@ public class GuiModelFactoryImage extends GuiScreen {
 		nameButton.setFocused(true);
 		nameButton.setMaxStringLength(42);
 		buttonList.clear();
-		doneButton = new GuiButton(DONE, width / 2 - 105, width / 4 + 120, 90,
+		doneButton = new GuiButton(DONE, width / 2 - 105, height / 4 + 120, 90,
 				20, "Done");
-		cancelButton = new GuiButton(CANCEL, width / 2 + 15, width / 4 + 120,
+		cancelButton = new GuiButton(CANCEL, width / 2 + 15, height / 4 + 120,
 				90, 20, "Cancel");
 		buttonList.add(doneButton);
 		buttonList.add(cancelButton);
