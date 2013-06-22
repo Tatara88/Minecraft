@@ -15,6 +15,7 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
@@ -23,6 +24,8 @@ import org.minecraftnauja.coloredwool.Packet;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Factory tile entity.
@@ -30,18 +33,69 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 public abstract class TileEntityFactory extends TileEntity implements
 		ISidedInventory {
 
+	/**
+	 * Index of red rose.
+	 */
+	private static final int RED_ROSE = 0;
+
+	/**
+	 * Index of cactus green.
+	 */
+	private static final int CACTUS_GREEN = 1;
+
+	/**
+	 * Index of lapis lazuli.
+	 */
+	private static final int LAPIS_LAZULI = 2;
+
+	/**
+	 * Index of colored dye.
+	 */
+	private static final int COLORED_DYE = 3;
+
+	/**
+	 * Index of wool.
+	 */
+	private static final int WOOL = 4;
+
+	/**
+	 * Index of colored wool.
+	 */
+	private static final int COLORED_WOOL = 5;
+
+	/**
+	 * Index of coal.
+	 */
+	private static final int COAL = 6;
+
+	/**
+	 * Slots for items.
+	 */
+	private static final int[] SLOTS_ITEMS = new int[] { RED_ROSE,
+			CACTUS_GREEN, LAPIS_LAZULI, COLORED_DYE, WOOL, COLORED_WOOL };
+
+	/**
+	 * Slots for coal.
+	 */
+	private static final int[] SLOTS_COAL = new int[] { COAL };
+
+	private String invName;
 	protected String imageName;
 	public int factoryBurnTime;
+	public int factoryCookTime;
 	public int currentItemBurnTime;
-	protected ItemStack[] dyeItemStacks;
-	protected ItemStack coalItemStack;
+
+	/**
+	 * Item stacks holding items.
+	 */
+	protected ItemStack[] factoryItemStacks = new ItemStack[7];
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public int getSizeInventory() {
-		return dyeItemStacks.length + 1;
+		return factoryItemStacks.length;
 	}
 
 	/**
@@ -49,12 +103,7 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 */
 	@Override
 	public ItemStack getStackInSlot(int par1) {
-		if (par1 == 6)
-			return coalItemStack;
-		if ((par1 >= 0) && (par1 < dyeItemStacks.length)) {
-			return dyeItemStacks[par1];
-		}
-		return null;
+		return factoryItemStacks[par1];
 	}
 
 	/**
@@ -62,37 +111,36 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 */
 	@Override
 	public ItemStack decrStackSize(int par1, int par2) {
-		if (par1 == 6) {
-			if (coalItemStack == null) {
-				return null;
-			}
-			if (coalItemStack.stackSize <= par2) {
-				ItemStack itemstack = coalItemStack;
-				coalItemStack = null;
+		if (factoryItemStacks[par1] != null) {
+			ItemStack itemstack;
+			if (factoryItemStacks[par1].stackSize <= par2) {
+				itemstack = factoryItemStacks[par1];
+				factoryItemStacks[par1] = null;
+				return itemstack;
+			} else {
+				itemstack = factoryItemStacks[par1].splitStack(par2);
+				if (factoryItemStacks[par1].stackSize == 0) {
+					factoryItemStacks[par1] = null;
+				}
 				return itemstack;
 			}
-			ItemStack itemstack = coalItemStack.splitStack(par2);
-			if (coalItemStack.stackSize == 0) {
-				coalItemStack = null;
-			}
-			return itemstack;
+		} else {
+			return null;
 		}
-		if ((par1 >= 0) && (par1 < dyeItemStacks.length)) {
-			if (dyeItemStacks[par1] == null) {
-				return null;
-			}
-			if (dyeItemStacks[par1].stackSize <= par2) {
-				ItemStack itemstack = dyeItemStacks[par1];
-				dyeItemStacks[par1] = null;
-				return itemstack;
-			}
-			ItemStack itemstack = dyeItemStacks[par1].splitStack(par2);
-			if (dyeItemStacks[par1].stackSize == 0) {
-				dyeItemStacks[par1] = null;
-			}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ItemStack getStackInSlotOnClosing(int par1) {
+		if (factoryItemStacks[par1] != null) {
+			ItemStack itemstack = factoryItemStacks[par1];
+			factoryItemStacks[par1] = null;
 			return itemstack;
+		} else {
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -100,16 +148,69 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 */
 	@Override
 	public void setInventorySlotContents(int par1, ItemStack par2ItemStack) {
-		if (par1 == 6)
-			coalItemStack = par2ItemStack;
-		else if ((par1 >= 0) && (par1 < dyeItemStacks.length)) {
-			dyeItemStacks[par1] = par2ItemStack;
-		}
-		if ((par2ItemStack != null)
-				&& (par2ItemStack.stackSize > getInventoryStackLimit()))
+		factoryItemStacks[par1] = par2ItemStack;
+		if (par2ItemStack != null
+				&& par2ItemStack.stackSize > getInventoryStackLimit()) {
 			par2ItemStack.stackSize = getInventoryStackLimit();
+		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getInvName() {
+		return isInvNameLocalized() ? invName : "container.furnace";
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isInvNameLocalized() {
+		return invName != null && invName.length() > 0;
+	}
+
+	/**
+	 * Sets the inventory name.
+	 * 
+	 * @param invName
+	 *            new name.
+	 */
+	public void setInvName(String invName) {
+		this.invName = invName;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getInventoryStackLimit() {
+		return 64;
+	}
+
+	/**
+	 * Returns the cooking progression.
+	 * 
+	 * @return the cooking progression.
+	 */
+	@SideOnly(Side.CLIENT)
+	public int getCookProgressScaled(int i) {
+		int p = factoryCookTime * i / 200;
+		if (p < 0)
+			return 0;
+		if (p > 200 * i) {
+			return 200 * i;
+		}
+		return p;
+	}
+
+	/**
+	 * Returns the remaining burn time.
+	 * 
+	 * @return the remaining burn time.
+	 */
+	@SideOnly(Side.CLIENT)
 	public int getBurnTimeRemainingScaled(int i) {
 		if (currentItemBurnTime == 0) {
 			currentItemBurnTime = 200;
@@ -117,53 +218,177 @@ public abstract class TileEntityFactory extends TileEntity implements
 		return factoryBurnTime * i / currentItemBurnTime;
 	}
 
+	/**
+	 * Indicates if the factory is burning.
+	 * 
+	 * @return if the factory is burning.
+	 */
 	public boolean isBurning() {
 		return factoryBurnTime > 0;
 	}
 
-	public boolean hasRedRose() {
-		if (dyeItemStacks[0] == null) {
-			return false;
-		}
-		return (dyeItemStacks[0].getItem().itemID == Item.dyePowder.itemID)
-				&& (dyeItemStacks[0].getItemDamage() == 1);
+	/**
+	 * Indicates if the factory can smelt the items.
+	 * 
+	 * @return if the factory can smelt the items.
+	 */
+	private boolean canSmelt() {
+		return (hasRedRose() && hasCactusGreen() && hasLapisLazuli() && hasWool())
+				|| (hasColoredDye() && hasWool()) || hasColoredWool();
 	}
 
-	public boolean hasCactusGreen() {
-		if (dyeItemStacks[1] == null) {
+	/**
+	 * Indicates if the furnace has a red rose.
+	 * 
+	 * @return if the furnace has a red rose.
+	 */
+	private boolean hasRedRose() {
+		if (factoryItemStacks[RED_ROSE] == null) {
 			return false;
 		}
-		return (dyeItemStacks[1].getItem().itemID == Item.dyePowder.itemID)
-				&& (dyeItemStacks[1].getItemDamage() == 2);
+		return (factoryItemStacks[RED_ROSE].getItem().itemID == Item.dyePowder.itemID)
+				&& (factoryItemStacks[RED_ROSE].getItemDamage() == 1);
 	}
 
-	public boolean hasLapisLazuli() {
-		if (dyeItemStacks[2] == null) {
+	/**
+	 * Indicates if the furnace has a cactus green.
+	 * 
+	 * @return if the furnace has a cactus green.
+	 */
+	private boolean hasCactusGreen() {
+		if (factoryItemStacks[CACTUS_GREEN] == null) {
 			return false;
 		}
-		return (dyeItemStacks[2].getItem().itemID == Item.dyePowder.itemID)
-				&& (dyeItemStacks[2].getItemDamage() == 4);
+		return (factoryItemStacks[CACTUS_GREEN].getItem().itemID == Item.dyePowder.itemID)
+				&& (factoryItemStacks[CACTUS_GREEN].getItemDamage() == 2);
 	}
 
-	public boolean hasColoredDye() {
-		if (dyeItemStacks[3] == null) {
+	/**
+	 * Indicates if the furnace has a lapis lazuli.
+	 * 
+	 * @return if the furnace has a lapis lazuli.
+	 */
+	private boolean hasLapisLazuli() {
+		if (factoryItemStacks[LAPIS_LAZULI] == null) {
 			return false;
 		}
-		return dyeItemStacks[3].getItem().itemID == ColoredWool.coloredDye.itemID;
+		return (factoryItemStacks[LAPIS_LAZULI].getItem().itemID == Item.dyePowder.itemID)
+				&& (factoryItemStacks[LAPIS_LAZULI].getItemDamage() == 4);
 	}
 
-	public boolean hasWool() {
-		if (dyeItemStacks[4] == null) {
+	/**
+	 * Indicates if the furnace has a colored dye.
+	 * 
+	 * @return if the furnace has a colored dye.
+	 */
+	private boolean hasColoredDye() {
+		if (factoryItemStacks[COLORED_DYE] == null) {
 			return false;
 		}
-		return dyeItemStacks[4].getItem().itemID == Block.cloth.blockID;
+		return factoryItemStacks[COLORED_DYE].getItem().itemID == ColoredWool.coloredDye.itemID;
 	}
 
-	public boolean hasColoredWool() {
-		if (dyeItemStacks[5] == null) {
+	/**
+	 * Indicates if the furnace has a wool.
+	 * 
+	 * @return if the furnace has a wool.
+	 */
+	private boolean hasWool() {
+		if (factoryItemStacks[WOOL] == null) {
 			return false;
 		}
-		return dyeItemStacks[5].getItem().itemID == ColoredWool.coloredWool.blockID;
+		return factoryItemStacks[WOOL].getItem().itemID == Block.cloth.blockID;
+	}
+
+	/**
+	 * Indicates if the furnace has a colored wool.
+	 * 
+	 * @return if the furnace has a colored wool.
+	 */
+	private boolean hasColoredWool() {
+		if (factoryItemStacks[COLORED_WOOL] == null) {
+			return false;
+		}
+		return factoryItemStacks[COLORED_WOOL].getItem().itemID == ColoredWool.coloredWool.blockID;
+	}
+
+	/**
+	 * Uses one combination of items.
+	 */
+	private void smeltItem() {
+		if (canSmelt()) {
+			if (hasRedRose() && hasCactusGreen() && hasLapisLazuli()
+					&& hasWool()) {
+				useItem(RED_ROSE);
+				useItem(CACTUS_GREEN);
+				useItem(LAPIS_LAZULI);
+				useItem(WOOL);
+			} else if (hasColoredDye() && hasWool()) {
+				useItem(COLORED_DYE);
+				useItem(WOOL);
+			} else if (hasColoredWool()) {
+				useItem(COLORED_WOOL);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer) {
+		return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord,
+				this.zCoord) != this ? false : par1EntityPlayer.getDistanceSq(
+				(double) this.xCoord + 0.5D, (double) this.yCoord + 0.5D,
+				(double) this.zCoord + 0.5D) <= 64.0D;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void openChest() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void closeChest() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isStackValidForSlot(int par1, ItemStack par2ItemStack) {
+		if (par1 == COAL) {
+			return TileEntityFurnace.isItemFuel(par2ItemStack);
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int[] getAccessibleSlotsFromSide(int par1) {
+		return par1 == 0 ? SLOTS_COAL : (par1 == 1 ? SLOTS_ITEMS : SLOTS_COAL);
+		// TODO
+	}
+
+	/**
+	 * Uses one of the items at given index.
+	 * 
+	 * @param index
+	 *            index in the furnace.
+	 */
+	private void useItem(int index) {
+		factoryItemStacks[index].stackSize--;
+		if (factoryItemStacks[index].stackSize <= 0) {
+			factoryItemStacks[index] = null;
+		}
 	}
 
 	public boolean[] findItemsToSmelt() {
@@ -172,44 +397,6 @@ public abstract class TileEntityFactory extends TileEntity implements
 		boolean type2 = (hasColoredDye()) && (hasWool());
 		boolean type3 = hasColoredWool();
 		return new boolean[] { type1, type2, type3 };
-	}
-
-	public boolean canSmelt() {
-		boolean[] b = findItemsToSmelt();
-		return b[0] || b[1] || b[2];
-	}
-
-	public int smeltItem() {
-		if (!canSmelt()) {
-			return -1;
-		}
-		boolean[] b = findItemsToSmelt();
-		if (b[2]) {
-			decrStackSize(5, 1);
-			return 2;
-		}
-		if (b[1]) {
-			decrStackSize(3, 1);
-			decrStackSize(4, 1);
-			return 1;
-		}
-		decrStackSize(0, 1);
-		decrStackSize(1, 1);
-		decrStackSize(2, 1);
-		decrStackSize(4, 1);
-		return 0;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer) {
-		if (worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) != this) {
-			return false;
-		}
-		return par1EntityPlayer.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D,
-				zCoord + 0.5D) <= 64.0D;
 	}
 
 	public boolean blockAlreadyColored(int i, int j, int k, int color) {
@@ -348,60 +535,12 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getInventoryStackLimit() {
-		return 64;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void openChest() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void closeChest() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public boolean canInsertItem(int par1, ItemStack par2ItemStack, int par3) {
 		return isStackValidForSlot(par1, par2ItemStack);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isInvNameLocalized() {
-		return false;
-	}
-
-	@Override
-	public int[] getAccessibleSlotsFromSide(int var1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public boolean canExtractItem(int i, ItemStack itemstack, int j) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public ItemStack getStackInSlotOnClosing(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
 		// TODO Auto-generated method stub
 		return false;
 	}

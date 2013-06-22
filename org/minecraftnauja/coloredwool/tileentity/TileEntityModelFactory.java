@@ -35,7 +35,6 @@ public class TileEntityModelFactory extends TileEntityFactory {
 	public int progressWidth;
 	public int progressHeight;
 	public int factoryGenerationTime;
-	public int factoryCookTime;
 	public boolean isActivated;
 	public boolean isBurning;
 
@@ -383,16 +382,6 @@ public class TileEntityModelFactory extends TileEntityFactory {
 			return 0;
 		}
 		return progressHeight * i / 100;
-	}
-
-	public int getCookProgressScaled(int i) {
-		int p = factoryCookTime * i / 200;
-		if (p < 0)
-			return 0;
-		if (p > 200 * i) {
-			return 200 * i;
-		}
-		return p;
 	}
 
 	/**
