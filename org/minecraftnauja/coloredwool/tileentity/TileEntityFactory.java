@@ -11,12 +11,12 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.world.World;
 
 import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.Config.Factory;
@@ -36,37 +36,37 @@ public abstract class TileEntityFactory extends TileEntity implements
 	/**
 	 * Index of red rose.
 	 */
-	private static final int RED_ROSE = 0;
+	protected static final int RED_ROSE = 0;
 
 	/**
 	 * Index of cactus green.
 	 */
-	private static final int CACTUS_GREEN = 1;
+	protected static final int CACTUS_GREEN = 1;
 
 	/**
 	 * Index of lapis lazuli.
 	 */
-	private static final int LAPIS_LAZULI = 2;
+	protected static final int LAPIS_LAZULI = 2;
 
 	/**
 	 * Index of colored dye.
 	 */
-	private static final int COLORED_DYE = 3;
+	protected static final int COLORED_DYE = 3;
 
 	/**
 	 * Index of wool.
 	 */
-	private static final int WOOL = 4;
+	protected static final int WOOL = 4;
 
 	/**
 	 * Index of colored wool.
 	 */
-	private static final int COLORED_WOOL = 5;
+	protected static final int COLORED_WOOL = 5;
 
 	/**
 	 * Index of coal.
 	 */
-	private static final int COAL = 6;
+	protected static final int COAL = 6;
 
 	/**
 	 * Slots for items.
@@ -79,11 +79,19 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 */
 	private static final int[] SLOTS_COAL = new int[] { COAL };
 
-	private String invName;
-	protected String imageName;
+	protected String invName;
+	protected String imageName = "";
 	public int factoryBurnTime;
 	public int factoryCookTime;
 	public int currentItemBurnTime;
+	public boolean isActivated;
+	public boolean isBurning;
+	protected int imageWidth;
+	protected int imageHeight;
+	protected int currentX;
+	protected int currentY;
+	public int progressWidth;
+	public int progressHeight;
 
 	/**
 	 * Item stacks holding items.
@@ -218,6 +226,32 @@ public abstract class TileEntityFactory extends TileEntity implements
 		return factoryBurnTime * i / currentItemBurnTime;
 	}
 
+	public void updateProgressWidth() {
+		if (imageWidth < 1) {
+			progressWidth = 0;
+		} else {
+			progressWidth = (int) ((currentX * 100.0F) / imageWidth);
+		}
+	}
+
+	public void updateProgressHeight() {
+		if (imageHeight < 1) {
+			progressHeight = 0;
+		} else {
+			progressHeight = (int) (((imageHeight - (currentY + 1)) * 100.0F) / imageHeight);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public int getImageProgressWidth(int i) {
+		return (int) ((progressWidth * i) / 100.0F);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public int getImageProgressHeight(int i) {
+		return (int) ((progressHeight * i) / 100.0F);
+	}
+
 	/**
 	 * Indicates if the factory is burning.
 	 * 
@@ -232,8 +266,9 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 * 
 	 * @return if the factory can smelt the items.
 	 */
-	private boolean canSmelt() {
-		return (hasRedRose() && hasCactusGreen() && hasLapisLazuli() && hasWool())
+	protected boolean canSmelt() {
+		return isActivated
+				&& (hasRedRose() && hasCactusGreen() && hasLapisLazuli() && hasWool())
 				|| (hasColoredDye() && hasWool()) || hasColoredWool();
 	}
 
@@ -315,7 +350,7 @@ public abstract class TileEntityFactory extends TileEntity implements
 	/**
 	 * Uses one combination of items.
 	 */
-	private void smeltItem() {
+	protected void smeltItem() {
 		if (canSmelt()) {
 			if (hasRedRose() && hasCactusGreen() && hasLapisLazuli()
 					&& hasWool()) {
@@ -329,6 +364,19 @@ public abstract class TileEntityFactory extends TileEntity implements
 			} else if (hasColoredWool()) {
 				useItem(COLORED_WOOL);
 			}
+		}
+	}
+
+	/**
+	 * Uses one of the items at given index.
+	 * 
+	 * @param index
+	 *            index in the furnace.
+	 */
+	private void useItem(int index) {
+		factoryItemStacks[index].stackSize--;
+		if (factoryItemStacks[index].stackSize <= 0) {
+			factoryItemStacks[index] = null;
 		}
 	}
 
@@ -375,38 +423,45 @@ public abstract class TileEntityFactory extends TileEntity implements
 	@Override
 	public int[] getAccessibleSlotsFromSide(int par1) {
 		return par1 == 0 ? SLOTS_COAL : (par1 == 1 ? SLOTS_ITEMS : SLOTS_COAL);
-		// TODO
 	}
 
 	/**
-	 * Uses one of the items at given index.
-	 * 
-	 * @param index
-	 *            index in the furnace.
+	 * {@inheritDoc}
 	 */
-	private void useItem(int index) {
-		factoryItemStacks[index].stackSize--;
-		if (factoryItemStacks[index].stackSize <= 0) {
-			factoryItemStacks[index] = null;
-		}
+	@Override
+	public boolean canInsertItem(int par1, ItemStack par2ItemStack, int par3) {
+		return this.isStackValidForSlot(par1, par2ItemStack);
 	}
 
-	public boolean[] findItemsToSmelt() {
-		boolean type1 = (hasRedRose()) && (hasCactusGreen())
-				&& (hasLapisLazuli()) && (hasWool());
-		boolean type2 = (hasColoredDye()) && (hasWool());
-		boolean type3 = hasColoredWool();
-		return new boolean[] { type1, type2, type3 };
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean canExtractItem(int par1, ItemStack par2ItemStack, int par3) {
+		return false;
 	}
 
-	public boolean blockAlreadyColored(int i, int j, int k, int color) {
-		int id = worldObj.getBlockId(i, j, k);
+	/**
+	 * Indicates if the block at given coordinates is already colored.
+	 * 
+	 * @param x
+	 *            x-coordinate.
+	 * @param y
+	 *            y-coordinate.
+	 * @param z
+	 *            z-coordinate.
+	 * @param color
+	 *            wanted color.
+	 * @return if it is already colored.
+	 */
+	public boolean blockAlreadyColored(int x, int y, int z, int color) {
+		int id = worldObj.getBlockId(x, y, z);
 		if ((id > 0)
 				&& ((getConfig().dontEraseAnything) || (getConfig().dontEraseTheseIds
 						.contains(id + ";")))) {
 			return true;
 		}
-		TileEntity tmp = worldObj.getBlockTileEntity(i, j, k);
+		TileEntity tmp = worldObj.getBlockTileEntity(x, y, z);
 		if (tmp == null) {
 			return false;
 		}
@@ -441,19 +496,6 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 */
 	public void setImageName(String name) {
 		imageName = name;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setWorldObj(World par1World) {
-		super.setWorldObj(par1World);
-		if (par1World != null && !par1World.isRemote && imageName != null) {
-			String name = imageName;
-			imageName = null;
-			setImageToGenerate(name);
-		}
 	}
 
 	/**
@@ -517,6 +559,76 @@ public abstract class TileEntityFactory extends TileEntity implements
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+		super.writeToNBT(par1NBTTagCompound);
+		par1NBTTagCompound.setString("ImageName", imageName);
+		par1NBTTagCompound.setInteger("ImageWidth", imageWidth);
+		par1NBTTagCompound.setInteger("ImageHeight", imageHeight);
+		par1NBTTagCompound.setInteger("CurrentX", currentX);
+		par1NBTTagCompound.setInteger("CurrentY", currentY);
+		par1NBTTagCompound.setBoolean("IsActivated", isActivated);
+		par1NBTTagCompound.setBoolean("IsBurning", isBurning);
+		par1NBTTagCompound.setShort("ProgressWidth", (short) progressWidth);
+		par1NBTTagCompound.setShort("ProgressHeight", (short) progressHeight);
+		par1NBTTagCompound.setShort("BurnTime", (short) factoryBurnTime);
+		par1NBTTagCompound.setShort("CookTime", (short) factoryCookTime);
+
+		NBTTagList nbttaglist = new NBTTagList();
+		for (int i = 0; i < factoryItemStacks.length; i++) {
+			if (factoryItemStacks[i] != null) {
+				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+				nbttagcompound1.setByte("Slot", (byte) i);
+				factoryItemStacks[i].writeToNBT(nbttagcompound1);
+				nbttaglist.appendTag(nbttagcompound1);
+			}
+		}
+		par1NBTTagCompound.setTag("Items", nbttaglist);
+		if (this.isInvNameLocalized()) {
+			par1NBTTagCompound.setString("CustomName", invName);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+		super.readFromNBT(par1NBTTagCompound);
+		imageName = par1NBTTagCompound.getString("ImageName");
+		imageWidth = par1NBTTagCompound.getInteger("ImageWidth");
+		imageHeight = par1NBTTagCompound.getInteger("ImageHeight");
+		currentX = par1NBTTagCompound.getInteger("CurrentX");
+		currentY = par1NBTTagCompound.getInteger("CurrentY");
+		isActivated = par1NBTTagCompound.getBoolean("IsActivated");
+		isBurning = par1NBTTagCompound.getBoolean("IsBurning");
+		progressWidth = par1NBTTagCompound.getShort("ProgressWidth");
+		progressHeight = par1NBTTagCompound.getShort("ProgressHeight");
+		factoryBurnTime = par1NBTTagCompound.getShort("BurnTime");
+		factoryCookTime = par1NBTTagCompound.getShort("CookTime");
+
+		NBTTagList nbttaglist = par1NBTTagCompound.getTagList("Items");
+		factoryItemStacks = new ItemStack[getSizeInventory()];
+
+		for (int i = 0; i < nbttaglist.tagCount(); i++) {
+			NBTTagCompound nbttagcompound1 = (NBTTagCompound) nbttaglist
+					.tagAt(i);
+			byte byte0 = nbttagcompound1.getByte("Slot");
+			if (byte0 >= 0 && byte0 < factoryItemStacks.length) {
+				factoryItemStacks[byte0] = ItemStack
+						.loadItemStackFromNBT(nbttagcompound1);
+			}
+		}
+		currentItemBurnTime = TileEntityFurnace
+				.getItemBurnTime(factoryItemStacks[COAL]);
+		if (par1NBTTagCompound.hasKey("CustomName")) {
+			invName = par1NBTTagCompound.getString("CustomName");
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public net.minecraft.network.packet.Packet getDescriptionPacket() {
 		NBTTagCompound tag = new NBTTagCompound();
 		writeToNBT(tag);
@@ -529,20 +641,6 @@ public abstract class TileEntityFactory extends TileEntity implements
 	@Override
 	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
 		readFromNBT(pkt.customParam1);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean canInsertItem(int par1, ItemStack par2ItemStack, int par3) {
-		return isStackValidForSlot(par1, par2ItemStack);
-	}
-
-	@Override
-	public boolean canExtractItem(int i, ItemStack itemstack, int j) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

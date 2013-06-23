@@ -1,5 +1,7 @@
 package org.minecraftnauja.coloredwool;
 
+import java.io.File;
+
 import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
@@ -19,7 +21,7 @@ public final class Config {
 		Configuration config = new Configuration(
 				event.getSuggestedConfigurationFile());
 		config.load();
-		Config c = new Config(config);
+		Config c = new Config(event, config);
 		config.save();
 		return c;
 	}
@@ -47,14 +49,14 @@ public final class Config {
 	/**
 	 * Loads the configuration.
 	 * 
-	 * @param config
-	 *            the configuration.
 	 * @param event
 	 *            initialization event.
+	 * @param config
+	 *            the configuration.
 	 */
-	private Config(Configuration config) {
+	private Config(FMLPreInitializationEvent event, Configuration config) {
 		ids = new Ids(config);
-		coloredWool = new ColoredWool(config);
+		coloredWool = new ColoredWool(event, config);
 		pictureFactory = new PictureFactory(config);
 		modelFactory = new ModelFactory(config);
 	}
@@ -218,11 +220,16 @@ public final class Config {
 		/**
 		 * Loads the configuration.
 		 * 
+		 * @param event
+		 *            initialization event.
 		 * @param config
 		 *            the configuration.
 		 */
-		private ColoredWool(Configuration config) {
-			folder = config.get(CATEGORY, "Folder", folder).getString();
+		private ColoredWool(FMLPreInitializationEvent event,
+				Configuration config) {
+			File f = new File(event.getModConfigurationDirectory(), "images");
+			folder = config.get(CATEGORY, "Folder", f.getAbsolutePath())
+					.getString();
 			initColorRed = get(config, "InitColorRed", initColorRed, 0, 255);
 			initColorGreen = get(config, "InitColorGreen", initColorGreen, 0,
 					255);

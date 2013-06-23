@@ -63,7 +63,8 @@ public class GuiPictureFactoryImage extends GuiScreen {
 		screenTitle = "Choose image to generate";
 		nameButton = new GuiTextField(fontRenderer, width / 2 - 100, 60, 200,
 				20);
-		nameButton.setText(entity.getImageName());
+		String name = entity.getImageName();
+		nameButton.setText(name == null ? "" : name);
 		nameButton.setEnabled(true);
 		nameButton.setFocused(true);
 		nameButton.setMaxStringLength(42);

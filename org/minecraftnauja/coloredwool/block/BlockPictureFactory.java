@@ -84,29 +84,28 @@ public class BlockPictureFactory extends BlockFactory {
 
 	public static void updateFactoryBlockState(boolean active, boolean burn,
 			World par1World, int x, int y, int z) {
-		TileEntity entity = par1World.getBlockTileEntity(x, y, z);
-		if (entity == null)
-			return;
-		if (!(entity instanceof TileEntityPictureFactory)) {
-			return;
-		}
-		TileEntityPictureFactory factory = (TileEntityPictureFactory) entity;
 		int l = par1World.getBlockMetadata(x, y, z);
+		TileEntity entity = par1World.getBlockTileEntity(x, y, z);
+		keepFactoryInventory = true;
 		if (active) {
 			if (burn)
 				par1World.setBlock(x, y, z,
-						ColoredWool.pictureFactoryBurning.blockID, l, 2);
+						ColoredWool.pictureFactoryBurning.blockID);
 			else
 				par1World.setBlock(x, y, z,
-						ColoredWool.pictureFactoryActive.blockID, l, 2);
+						ColoredWool.pictureFactoryActive.blockID);
 		} else {
-			par1World.setBlock(x, y, z, ColoredWool.pictureFactoryIdle.blockID,
-					l, 2);
+			par1World.setBlock(x, y, z, ColoredWool.pictureFactoryIdle.blockID);
 		}
-		factory.isActivated = active;
-		factory.isBurning = burn;
-		factory.validate();
-		par1World.setBlockTileEntity(x, y, z, factory);
+		keepFactoryInventory = false;
+		par1World.setBlockMetadataWithNotify(x, y, z, l, 2);
+		if (entity != null && entity instanceof TileEntityPictureFactory) {
+			TileEntityPictureFactory factory = (TileEntityPictureFactory) entity;
+			factory.isActivated = active;
+			factory.isBurning = burn;
+			factory.validate();
+			par1World.setBlockTileEntity(x, y, z, factory);
+		}
 	}
 
 	/**
@@ -124,7 +123,8 @@ public class BlockPictureFactory extends BlockFactory {
 	 */
 	@Override
 	protected void openMenuImage(EntityPlayer player, TileEntityFactory entity) {
-		ColoredWool.proxy.openPictureFactoryImage(player, (TileEntityPictureFactory) entity);
+		ColoredWool.proxy.openPictureFactoryImage(player,
+				(TileEntityPictureFactory) entity);
 	}
 
 	/**

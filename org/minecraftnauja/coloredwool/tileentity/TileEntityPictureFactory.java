@@ -3,9 +3,6 @@ package org.minecraftnauja.coloredwool.tileentity;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 
@@ -21,86 +18,63 @@ import cpw.mods.fml.common.FMLLog;
 public class TileEntityPictureFactory extends TileEntityFactory {
 
 	protected BufferedImage image;
-	protected int imageWidth;
-	protected int imageHeight;
-	protected int currentLine;
-	protected int currentColumn;
-	public int progressWidth;
-	public int progressHeight;
-	public int factoryGenerationTime;
-	public int factoryCookTime;
-	public boolean isBurning;
-	public boolean isActivated;
-
-	/**
-	 * Default constructor.
-	 */
-	public TileEntityPictureFactory() {
-		super();
-		imageName = "";
-		dyeItemStacks = new ItemStack[6];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getInvName() {
-		return "Picture Factory";
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void updateEntity() {
-		if (!isActivated) {
-			return;
-		}
-		if (image == null) {
-			return;
-		}
-		boolean changed = false;
-		boolean smelt = canSmelt();
-		if (ColoredWool.config.pictureFactory.dontRequireItems) {
-			smelt = true;
-		}
-		boolean fuel = TileEntityFurnace.isItemFuel(coalItemStack);
-		if (ColoredWool.config.pictureFactory.dontRequireFuel) {
-			fuel = true;
+		FMLLog.log("Pouet", Level.INFO, "Update");
+		boolean flag = factoryBurnTime > 0;
+		boolean flag1 = false;
+
+		if (factoryBurnTime > 0) {
+			--factoryBurnTime;
 		}
 
-		if (isActivated && !isBurning && smelt && fuel) {
-			BlockPictureFactory.updateFactoryBlockState(true, true, worldObj,
-					xCoord, yCoord, zCoord);
-		} else if (isBurning && (!isActivated || !fuel || !smelt)) {
-			BlockPictureFactory.updateFactoryBlockState(isActivated, false,
-					worldObj, xCoord, yCoord, zCoord);
-		}
-		if (factoryBurnTime > 0) {
-			factoryBurnTime -= 1;
-		}
 		if (!worldObj.isRemote) {
-			if (factoryBurnTime == 0 && smelt) {
-				factoryBurnTime = TileEntityFurnace
-						.getItemBurnTime(coalItemStack);
-				if (ColoredWool.config.pictureFactory.dontRequireFuel) {
-					factoryBurnTime = 500;
+			// Reloads image if necessary.
+			if (!imageName.isEmpty() && image == null) {
+				if (!loadImage(imageName)) {
+					imageName = "";
+				} else {
+					BlockPictureFactory.updateFactoryBlockState(isActivated,
+							isBurning, worldObj, xCoord, yCoord, zCoord);
 				}
-				currentItemBurnTime = factoryBurnTime;
+			}
+			if (factoryBurnTime == 0
+					&& isActivated
+					&& image != null
+					&& (canSmelt() || ColoredWool.config.pictureFactory.dontRequireItems)) {
+				currentItemBurnTime = factoryBurnTime = ColoredWool.config.pictureFactory.dontRequireFuel ? 200
+						: TileEntityFurnace
+								.getItemBurnTime(factoryItemStacks[COAL]);
 				if (factoryBurnTime > 0) {
-					changed = true;
-					if (!ColoredWool.config.pictureFactory.dontRequireFuel) {
-						decrStackSize(6, 1);
+					flag1 = true;
+					if (!ColoredWool.config.pictureFactory.dontRequireFuel
+							&& factoryItemStacks[COAL] != null) {
+						--factoryItemStacks[COAL].stackSize;
+						if (factoryItemStacks[COAL].stackSize == 0) {
+							factoryItemStacks[COAL] = factoryItemStacks[COAL]
+									.getItem().getContainerItemStack(
+											factoryItemStacks[COAL]);
+						}
 					}
 				}
 			}
-			if (isBurning() && smelt) {
-				factoryCookTime += 16;
+
+			if (isActivated
+					&& isBurning()
+					&& image != null
+					&& (canSmelt() || ColoredWool.config.pictureFactory.dontRequireItems)) {
 				if (ColoredWool.config.pictureFactory.instantCook) {
 					factoryCookTime = 200;
+				} else {
+					factoryCookTime += 16;
 				}
+
 				if (factoryCookTime >= 200) {
+					factoryCookTime = 0;
 					if (!ColoredWool.config.pictureFactory.dontRequireItems) {
 						smeltItem();
 					}
@@ -111,34 +85,39 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 					}
 					updateProgressWidth();
 					updateProgressHeight();
-					changed = true;
-					factoryCookTime = 0;
+					flag1 = true;
 				}
 			} else {
 				factoryCookTime = 0;
 			}
-			if (!isBurning) {
-				changed = true;
-				BlockPictureFactory.updateFactoryBlockState(isActivated, false,
+
+			if (flag != factoryBurnTime > 0) {
+				flag1 = true;
+				BlockPictureFactory.updateFactoryBlockState(isActivated,
+						factoryBurnTime > 0, worldObj, xCoord, yCoord, zCoord);
+			} else if (isActivated && !isBurning && factoryBurnTime > 0) {
+				BlockPictureFactory.updateFactoryBlockState(true, true,
 						worldObj, xCoord, yCoord, zCoord);
 			}
 		}
-		if (changed)
+
+		if (flag1) {
 			onInventoryChanged();
+		}
 	}
 
 	private boolean generateImagePart() {
-		if ((currentColumn < 0) || (currentColumn >= imageWidth))
+		if ((currentX < 0) || (currentX >= imageWidth))
 			return true;
-		if ((currentLine < 0) || (currentLine >= imageHeight)) {
+		if ((currentY < 0) || (currentY >= imageHeight)) {
 			return true;
 		}
-		int[] pos = nextVisiblePixel(currentColumn, currentLine);
+		int[] pos = nextVisiblePixel(currentX, currentY);
 		if (pos == null) {
 			return true;
 		}
-		currentColumn = pos[0];
-		currentLine = pos[1];
+		currentX = pos[0];
+		currentY = pos[1];
 		int rgb = pos[2] & 0xFFFFFF;
 
 		int l = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
@@ -146,29 +125,29 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 		int y = yCoord;
 		int z = zCoord;
 		if (l == 5) {
-			x = xCoord - imageWidth / 2 + currentColumn;
-			y = yCoord + 1 + (imageHeight - currentLine);
+			x = xCoord - imageWidth / 2 + currentX;
+			y = yCoord + 1 + (imageHeight - currentY);
 		} else if (l == 6) {
-			z = zCoord - imageWidth / 2 + currentColumn;
-			y = yCoord + 1 + (imageHeight - currentLine);
+			z = zCoord - imageWidth / 2 + currentX;
+			y = yCoord + 1 + (imageHeight - currentY);
 		} else if (l == 7) {
-			x = xCoord + imageWidth / 2 - currentColumn;
-			y = yCoord + 1 + (imageHeight - currentLine);
+			x = xCoord + imageWidth / 2 - currentX;
+			y = yCoord + 1 + (imageHeight - currentY);
 		} else if (l == 8) {
-			z = zCoord + imageWidth / 2 - currentColumn;
-			y = yCoord + 1 + (imageHeight - currentLine);
+			z = zCoord + imageWidth / 2 - currentX;
+			y = yCoord + 1 + (imageHeight - currentY);
 		} else if (l == 1) {
-			z = zCoord + imageWidth / 2 - currentColumn;
-			x = xCoord - 1 - (imageHeight - currentLine);
+			z = zCoord + imageWidth / 2 - currentX;
+			x = xCoord - 1 - (imageHeight - currentY);
 		} else if (l == 3) {
-			z = zCoord - imageWidth / 2 + currentColumn;
-			x = xCoord + 1 + (imageHeight - currentLine);
+			z = zCoord - imageWidth / 2 + currentX;
+			x = xCoord + 1 + (imageHeight - currentY);
 		} else if (l == 0) {
-			x = xCoord + imageWidth / 2 - currentColumn;
-			z = zCoord + 1 + (imageHeight - currentLine);
+			x = xCoord + imageWidth / 2 - currentX;
+			z = zCoord + 1 + (imageHeight - currentY);
 		} else if (l == 2) {
-			x = xCoord - imageWidth / 2 + currentColumn;
-			z = zCoord - 1 - (imageHeight - currentLine);
+			x = xCoord - imageWidth / 2 + currentX;
+			z = zCoord - 1 - (imageHeight - currentY);
 		}
 		if (!blockAlreadyColored(x, y, z, rgb)) {
 			TileEntityColoredWool t = null;
@@ -188,12 +167,12 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 			t.sendColorToPlayers();
 		}
 
-		currentColumn += 1;
-		if (currentColumn >= imageWidth) {
-			currentColumn = 0;
-			currentLine -= 1;
+		currentX += 1;
+		if (currentX >= imageWidth) {
+			currentX = 0;
+			currentY -= 1;
 		}
-		return currentLine < 0;
+		return currentY < 0;
 	}
 
 	/**
@@ -227,122 +206,11 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 
 	public void resetImage() {
 		if (image != null)
-			currentLine = (imageHeight - 1);
+			currentY = (imageHeight - 1);
 		else {
-			currentLine = 0;
+			currentY = 0;
 		}
-		currentColumn = 0;
-	}
-
-	public void updateProgressWidth() {
-		if (imageWidth < 1) {
-			progressWidth = 0;
-		} else {
-			progressWidth = ((int) (currentColumn / imageWidth * 100.0F));
-		}
-	}
-
-	public void updateProgressHeight() {
-		if (imageHeight < 1) {
-			progressHeight = 0;
-		} else {
-			progressHeight = ((int) ((imageHeight - (currentLine + 1))
-					/ imageHeight * 100.0F));
-		}
-	}
-
-	public int getImageProgressWidth(int i) {
-		if (!worldObj.isRemote && ((image == null) || (imageWidth < 1))) {
-			return 0;
-		}
-		return progressWidth * i / 100;
-	}
-
-	public int getImageProgressHeight(int i) {
-		if (!worldObj.isRemote && ((image == null) || (imageHeight < 1))) {
-			return 0;
-		}
-		return progressHeight * i / 100;
-	}
-
-	public int getCookProgressScaled(int i) {
-		int p = factoryCookTime * i / 200;
-		if (p < 0)
-			return 0;
-		if (p > 200 * i) {
-			return 200 * i;
-		}
-		return p;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
-		super.writeToNBT(par1NBTTagCompound);
-		par1NBTTagCompound.setString("ImageName", imageName);
-		par1NBTTagCompound.setInteger("ImageWidth", imageWidth);
-		par1NBTTagCompound.setInteger("ImageHeight", imageHeight);
-		par1NBTTagCompound.setInteger("ImageLine", currentLine);
-		par1NBTTagCompound.setInteger("ImageColumn", currentColumn);
-		par1NBTTagCompound.setInteger("GenerationTime", factoryGenerationTime);
-		par1NBTTagCompound.setBoolean("IsActivated", isActivated);
-		par1NBTTagCompound.setBoolean("IsBurning", isBurning);
-		par1NBTTagCompound.setShort("BurnTime", (short) factoryBurnTime);
-		par1NBTTagCompound.setShort("CookTime", (short) factoryCookTime);
-
-		NBTTagList nbttaglist = new NBTTagList();
-		for (int i = 0; i < dyeItemStacks.length; i++) {
-			if (dyeItemStacks[i] != null) {
-				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-				nbttagcompound1.setByte("Slot", (byte) i);
-				dyeItemStacks[i].writeToNBT(nbttagcompound1);
-				nbttaglist.appendTag(nbttagcompound1);
-			}
-		}
-		if (coalItemStack != null) {
-			NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-			nbttagcompound1.setByte("Slot", (byte) 6);
-			coalItemStack.writeToNBT(nbttagcompound1);
-			nbttaglist.appendTag(nbttagcompound1);
-		}
-		par1NBTTagCompound.setTag("Items", nbttaglist);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
-		super.readFromNBT(par1NBTTagCompound);
-		imageName = par1NBTTagCompound.getString("ImageName");
-		imageWidth = par1NBTTagCompound.getInteger("ImageWidth");
-		imageHeight = par1NBTTagCompound.getInteger("ImageHeight");
-		currentLine = par1NBTTagCompound.getInteger("ImageLine");
-		currentColumn = par1NBTTagCompound.getInteger("ImageColumn");
-		updateProgressWidth();
-		updateProgressHeight();
-		factoryGenerationTime = par1NBTTagCompound.getInteger("GenerationTime");
-		isActivated = par1NBTTagCompound.getBoolean("IsActivated");
-		isBurning = par1NBTTagCompound.getBoolean("IsBurning");
-		factoryBurnTime = par1NBTTagCompound.getShort("BurnTime");
-		factoryCookTime = par1NBTTagCompound.getShort("CookTime");
-
-		NBTTagList nbttaglist = par1NBTTagCompound.getTagList("Items");
-		dyeItemStacks = new ItemStack[getSizeInventory()];
-		for (int i = 0; i < nbttaglist.tagCount(); i++) {
-			NBTTagCompound nbttagcompound1 = (NBTTagCompound) nbttaglist
-					.tagAt(i);
-			byte b0 = nbttagcompound1.getByte("Slot");
-			if (b0 == 6) {
-				coalItemStack = ItemStack.loadItemStackFromNBT(nbttagcompound1);
-			} else if ((b0 >= 0) && (b0 < dyeItemStacks.length)) {
-				dyeItemStacks[b0] = ItemStack
-						.loadItemStackFromNBT(nbttagcompound1);
-			}
-		}
-		currentItemBurnTime = TileEntityFurnace.getItemBurnTime(coalItemStack);
+		currentX = 0;
 	}
 
 	/**
@@ -354,23 +222,33 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 			return;
 		}
 		imageName = name;
-		currentLine = 0;
-		currentColumn = 0;
+		currentY = 0;
+		currentX = 0;
 		progressWidth = 0;
 		progressHeight = 0;
-		factoryGenerationTime = 0;
-		if (name.equals("")) {
+		if (name.isEmpty()) {
+			return;
+		} else if (!loadImage(name)) {
+			imageName = "";
 			return;
 		}
-		image = ColoredWool.getLocalImage(name);
-		if (image == null) {
-			return;
-		} else {
-			sendImageToPlayers();
-		}
+		
+		sendImageToPlayers();
 		imageWidth = image.getWidth();
 		imageHeight = image.getHeight();
-		currentLine = (imageHeight - 1);
+		currentY = (imageHeight - 1);
+	}
+
+	/**
+	 * Loads the image.
+	 * 
+	 * @param name
+	 *            image name.
+	 * @return if it has been loaded.
+	 */
+	private boolean loadImage(String name) {
+		image = ColoredWool.getLocalImage(name);
+		return image != null;
 	}
 
 }

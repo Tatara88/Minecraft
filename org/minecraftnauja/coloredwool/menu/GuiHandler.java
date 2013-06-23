@@ -4,8 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import org.minecraftnauja.coloredwool.block.ContainerModelFactory;
-import org.minecraftnauja.coloredwool.block.ContainerPictureFactory;
+import org.minecraftnauja.coloredwool.block.ContainerFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityModelFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
 
@@ -25,10 +24,10 @@ public class GuiHandler implements IGuiHandler {
 		}
 		switch (Gui.values()[ID]) {
 		case PictureFactoryFurnace:
-			return new ContainerPictureFactory(player.inventory,
+			return new ContainerFactory(player.inventory,
 					(TileEntityPictureFactory) e);
 		case ModelFactoryFurnace:
-			return new ContainerModelFactory(player.inventory,
+			return new ContainerFactory(player.inventory,
 					(TileEntityModelFactory) e);
 		default:
 			return null;

@@ -6,20 +6,20 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 
-import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
+import org.minecraftnauja.coloredwool.tileentity.TileEntityFactory;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * Container for the picture factory.
+ * Container for factories.
  */
-public class ContainerPictureFactory extends Container {
+public class ContainerFactory extends Container {
 
 	/**
 	 * Instance of the factory.
 	 */
-	private TileEntityPictureFactory factory;
+	private TileEntityFactory factory;
 
 	/**
 	 * Progress.
@@ -49,18 +49,17 @@ public class ContainerPictureFactory extends Container {
 	 * @param factory
 	 *            instance of the factory.
 	 */
-	public ContainerPictureFactory(InventoryPlayer inventory,
-			TileEntityPictureFactory factory) {
+	public ContainerFactory(InventoryPlayer inventory, TileEntityFactory factory) {
 		cookTime = 0;
 		burnTime = 0;
 		progressWidth = 0;
 		progressHeight = 0;
 		this.factory = factory;
 
-		for (int i = 0; i < 3; i++) {
-			for (int k = 0; k < 2; k++) {
-				addSlotToContainer(new Slot(factory, k + i * 2, 8 + k * 18,
-						17 + i * 18));
+		for (int y = 0; y < 3; y++) {
+			for (int x = 0; x < 2; x++) {
+				addSlotToContainer(new Slot(factory, x + y * 2, 8 + x * 18,
+						17 + y * 18));
 			}
 		}
 		addSlotToContainer(new Slot(factory, 6, 80, 35));
@@ -73,9 +72,20 @@ public class ContainerPictureFactory extends Container {
 
 		}
 
-		for (int j = 0; j < 9; j++) {
+		for (int j = 0; j < 9; j++)
 			addSlotToContainer(new Slot(inventory, j, 8 + j * 18, 142));
-		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addCraftingToCrafters(ICrafting par1ICrafting) {
+		super.addCraftingToCrafters(par1ICrafting);
+		par1ICrafting.sendProgressBarUpdate(this, 0, factory.factoryCookTime);
+		par1ICrafting.sendProgressBarUpdate(this, 1, factory.progressWidth);
+		par1ICrafting.sendProgressBarUpdate(this, 2, factory.progressHeight);
+		par1ICrafting.sendProgressBarUpdate(this, 3, factory.factoryBurnTime);
 	}
 
 	/**
@@ -86,15 +96,18 @@ public class ContainerPictureFactory extends Container {
 		super.detectAndSendChanges();
 		for (int i = 0; i < crafters.size(); i++) {
 			ICrafting icrafting = (ICrafting) crafters.get(i);
-			if (cookTime != factory.factoryCookTime)
+			if (cookTime != factory.factoryCookTime) {
 				icrafting.sendProgressBarUpdate(this, 0,
 						factory.factoryCookTime);
-			else if (progressWidth != factory.progressWidth)
+			}
+			if (progressWidth != factory.progressWidth) {
 				icrafting.sendProgressBarUpdate(this, 1, factory.progressWidth);
-			else if (progressHeight != factory.progressHeight)
+			}
+			if (progressHeight != factory.progressHeight) {
 				icrafting
 						.sendProgressBarUpdate(this, 2, factory.progressHeight);
-			else if (burnTime != factory.factoryBurnTime) {
+			}
+			if (burnTime != factory.factoryBurnTime) {
 				icrafting.sendProgressBarUpdate(this, 3,
 						factory.factoryBurnTime);
 			}

@@ -4,7 +4,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 
 import org.lwjgl.opengl.GL11;
-import org.minecraftnauja.coloredwool.block.ContainerPictureFactory;
+import org.minecraftnauja.coloredwool.block.ContainerFactory;
 import org.minecraftnauja.coloredwool.tileentity.TileEntityPictureFactory;
 
 import cpw.mods.fml.relauncher.Side;
@@ -31,7 +31,7 @@ public class GuiPictureFactoryFurnace extends GuiContainer {
 	 */
 	public GuiPictureFactoryFurnace(InventoryPlayer inventoryplayer,
 			TileEntityPictureFactory factory) {
-		super(new ContainerPictureFactory(inventoryplayer, factory));
+		super(new ContainerFactory(inventoryplayer, factory));
 		this.factory = factory;
 	}
 

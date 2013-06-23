@@ -252,7 +252,11 @@ public class ColoredWool implements ITickHandler {
 	 */
 	public static BufferedImage getLocalImage(String path) {
 		try {
-			return ImageIO.read(new File(config.coloredWool.folder, path));
+			File f = new File(config.coloredWool.folder);
+			if (f.isDirectory() && !f.exists()) {
+				f.mkdirs();
+			}
+			return ImageIO.read(new File(f, path));
 		} catch (Exception e) {
 			FMLLog.log(MOD_ID, Level.SEVERE, e, "Image not found");
 			return null;

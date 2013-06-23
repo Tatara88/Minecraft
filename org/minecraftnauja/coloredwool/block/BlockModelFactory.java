@@ -84,29 +84,28 @@ public class BlockModelFactory extends BlockFactory {
 
 	public static void updateFactoryBlockState(boolean active, boolean burn,
 			World par1World, int x, int y, int z) {
-		TileEntity entity = par1World.getBlockTileEntity(x, y, z);
-		if (entity == null)
-			return;
-		if (!(entity instanceof TileEntityModelFactory)) {
-			return;
-		}
-		TileEntityModelFactory factory = (TileEntityModelFactory) entity;
 		int l = par1World.getBlockMetadata(x, y, z);
+		TileEntity entity = par1World.getBlockTileEntity(x, y, z);
+		keepFactoryInventory = true;
 		if (active) {
 			if (burn)
 				par1World.setBlock(x, y, z,
-						ColoredWool.modelFactoryBurning.blockID, l, 2);
+						ColoredWool.modelFactoryBurning.blockID);
 			else
 				par1World.setBlock(x, y, z,
-						ColoredWool.modelFactoryActive.blockID, l, 2);
+						ColoredWool.modelFactoryActive.blockID);
 		} else {
-			par1World.setBlock(x, y, z, ColoredWool.modelFactoryIdle.blockID,
-					l, 2);
+			par1World.setBlock(x, y, z, ColoredWool.modelFactoryIdle.blockID);
 		}
-		factory.isActivated = active;
-		factory.isBurning = burn;
-		factory.validate();
-		par1World.setBlockTileEntity(x, y, z, factory);
+		keepFactoryInventory = false;
+		par1World.setBlockMetadataWithNotify(x, y, z, l, 2);
+		if (entity != null && entity instanceof TileEntityModelFactory) {
+			TileEntityModelFactory factory = (TileEntityModelFactory) entity;
+			factory.isActivated = active;
+			factory.isBurning = burn;
+			factory.validate();
+			par1World.setBlockTileEntity(x, y, z, factory);
+		}
 	}
 
 	/**
