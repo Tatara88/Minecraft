@@ -105,12 +105,16 @@ public class SavedColors {
 		}
 	}
 
-	public static void load(File file) {
+	public static void load(String path) {
 		try {
+			file = new File(path);
+			File p = file.getParentFile();
+			if (p != null && !p.exists()) {
+				p.mkdirs();
+			}
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			SavedColors.file = file;
 			FileInputStream fis = new FileInputStream(file);
 			properties = new Properties();
 			fis.close();

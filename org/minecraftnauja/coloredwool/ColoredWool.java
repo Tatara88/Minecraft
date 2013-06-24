@@ -131,9 +131,7 @@ public class ColoredWool implements ITickHandler {
 	public void preInit(FMLPreInitializationEvent event) {
 		side = event.getSide();
 		config = Config.load(event);
-		File f = new File(event.getModConfigurationDirectory(),
-				"savedColors.properties");
-		SavedColors.load(f);
+		SavedColors.load(config.coloredWool.savedColors);
 	}
 
 	/**

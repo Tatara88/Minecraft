@@ -183,6 +183,11 @@ public final class Config {
 		public String folder = "";
 
 		/**
+		 * File for saved colors.
+		 */
+		public String savedColors = "";
+
+		/**
 		 * Initial value for red component.
 		 */
 		public int initColorRed = 56;
@@ -230,6 +235,10 @@ public final class Config {
 			File f = new File(event.getModConfigurationDirectory(), "images");
 			folder = config.get(CATEGORY, "Folder", f.getAbsolutePath())
 					.getString();
+			f = new File(event.getModConfigurationDirectory(),
+					"savedColors.properties");
+			savedColors = config.get(CATEGORY, "SavedColors",
+					f.getAbsolutePath()).getString();
 			initColorRed = get(config, "InitColorRed", initColorRed, 0, 255);
 			initColorGreen = get(config, "InitColorGreen", initColorGreen, 0,
 					255);
@@ -270,11 +279,12 @@ public final class Config {
 		 */
 		@Override
 		public String toString() {
-			return "ColoredWool [folder=" + folder + ", initColorRed="
-					+ initColorRed + ", initColorGreen=" + initColorGreen
-					+ ", initColorBlue=" + initColorBlue + ", initColorStep="
-					+ initColorStep + ", maxColorStep=" + maxColorStep
-					+ ", colorSelection=" + colorSelection + "]";
+			return "ColoredWool [folder=" + folder + ", savedColors="
+					+ savedColors + ", initColorRed=" + initColorRed
+					+ ", initColorGreen=" + initColorGreen + ", initColorBlue="
+					+ initColorBlue + ", initColorStep=" + initColorStep
+					+ ", maxColorStep=" + maxColorStep + ", colorSelection="
+					+ colorSelection + "]";
 		}
 
 	}
