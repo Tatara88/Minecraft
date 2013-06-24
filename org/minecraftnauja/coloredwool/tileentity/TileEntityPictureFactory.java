@@ -1,7 +1,6 @@
 package org.minecraftnauja.coloredwool.tileentity;
 
 import java.awt.image.BufferedImage;
-import java.util.logging.Level;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -9,8 +8,6 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import org.minecraftnauja.coloredwool.ColoredWool;
 import org.minecraftnauja.coloredwool.Config.Factory;
 import org.minecraftnauja.coloredwool.block.BlockPictureFactory;
-
-import cpw.mods.fml.common.FMLLog;
 
 /**
  * Picture factory tile entity.
@@ -24,7 +21,6 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 	 */
 	@Override
 	public void updateEntity() {
-		FMLLog.log("Pouet", Level.INFO, "Update");
 		boolean flag = factoryBurnTime > 0;
 		boolean flag1 = false;
 
@@ -232,7 +228,7 @@ public class TileEntityPictureFactory extends TileEntityFactory {
 			imageName = "";
 			return;
 		}
-		
+
 		sendImageToPlayers();
 		imageWidth = image.getWidth();
 		imageHeight = image.getHeight();
