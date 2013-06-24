@@ -9,15 +9,11 @@ import net.tomp2p.futures.FutureResponse;
 import net.tomp2p.peers.PeerAddress;
 
 import org.minecraftnauja.p2p.provider.IProvider;
-import org.minecraftnauja.tomp2p.config.IPeerConfig;
 
 /**
  * Interface for peers.
- * 
- * @param <T>
- *            type of the configuration.
  */
-public interface IPeer<T extends IPeerConfig> extends IProvider {
+public interface IPeer extends IProvider {
 
 	/**
 	 * Gets its identifier.
@@ -25,13 +21,6 @@ public interface IPeer<T extends IPeerConfig> extends IProvider {
 	 * @return its identifier.
 	 */
 	public String getId();
-
-	/**
-	 * Gets its configuration.
-	 * 
-	 * @return its configuration.
-	 */
-	public T getConfig();
 
 	/**
 	 * Indicates if the peer is running.

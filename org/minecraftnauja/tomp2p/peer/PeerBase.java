@@ -20,7 +20,6 @@ import org.minecraftnauja.p2p.provider.file.IFileProvider;
 import org.minecraftnauja.p2p.provider.packet.IPacket;
 import org.minecraftnauja.p2p.provider.packet.IPacketProvider;
 import org.minecraftnauja.p2p.provider.player.IPlayerProvider;
-import org.minecraftnauja.tomp2p.config.IPeerConfig;
 import org.minecraftnauja.tomp2p.packet.ICorePacket;
 import org.minecraftnauja.tomp2p.packet.PacketGetPlayer;
 import org.minecraftnauja.tomp2p.provider.FileProvider;
@@ -29,22 +28,14 @@ import org.minecraftnauja.tomp2p.provider.PlayerProvider;
 
 /**
  * Base for peers.
- * 
- * @param <T>
- *            type of the configuration.
  */
-public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
-		implements IPeer<T>, ObjectDataReply {
+public abstract class PeerBase extends ProviderBase implements IPeer,
+		ObjectDataReply {
 
 	/**
 	 * Its instance.
 	 */
 	private Peer peer;
-
-	/**
-	 * Its configuration.
-	 */
-	private T config;
 
 	/**
 	 * The player provider.
@@ -94,24 +85,6 @@ public abstract class PeerBase<T extends IPeerConfig> extends ProviderBase
 		if (peer != null) {
 			peer.setObjectDataReply(this);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized T getConfig() {
-		return config;
-	}
-
-	/**
-	 * Sets its configuration.
-	 * 
-	 * @param config
-	 *            new value.
-	 */
-	protected synchronized void setConfig(T config) {
-		this.config = config;
 	}
 
 	/**

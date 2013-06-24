@@ -1,26 +1,33 @@
 package org.minecraftnauja.tomp2p.peer;
 
-import java.io.IOException;
-
-import org.minecraftnauja.tomp2p.config.ClientConfig;
-import org.minecraftnauja.tomp2p.config.IClientConfig;
-
 /**
  * Interface for clients.
  */
-public interface IClient extends IPeer<IClientConfig> {
+public interface IClient extends IPeer {
 
 	/**
 	 * Starts the client.
 	 * 
 	 * @param id
 	 *            peer identifier.
-	 * @param config
-	 *            client configuration.
-	 * @throws IOException
-	 *             error with IO.
+	 * @param address
+	 *            bootstrap address.
+	 * @param port
+	 *            bootstrap port.
+	 * @throws Exception
+	 *             any error.
 	 */
-	public void start(String id, ClientConfig config) throws IOException;
+	public void start(String id, String address, int port) throws Exception;
+
+	/**
+	 * Starts the client.
+	 * 
+	 * @param id
+	 *            peer identifier.
+	 * @throws Exception
+	 *             any error.
+	 */
+	public void start(String id) throws Exception;
 
 	/**
 	 * Stops the client.
