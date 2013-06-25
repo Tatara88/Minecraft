@@ -2,9 +2,12 @@ package org.minecraftnauja.tomp2p;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.network.Player;
 
 /**
@@ -19,14 +22,7 @@ public enum PacketType {
 
 		public void handle(INetworkManager manager, Player player,
 				DataInputStream dis) throws IOException {
-			// Important, gets the WAN address.
-			String address = manager.getSocketAddress().toString();
-			if (address.startsWith("/")) {
-				address = address.substring(1);
-			}
-			if (address.contains(":")) {
-				address = address.substring(0, address.indexOf(":"));
-			}
+			String address = dis.readUTF();
 			int port = dis.readInt();
 			TomP2P.onJoin(player, address, port);
 		}
@@ -66,14 +62,7 @@ public enum PacketType {
 
 		public void handle(INetworkManager manager, Player player,
 				DataInputStream dis) throws IOException {
-			// Important, gets the WAN address.
-			String address = manager.getSocketAddress().toString();
-			if (address.startsWith("/")) {
-				address = address.substring(1);
-			}
-			if (address.contains(":")) {
-				address = address.substring(0, address.indexOf(":"));
-			}
+			String address = dis.readUTF();
 			int port = dis.readInt();
 			TomP2P.onJoined(((EntityPlayer) player).username, address, port);
 		}

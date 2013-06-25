@@ -1,12 +1,14 @@
 package org.minecraftnauja.tomp2p.peer;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.logging.Level;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.tomp2p.connection.Bindings;
+import net.tomp2p.connection.Bindings.Protocol;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.Peer;
@@ -61,8 +63,8 @@ public class Client extends PeerBase implements IClient {
 			FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client %s: starting", id);
 			p.addChatMessage("[TomP2P] Connecting to " + address + ':' + port);
 			fireStarting();
-			Bindings b = new Bindings();
-			b.addAddress(InetAddress.getByName(TomP2P.config.address));
+			Bindings b = new Bindings(Protocol.IPv6);
+			b.addAddress(Inet6Address.getByName(TomP2P.config.address));
 			peer = new PeerMaker(Number160.createHash(id)).setBindings(b)
 					.setPorts(TomP2P.config.port)
 					.setEnableIndirectReplication(true).makeAndListen();
@@ -70,8 +72,9 @@ public class Client extends PeerBase implements IClient {
 					TomP2P.config.behindFirewall);
 			TomP2P.config.storageType.apply(peer);
 			// Discovers outside address.
-			PeerAddress pa = new PeerAddress(Number160.ZERO, address, port,
-					port);
+			InetAddress serverAddress = Inet6Address.getByName(address);
+			PeerAddress pa = new PeerAddress(Number160.ZERO, serverAddress,
+					port, port);
 			FutureDiscover fd = peer.discover().setPeerAddress(pa).start();
 			FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client: discovering...");
 			p.addChatMessage("[TomP2P] Discovering...");
@@ -137,8 +140,8 @@ public class Client extends PeerBase implements IClient {
 			FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client %s: starting", id);
 			p.addChatMessage("[TomP2P] Starting the peer-to-peer network");
 			fireStarting();
-			Bindings b = new Bindings();
-			b.addAddress(InetAddress.getByName(TomP2P.config.address));
+			Bindings b = new Bindings(Protocol.IPv6);
+			b.addAddress(Inet6Address.getByName(TomP2P.config.address));
 			peer = new PeerMaker(Number160.createHash(id)).setBindings(b)
 					.setPorts(TomP2P.config.port)
 					.setEnableIndirectReplication(true).makeAndListen();

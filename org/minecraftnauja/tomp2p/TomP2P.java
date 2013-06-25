@@ -184,6 +184,7 @@ public class TomP2P {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
 		dos.writeInt(PacketType.Join.ordinal());
+		dos.writeUTF(config.address);
 		dos.writeInt(config.port);
 		Packet250CustomPayload p = new Packet250CustomPayload();
 		p.channel = MOD_ID;
@@ -202,6 +203,7 @@ public class TomP2P {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
 		dos.writeInt(PacketType.Joined.ordinal());
+		dos.writeUTF(config.address);
 		dos.writeInt(config.port);
 		Packet250CustomPayload p = new Packet250CustomPayload();
 		p.channel = MOD_ID;
