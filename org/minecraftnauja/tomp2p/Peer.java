@@ -6,6 +6,11 @@ package org.minecraftnauja.tomp2p;
 public class Peer {
 
 	/**
+	 * Name.
+	 */
+	private final String player;
+
+	/**
 	 * Address.
 	 */
 	private final String address;
@@ -18,15 +23,27 @@ public class Peer {
 	/**
 	 * Initializing constructor.
 	 * 
+	 * @param player
+	 *            name.
 	 * @param address
 	 *            address.
 	 * @param port
 	 *            port.
 	 */
-	public Peer(String address, int port) {
+	public Peer(String player, String address, int port) {
 		super();
+		this.player = player;
 		this.address = address;
 		this.port = port;
+	}
+
+	/**
+	 * Gets the name.
+	 * 
+	 * @return the name.
+	 */
+	public String getPlayer() {
+		return player;
 	}
 
 	/**
@@ -52,7 +69,8 @@ public class Peer {
 	 */
 	@Override
 	public String toString() {
-		return "Peer [address=" + address + ", port=" + port + "]";
+		return "Peer [player=" + player + ", address=" + address + ", port="
+				+ port + "]";
 	}
 
 }

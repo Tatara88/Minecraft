@@ -51,8 +51,8 @@ public class Client extends PeerBase implements IClient {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void start(String id, String address, int port)
-			throws Exception {
+	public synchronized void start(String id, String peerId, String address,
+			int port) throws Exception {
 		if (isRunning()) {
 			return;
 		}
@@ -73,8 +73,8 @@ public class Client extends PeerBase implements IClient {
 			TomP2P.config.storageType.apply(peer);
 			// Bootstrap to master server.
 			InetAddress serverAddress = Inet6Address.getByName(address);
-			PeerAddress pa = new PeerAddress(Number160.ZERO, serverAddress,
-					port, port);
+			PeerAddress pa = new PeerAddress(Number160.createHash(peerId),
+					serverAddress, port, port);
 			FutureBootstrap bootstrap = peer.bootstrap().setPeerAddress(pa)
 					.start();
 			p.addChatMessage("[TomP2P] Bootstrapping...");

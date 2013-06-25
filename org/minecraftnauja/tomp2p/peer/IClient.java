@@ -9,7 +9,9 @@ public interface IClient extends IPeer {
 	 * Starts the client.
 	 * 
 	 * @param id
-	 *            peer identifier.
+	 *            peer's identifier.
+	 * @param peerId
+	 *            peer's identifier.
 	 * @param address
 	 *            bootstrap address.
 	 * @param port
@@ -17,7 +19,8 @@ public interface IClient extends IPeer {
 	 * @throws Exception
 	 *             any error.
 	 */
-	public void start(String id, String address, int port) throws Exception;
+	public void start(String id, String peerId, String address, int port)
+			throws Exception;
 
 	/**
 	 * Starts the client.

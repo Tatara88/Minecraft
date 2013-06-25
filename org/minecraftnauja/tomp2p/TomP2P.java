@@ -124,18 +124,20 @@ public class TomP2P {
 	 * 
 	 * @param player
 	 *            player's name.
+	 * @param peerId
+	 *            peer's identifier.
 	 * @param address
 	 *            address to use.
 	 * @param port
 	 *            port to use.
 	 */
 	public static synchronized void onBootstrap(final String player,
-			final String address, final int port) {
+			final String peerId, final String address, final int port) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
 					((IClient) P2P.get(P2P.CLIENT_PROVIDER)).start(player,
-							address, port);
+							peerId, address, port);
 				} catch (Exception e) {
 					// Try again.
 					FMLLog.log(TomP2P.MOD_ID, Level.SEVERE, e,
@@ -284,15 +286,16 @@ public class TomP2P {
 		Peer p = getBootstrapPeer();
 		if (p == null) {
 			// No peer available, starts the network.
-			p = new Peer(address, port);
-			nameToPeer.put(((EntityPlayer) player).username, p);
+			String username = ((EntityPlayer) player).username;
+			p = new Peer(username, address, port);
+			nameToPeer.put(username, p);
 			peers.add(p);
 			FMLLog.log(MOD_ID, Level.INFO, "Player %s started the network",
 					player);
 			sendNoBootstrapPacket(player);
 		} else {
 			// Peer available, sends informations.
-			sendBootstrapPacket(player, p.getAddress(), p.getPort());
+			sendBootstrapPacket(player, p);
 		}
 	}
 
@@ -309,7 +312,7 @@ public class TomP2P {
 	public static synchronized void onJoined(String player, String address,
 			int port) {
 		if (!nameToPeer.containsKey(player)) {
-			Peer p = new Peer(address, port);
+			Peer p = new Peer(player, address, port);
 			nameToPeer.put(player, p);
 			peers.add(p);
 			FMLLog.log(MOD_ID, Level.INFO, "Player %s joined the network",
@@ -356,19 +359,17 @@ public class TomP2P {
 	 * 
 	 * @param player
 	 *            player.
-	 * @param address
-	 *            address to use.
-	 * @param port
-	 *            port to use.
+	 * @param peer
+	 *            peer informations.
 	 */
-	public static synchronized void sendBootstrapPacket(Player player,
-			String address, int port) {
+	public static synchronized void sendBootstrapPacket(Player player, Peer peer) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(bos);
 			dos.writeInt(PacketType.Bootstrap.ordinal());
-			dos.writeUTF(address);
-			dos.writeInt(port);
+			dos.writeUTF(peer.getPlayer());
+			dos.writeUTF(peer.getAddress());
+			dos.writeInt(peer.getPort());
 			Packet250CustomPayload p = new Packet250CustomPayload();
 			p.channel = MOD_ID;
 			p.data = bos.toByteArray();
