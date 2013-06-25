@@ -71,48 +71,31 @@ public class Client extends PeerBase implements IClient {
 			peer.getConfiguration().setBehindFirewall(
 					TomP2P.config.behindFirewall);
 			TomP2P.config.storageType.apply(peer);
-			// Discovers outside address.
+			// Bootstrap to master server.
 			InetAddress serverAddress = Inet6Address.getByName(address);
 			PeerAddress pa = new PeerAddress(Number160.ZERO, serverAddress,
 					port, port);
-			FutureDiscover fd = peer.discover().setPeerAddress(pa).start();
-			FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client: discovering...");
-			p.addChatMessage("[TomP2P] Discovering...");
-			fd.awaitUninterruptibly();
-			if (fd.isSuccess()) {
-				FMLLog.log(TomP2P.MOD_ID, Level.INFO,
-						"Client: outside address is %s", fd.getPeerAddress());
-				// Bootstrap to master server.
-				FutureBootstrap bootstrap = peer.bootstrap()
-						.setPeerAddress(fd.getReporter()).start();
-				p.addChatMessage("[TomP2P] Bootstrapping...");
-				bootstrap.awaitUninterruptibly();
-				if (bootstrap.isSuccess()) {
-					// Started.
-					setPeer(peer);
-					this.id = id;
-					// Notifies.
-					FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client: started");
-					p.addChatMessage("[TomP2P] Connected");
-					fireStarted();
-					return;
-				} else {
-					FMLLog.log(TomP2P.MOD_ID, Level.SEVERE,
-							"Client: could not bootstrap");
-					p.addChatMessage("[TomP2P] Bootstrap error");
-					if (peer != null) {
-						peer.shutdown();
-					}
-					throw new Exception("Bootstrap error");
-				}
+			FutureBootstrap bootstrap = peer.bootstrap().setPeerAddress(pa)
+					.start();
+			p.addChatMessage("[TomP2P] Bootstrapping...");
+			bootstrap.awaitUninterruptibly();
+			if (bootstrap.isSuccess()) {
+				// Started.
+				setPeer(peer);
+				this.id = id;
+				// Notifies.
+				FMLLog.log(TomP2P.MOD_ID, Level.INFO, "Client: started");
+				p.addChatMessage("[TomP2P] Connected");
+				fireStarted();
+				return;
 			} else {
 				FMLLog.log(TomP2P.MOD_ID, Level.SEVERE,
-						"Client: failed because of %s", fd.getFailedReason());
-				p.addChatMessage("[TomP2P] " + fd.getFailedReason());
+						"Client: could not bootstrap");
+				p.addChatMessage("[TomP2P] Bootstrap error");
 				if (peer != null) {
 					peer.shutdown();
 				}
-				throw new Exception(fd.getFailedReason());
+				throw new Exception("Bootstrap error");
 			}
 		} catch (Exception e) {
 			FMLLog.log(TomP2P.MOD_ID, Level.SEVERE, e, "Client: failed");
